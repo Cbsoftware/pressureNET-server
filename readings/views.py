@@ -173,7 +173,7 @@ class LoggedLocationListView(ListModelView):
                 readings_choices.SHARING_RESEARCHERS_FORECASTERS,
             ])
 
-        return queryset[:parameters['results_limit']]
+        return queryset.order_by('user_id')[:parameters['results_limit']]
 
 
 class ReadingLiveView(APIKeyViewMixin, LoggedLocationListView):
