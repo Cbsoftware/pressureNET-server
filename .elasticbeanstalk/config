@@ -1,0 +1,23 @@
+[global]
+ApplicationName=PressureNET
+AwsCredentialFile=/home/jkerim/.elasticbeanstalk/aws_credential_file
+DevToolsEndpoint=git.elasticbeanstalk.us-east-1.amazonaws.com
+EnvironmentName=PressureNET-Live
+OptionSettingFile=/home/jkerim/pressureNETAnalysis/.elasticbeanstalk/optionsettings.PressureNET-Live
+RdsDeletionPolicy=Snapshot
+RdsEnabled=Yes
+RdsSourceSnapshotName=
+Region=us-east-1
+ServiceEndpoint=https://elasticbeanstalk.us-east-1.amazonaws.com
+SolutionStack=32bit Amazon Linux running Python
+
+[branches]
+beanstalk=PressureNET-Live
+
+[branch:beanstalk]
+EnvironmentName=PressureNET-Live
+OptionSettingFile=/home/jkerim/pressureNETAnalysis/.elasticbeanstalk/optionsettings.PressureNET-Live
+RdsDeletionPolicy=Snapshot
+RdsEnabled=Yes
+RdsSourceSnapshotName=
+

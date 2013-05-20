@@ -1,4 +1,0 @@
-URLObject>=0.6.0
-
-[markdown]
-Markdown>=2.0
