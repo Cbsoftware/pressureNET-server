@@ -177,7 +177,7 @@ class LoggedLocationListView(FilteredListAPIView):
 
         if parameters['since_last_call']:
             try:
-                call_log = CustomerCallLog.objects.filter(customer=customer).order_by('-timestamp').limit(1).get()
+                call_log = CustomerCallLog.objects.filter(customer=customer).order_by('-timestamp')[:1].get()
                 last_customerapi_call_time = call_log.timestamp
             except CustomerCallLog.DoesNotExist:
                 last_customerapi_call_time = datetime.datetime.now() - datetime.timedelta(hours=1)
