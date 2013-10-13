@@ -8,9 +8,17 @@ body {
 	font: 0.875rem/1.2 Roboto, sans-serif;
 	color: #000;
 	min-width: 20rem;
-	background-color: #ddd;
+	background-color: #fff;
 	margin: 0 auto;
 	}
+
+h1 a {
+  color: #fff;
+}
+
+h1 a:hover {
+  color: #fff;
+}
 
 h2 {
 	color: #555;
@@ -23,14 +31,14 @@ h2 {
 	#pages h2 {color: #aaa;}
   #main > h2 {padding: 0.625rem 0.625rem 0;}
 h3 {
-	color: #333;
+	color: #09c;
 	font-size: 1.125rem;
 	font-weight: 700;
 	margin-bottom: 0.625rem;
 	}
 
 h4 {
-	color: #333;
+	color: #09c;
 	font-size: 1rem;
 	font-weight: 700;
 	margin-bottom: 0.625rem;
@@ -70,11 +78,6 @@ input[type="radio"] + label {
     margin: 0;
 	}
 
-	input[type="radio"]:hover + label {
-		color: #fff;
-		background-color: #33b5e5;
-		}
-		
 	input[type="radio"]:checked + label {
 		color: #fff;
 		background-color: #09c;
@@ -84,8 +87,8 @@ input[type="text"] {
 	float: left;
 	font-size: 0.875rem;
 	height: 1rem;
-	background-color: transparent;
-	border-color: #33b5e5;
+	background-color: #ddd;
+	border-color: #aaa;
 	border-style: solid;
 	border-width: 0 0 0.125rem;
 	padding: 0.125rem;
@@ -99,7 +102,7 @@ textarea {
 	width: 18.25rem;
 	height: 5rem;
 	background-color: #fff;
-	border-color: #33b5e5;
+	border-color: #fff;
 	border-style: solid;
 	border-width: 0 0 0.125rem;
 	padding: 0.25rem;
@@ -124,7 +127,7 @@ input[type="button"], input[type="submit"] {
 
 	input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus {
 		color: #fff;
-		background-color: #33b5e5;
+		background-color: #fff;
 		}
 
 @media all and (max-width: 639px) {
@@ -133,7 +136,6 @@ input[type="button"], input[type="submit"] {
 
 a {
 	cursor: pointer;
-	color: #33b5e5;
 	text-decoration: none;
 	}
 
@@ -148,7 +150,7 @@ a {
 #masthead {
 	z-index: 5;
 	color: #fff;
-	background-color: #333;
+	background-color: #09c;
 	padding: 0.625rem 0;
 	}
 
@@ -183,7 +185,7 @@ a {
 			}
 
 			#masthead nav a:first-child {border: none;}
-			#masthead nav a:hover {color: #33b5e5;}
+			#masthead nav a:hover {color: #fff;}
 
 		.link-logo {
 			height: 1rem;
@@ -360,7 +362,7 @@ footer {
 
 		.contact:hover, .contact:focus {
 			color: #fff;
-			background: #33b5e5;
+			background: #fff;
 			}
 
 	#nav-social {
