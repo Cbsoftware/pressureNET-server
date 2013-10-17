@@ -1,20 +1,14 @@
 {% extends "base.html" %}
 
 {% load url from future %}
-    
-{% block extrahead %}
-  <script language="Javascript" type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false"></script>
-  <script language="Javascript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script> 
-  <script language="Javascript" type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script> 
-{% endblock %}
 
 {% block main_content %}
-		<section id="intro" class="full">
+		<div id="intro" class="full">
 			<h2>Welcome to pressureNET</h2>
 			<p>We are collecting atmospheric pressure measurements from many thousands of <a href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" target="_blank">pressureNET</a> users. We intend to use this data to help predict weather more accurately and to better understand Earth's atmosphere. Choose a date range and pan/zoom the map to any location of interest to view the data we have collected.</p>
-		</section>
+		</div>
 
-		<section id="date-range" class="full">
+		<div id="date-range" class="full">
 			<div class="half">
 				<label for="start_date">From</label>
 				<input readonly="true" type="text" name="start_date" id="start_date" class="dateselector" placeholder="Start Date">
@@ -24,20 +18,20 @@
 				<input readonly="true" type="text" id="end_date" name="end_date" class="dateselector" placeholder="End Date">
 			</div>
 			<input type="button" id="load" value="Load" onClick="PressureNET.loadAndUpdate(0);">
-		</section>
+		</div>
 
-		<section id="query_results" class="full"></section>
-		<section id="share_spot" class="full">
+		<div id="query_results" class="full"></div>
+		<div id="share_spot" class="full">
 			<input type="text" id="share_input">
-		</section>
+		</div>
 
-		<section id="map_canvas" class="full"></section>  
+		<div id="map_canvas" class="full"></div>  
 
-		<section id="current_position" class="full"></section>
+		<div id="current_position" class="full"></div>
 
-		<section id="placeholder" class="full"></section>
+		<div id="placeholder" class="full"></div>
 
-		<section id="graph_info" class="full">
+		<div id="graph_info" class="full">
 			<p>This graph is a plot of our raw atmospheric pressure data in millibars over time (some outliers have been discarded). Below is a table of information about the graph.</p>
 
 			<table class="graph_info_table">
@@ -64,5 +58,5 @@
 					<td id="resultsCount_cell" colspan="3"></td>
 				</tr>
 			</table>
-		</section>
+		</div>
 {% endblock %}

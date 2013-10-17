@@ -15,6 +15,9 @@
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700,900,400italic">
     <script language="Javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script language="Javascript" type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+    <script language="Javascript" type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script> 
+    <script language="Javascript" type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false"></script>
+    <script language="Javascript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script> 
     
     {% block extrahead %}
     {% endblock %}
@@ -32,12 +35,12 @@
       </nav>
     </header>
 
-    <section id="main" class="group">
+    <div id="main" class="group">
 
       {% block main_content %}
       {% endblock %}
 
-    </section>
+    </div>
 
     <footer>
       <a class="contact" style="cursor:pointer;" onClick="PressureNET.alertCumulonimbus()" title="E-mail us!">Found something interesting? <wbr>Let us know!</a>
