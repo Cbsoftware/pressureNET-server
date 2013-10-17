@@ -383,3 +383,29 @@ footer {
 		#link-pl {background-image: url("../images/logo-pl.png");}
 		#link-tw {background-image: url("../images/logo-tw.png");}
 			#link-fb:hover, #link-pl:hover, #link-tw:hover {background-position: center bottom;}
+
+  #contact {
+    display: block;
+    width: 188px;
+    height: 32px;
+    margin: 20px auto;
+    }
+
+    #contact a {
+      display: block;
+      float: left;
+      width: 32px;
+      height: 32px;
+      background-image: url("../images/contact.png");
+      background-size: 128px 32px;
+      margin-left: 20px;
+      }
+
+      #contact a:first-child {
+        margin-left: 0;
+        }
+
+      #mail {background-position: left top;}
+      #bird {background-position: -32px top;}
+      #gplus {background-position: -64px top;}
+      #octo {background-position: right top;}
