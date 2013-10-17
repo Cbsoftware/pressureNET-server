@@ -13,11 +13,8 @@
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
     <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700,900,400italic">
-    <script language="Javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script language="Javascript" type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-    <script language="Javascript" type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script> 
-    <script language="Javascript" type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false"></script>
-    <script language="Javascript" type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script> 
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
     
     {% block extrahead %}
     {% endblock %}
@@ -29,7 +26,7 @@
       <nav>
         <a href="{% url 'home-about' %}">About</a>
         <a href="{% url 'customers-livestream'%}">Developers</a>
-        <a href="https://github.com/cbsoftware">GitHub</a>
+        <a href="https://github.com/cbsoftware" target="blank">GitHub</a>
         <a id="link-cb" class="link-logo" href="http://cumulonimbus.ca">Cumulonimbus</a>
         <a id="link-gp" class="link-logo" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" target="_blank">Download pressureNET</a>
       </nav>
@@ -55,10 +52,6 @@
 
 
     <script type="text/javascript">
-      PressureNET.initialize({
-        readingsUrl: '{% url 'readings-list' %}'
-      });
-
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-78967-8']);
       _gaq.push(['_trackPageview']);
@@ -70,6 +63,9 @@
       })();
 
     </script>
+
+    {% block extra_footer %}
+    {% endblock %}
 
   </body>
 </html>

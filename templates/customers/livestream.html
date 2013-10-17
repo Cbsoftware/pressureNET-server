@@ -3,9 +3,6 @@
 {% load url from future %}
 {% load customers_tags %}
 
-{% get_customer_types as customer_types %}
-{% get_customer_plans as customer_plans %}
-
 {% block extrahead %}
   <script type="text/javascript">
 
@@ -47,6 +44,10 @@
 {% endblock %}
 
 {% block main_content %}
+    
+    {% get_customer_types as customer_types %}
+    {% get_customer_plans as customer_plans %}
+
     <div id="success">
       <h3>Thanks for signing up!</h3>
       <p>You'll receive your API key by e-mail shortly.</p>
