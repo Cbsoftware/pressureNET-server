@@ -343,7 +343,7 @@ footer {
 	z-index: 1;
 	max-width: 38.75rem;
 	background: #555;
-	padding: 0.625rem 0.625rem 3.75rem;
+	padding: 10px;
 	margin: 0 auto;
 	}
 
@@ -388,7 +388,7 @@ footer {
     display: block;
     width: 188px;
     height: 32px;
-    margin: 20px auto;
+    margin: 0 auto;
     }
 
     #contact a {
