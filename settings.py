@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'debug_toolbar',
     'rest_framework',
     'raven.contrib.django.raven_compat',
     'south',
@@ -169,7 +170,7 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
 }
 
-MAX_CALL_LENGTH = 10000
+MAX_CALL_LENGTH = 100000
 
 
 # Sentry Logging

@@ -14,77 +14,17 @@
     var max_longitude = -65;
     var start_time = 0;
     var end_time = 0;
-    var zoom = 2;
+    var zoom = 20;
    
     var dataPoints = [];
     
-    var defaultQueryLimit = 2000;
+    var defaultQueryLimit = 20000;
     var defaultQueryIncrement = 5000;
     //var largeQueryIncrement = 10000;
     
     var map;
     
     var currentQueryLimit = defaultQueryLimit;
-
-    var events = [{
-        eventName: "Sandy",
-        eventDates: [new Date(), new Date()],
-        eventTime: "October - November 2012",
-        eventDescription: "Sandy was a category 2...",
-        eventLink: "http://en.wikipedia.org/wiki/Hurricane_Sandy",
-        pointsOfInterest: [{
-          pointName: "New York", 
-          latitude: 40.670345225,
-          longitude: -73.9425720,
-          start_time: (new  Date(2012, 9, 25)).getTime(),
-          end_time: (new  Date(2012, 10, 01)).getTime(),
-          zoomLevel: 11
-        }, {
-          pointName: "New Jersey",
-          latitude: 39.9977615,
-          longitude: -74.7212280,
-          start_time: (new  Date(2012, 9, 29)).getTime(),
-          end_time: (new  Date(2012, 10, 01)).getTime(),
-          zoomLevel: 9
-        }, { // 39.291382453532435 -76.48104933520496 1351396800000 1351742400000 10
-          pointName: "Baltimore",
-          latitude: 39.291382453532435,
-          longitude: -76.48104933520496,
-          start_time: 1351396800000,
-          end_time: 1351742400000,
-          zoomLevel: 10
-        }]
-    }, { // 29.989573859470866 -91.0675109863281 1346040000000 1346558400000 8
-        eventName: "Isaac",
-        eventDates: [new Date(), new Date()],
-        eventTime: "Summer 2012",
-        eventDescription: "Isaac was a ...",
-        eventLink: "http://en.wikipedia.org/wiki/Hurricane_Isaac_(2012)",
-        pointsOfInterest: [{
-          pointName: "Louisiana",
-          latitude: 29.989573859470866,
-          longitude: -91.0675109863281,
-          start_time: 1346040000000,
-          end_time: 1346558400000,
-          zoomLevel: 8
-        }]
-    }, { // 39.98355761483058 -74.95125427246091 1352091600000 1352610000000 10
-         // boston: 42.326689434570994 -71.50360717773435 1352178000000 1352610000000 9 
-        eventName: "Post-Sandy Nor'easter",
-        eventDates: [new Date(), new Date()],
-        eventTime: "November 2012",
-        eventDescription: "After Sandy, ...",
-        eventLink: "http://en.wikipedia.org/wiki/November_2012_nor'easter",
-        pointsOfInterest: [{
-          pointName: "Boston",
-          latitude: 42.326689434570994,
-          longitude: -71.50360717773435,
-          start_time: 1352178000000,
-          end_time: 1352610000000,
-          zoomLevel: 9
-        }]
-      }];
-    
 
     PressureNET.initialize = function(config) {
         readingsUrl = config.readingsUrl;
@@ -145,28 +85,6 @@
         PressureNET.loadAndUpdate();
     }    
 
-    PressureNET.loadEventInfo = function(eventName) {
-      var eventId = 0;
-      if(eventName=="sandy") {
-        eventId = 0;
-      } else if(eventName=="isaac") {
-        eventId = 1;
-      } else if(eventName=="noreaster") {
-        eventId = 2;
-      } 
-      $('#event_title_text').html(events[eventId].eventName);
-      $('#event_date_text').html(events[eventId].eventTime);
-      $('#event_link_text').html('<a href="' + events[eventId].eventLink + '">' + events[eventId].eventName + ' on Wikipedia</a>');
-      
-      var eventDescription = ''; //events[eventId].eventDescription;
-      
-      for(x = 0; x < events[eventId].pointsOfInterest.length; x++) {
-          eventDescription += "<br><a href='#query_results' style='cursor:pointer' onClick='PressureNET.setMapPosition(" + events[eventId].pointsOfInterest[x].latitude + ", " + events[eventId].pointsOfInterest[x].longitude + ", " + events[eventId].pointsOfInterest[x].zoomLevel + ", " + events[eventId].pointsOfInterest[x].start_time + ", " + events[eventId].pointsOfInterest[x].end_time + ")'>" + events[eventId].pointsOfInterest[x].pointName + "</a>";
-      }
-      
-      $('#event_main_text').html(eventDescription);
-    }
-
     PressureNET.dateRange = function() {
         var start = new Date($('#start_date').val());
         var end = new Date($('#end_date').val());
@@ -196,18 +114,20 @@
         $('#placeholder').html('');
         $("#query_results").html("Loading...");
         
-        start_time = $('#start_date').datepicker('getDate').getTime();
-        end_time = $('#end_date').datepicker('getDate').getTime();
+        //start_time = $('#start_date').datepicker('getDate').getTime();
+        //end_time = $('#end_date').datepicker('getDate').getTime();
+        end_time = new Date().getTime(); 
+        start_time = end_time - 3600000;
         
         var query_params = {
             format: 'json',
-            min_latitude: min_latitude,
-            max_latitude: max_latitude,
-            min_longitude: min_longitude,
-            max_longitude: max_longitude,
+            //min_latitude: min_latitude,
+            //max_latitude: max_latitude,
+            //min_longitude: min_longitude,
+            //max_longitude: max_longitude,
             start_time: start_time,
             end_time: end_time,
-            limit: currentQueryLimit
+            limit: 100000 //currentQueryLimit
         };
 
         $.ajax({
@@ -216,13 +136,25 @@
             dataType: 'json',
             success: function(readings, status) {
                 var plot_data = [];
-                var readings_sum = 0;
-                var sampleFactor = 10;
-                var count = 0;
+                var heatmap_data = [];
                 for(var reading_i in readings) {
                     var reading = readings[reading_i];
-                    plot_data.push([reading.daterecorded, reading.reading]);
+                    if(reading.reading > 800) {
+                        plot_data.push([
+                            reading.daterecorded, 
+                            reading.reading
+                        ]);
+                        heatmap_data.push({
+                            location: new google.maps.LatLng(reading.latitude, reading.longitude),
+                            weight: reading.reading
+                        });
+                    }
                 }
+                var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatmap_data
+                });
+                heatmap.setMap(map);
+
 
                 $.plot($("#placeholder"), [plot_data],{ 
                     lines:{show:false}, 
@@ -323,12 +255,12 @@
         });
         
         google.maps.event.addListener(map, 'bounds_changed', function() {
-            if(map.getZoom() > 15) {
-              map.setZoom(15);
-            }
-            window.clearTimeout(aboutToReload);
-            PressureNET.updateAllMapParams();
-            aboutToReload = setTimeout("PressureNET.loadAndUpdate()", 1000);
+            //if(map.getZoom() > 15) {
+            //  map.setZoom(15);
+            //}
+            //window.clearTimeout(aboutToReload);
+            //PressureNET.updateAllMapParams();
+            //aboutToReload = setTimeout("PressureNET.loadAndUpdate()", 1000);
         });
     }
 

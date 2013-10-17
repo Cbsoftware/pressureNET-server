@@ -128,7 +128,7 @@ class LoggedLocationListView(FilteredListAPIView):
             'max_longitude': self.request.GET.get('max_lon', 180),
             'start_time': self.request.GET.get('start_time', (time.time() - 3600 * 24) * 1000),
             'end_time': self.request.GET.get('end_time', time.time() * 1000),
-            'results_limit': self.request.GET.get('limit', 1000000),
+            'results_limit': self.request.GET.get('limit', settings.MAX_CALL_LENGTH),
             'api_key': self.request.GET.get('api_key', ''),
             'data_format': self.request.GET.get('format', 'json'),
         }
