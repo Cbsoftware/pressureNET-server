@@ -1,0 +1,14 @@
+{% extends "grappelli/dashboard/module.html" %}
+{% load i18n %}
+{% load url from future %}
+{% block module_content %}
+    <ul class="grp-listing-small">
+        {% spaceless %}
+            <li class="grp-row">
+                <p class="grp-font-color-quiet">
+                    <a href="{% url 'home-dashboard' %}">Dashboard</a>
+                </p>
+            </li>
+        {% endspaceless %}
+    </ul>
+{% endblock %}

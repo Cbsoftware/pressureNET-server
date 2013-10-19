@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+
+{% block extrahead %}
+  {{ block.super }}
+
+  <script type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/flot/jquery.flot.time.min.js"></script>
+
+  <script type="text/javascript">
+      $(function () {
+          var graphs = {{ graphs|safe }};
+          $(graphs).each(function (index, graph) {
+             
+              var graph_id = graph.id + '_graph';
+              var graph_html = '<strong>' + graph.title + '</strong><div id="' + graph_id + '"></div>';
+
+              var $graphs = $('#graphs').append(graph_html);
+              var $graph = $graphs.find('#' + graph_id);
+              $graph.css({
+                  'height': '200px',
+                  'width': '100%'
+              });
+              $.plot($graph, [graph.data], {
+                  color: 'rgb(48, 155, 191)',
+                  points: { 
+                      show: true 
+                  },
+                  lines: { 
+                      show: true 
+                  },
+                  xaxis: { 
+                      mode: 'time',
+                      timeformat: '%Y/%m/%d',
+                  }
+              });
+          });
+          
+      });
+  
+  </script>
+
+{% endblock %}
+
+{% block content %}
+  <div id="graphs"></div>
+{% endblock %}
