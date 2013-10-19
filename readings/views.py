@@ -140,7 +140,7 @@ class LoggedLocationListView(FilteredListAPIView):
 
         parameters = self.unpack_parameters()
         call_log = CustomerCallLog(call_type=self.call_type)
-        call_log.customer = Customer.objects.get(api_key=parameters['api_key'])
+        call_log.customer = Customer.objects.get(api_key=parameters['api_key']) # TODO: Handle DoesNotExist case
         call_log.results_returned = len(self.get_queryset())
         call_log.query = self.get_queryset().query
         call_log.path = '%s?%s' % (self.request.path, self.request.META['QUERY_STRING'])
@@ -164,7 +164,7 @@ class LoggedLocationListView(FilteredListAPIView):
     def get_queryset(self):
         parameters = self.unpack_parameters()
 
-        customer = Customer.objects.get(api_key=parameters['api_key'])
+        customer = Customer.objects.get(api_key=parameters['api_key']) # TODO: Handle DoesNotExist case
         queryset = super(LoggedLocationListView, self).get_queryset()
 
         if not parameters['global_data']:

@@ -1,24 +1,10 @@
+{% extends "base.html" %}
+
 {% load url from future %}
 {% load customers_tags %}
 
-{% get_customer_types as customer_types %}
-{% get_customer_plans as customer_plans %}
-
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>pressureNET | Live Stream</title>
-
-  <link rel="shortcut icon" href="http://www.cumulonimbus.ca/favicon.gif">
-
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700,900,400italic">
-
-  <script language="Javascript" type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script type="text/javascript">
+{% block extrahead %}
+  <script type="text/javascript">
 
     $(function() {
 
@@ -54,41 +40,26 @@
 
     });
 
-
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-78967-8']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-
   </script>
-</head>
-<body>
-  <header id="masthead">
-    <h1 id="site-title"><a href="/">pressure<span>NET</span></a></h1>
-    <nav>
-      <a href="{% url 'customers-livestream'%}">Live Stream</a>
-      <a href="{% url 'home-about' %}">About</a>
-      <a id="link-cb" class="link-logo" href="http://cumulonimbus.ca">Cumulonimbus</a>
-      <a id="link-gp" class="link-logo" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" target="_blank">Download pressureNET</a>
-    </nav>
-  </header>
+{% endblock %}
 
-  <section id="main" class="group">
+{% block main_content %}
+    
+    {% get_customer_types as customer_types %}
+    {% get_customer_plans as customer_plans %}
 
     <div id="success">
       <h3>Thanks for signing up!</h3>
       <p>You'll receive your API key by e-mail shortly.</p>
     </div>
 
-    <section id="live-intro" class="full">
-      <h3>pressureNET Live Stream Service</h3>
-      <p>Our Live API allows you to access our global dataset of atmospheric pressure with a simple interface. We’re going to ensure that this data is as accessible as possible. If there’s anything that we can do to make this service easier to use, please let us know as we intend to improve the service based on your feedback.</p>
-      <p>This live stream is accessed through a simple <a href="http://pressurenet.cumulonimbus.ca/static/docs/pressureNET_Live_API_2_1.pdf">HTTPS API</a> (pdf). Please sign up below.</p>
+    <div id="live-intro" class="full">
+      <h3>pressureNET Developers</h3>
+
+        <p>We offer a pressureNET API and SDK to developers. Our Live API allows access to our global dataset of atmospheric pressure with simple HTTPS requests. Our SDK is <a href="https://github.com/Cbsoftware/pressureNET-SDK/" target="_blank">open source on GitHub</a> and enables developers to include pressureNET’s core functionality inside their apps to collect and distribute Android sensor data.</p> 
+
+        <p>We’re going to ensure that our live data is as accessible as possible. If there’s anything that we can do to make the API service or SDK package easier to use, please let us know as we intend to improve them based on your feedback.</p>
+        <p>Documentation is available for the <a href="{{ STATIC_URL }}docs/pressureNET_Live_API_2_1.pdf" target="_blank">API (pdf)</a> as well as the <a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md" target="_blank">SDK</a>. In order to use these services, please sign up for an API key below.</p>
 
       <h4 id="legal-title"><a class="closed">Legal Notes</a></h4>
       <ul id="legal-notes">
@@ -99,7 +70,7 @@
         <li>As the project grows, our operational needs may change, so we may charge a fee for our live stream in the future. We will of course always remain foremost committed to promoting scientific progress, so we will ever endeavour to help advance your research objectives.</li>
         <li>By accepting use of our live stream, you accept the terms above.</li>
       </ul>
-    </section>
+    </div>
 
     <form id="signup-form" class="signup full" method="POST" action="{% url 'customers-livestream' %}">
 
@@ -170,18 +141,4 @@
       <input type="submit" value="Sign up!" />
 
     </form>
-
-  </section>
-
-  <footer id="colophon" class="group">
-    <a class="contact" href="mailto:livestream@cumulonimbus.ca?subject=Live%20Stream%20Sign-Up">Contact us!</a>
-    <br/>
-    <nav id="social">
-      <a id="link-tw" class="link-social" href="https://twitter.com/Cumulonimbus_ca" title="Follow us on Twitter!"></a>
-      <a id="link-pl" class="link-social" href="https://plus.google.com/105785057346543310426/" title="Follow us on Google Plus!"></a>
-      <a id="link-fb" class="link-social" href="http://www.facebook.com/Cumulonimbus.ca" title="Follow us on Facebook!"></a>
-    </nav>
-  </footer>
-
-</body>
-</html>
+{% endblock %}
