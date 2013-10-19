@@ -41,7 +41,7 @@ class ReadingLiveSerializer(serializers.ModelSerializer):
         fields = super(ReadingLiveSerializer, self).get_fields()
 
         api_key = self.context['view'].request.GET.get('api_key', '')
-        customer = Customer.objects.get(api_key=api_key)
+        customer = Customer.objects.get(api_key=api_key) # TODO: Handle DoesNotExist case
 
         if customer.customer_type == customers_choices.CUSTOMER_PUBLIC:
             del fields['user_id']
