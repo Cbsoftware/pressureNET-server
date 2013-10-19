@@ -33,6 +33,13 @@ class CacheModule(modules.DashboardModule):
         context['cache_online'] = cache_online
 
 
+class DashboardLinkModule(modules.DashboardModule):
+    template = 'admin/includes/dashboard_link_module.html'
+
+    def is_empty(self):
+        return False
+
+
 class PressureNETIndexDashboard(Dashboard):
     """
     Custom index dashboard for www.
@@ -87,6 +94,11 @@ class PressureNETIndexDashboard(Dashboard):
         # Cache module
         self.children.append(CacheModule(
             _('Cache Status'),
+            column=2,
+        ))
+
+        self.children.append(DashboardLinkModule(
+            _('Dashboard'),
             column=2,
         ))
 
