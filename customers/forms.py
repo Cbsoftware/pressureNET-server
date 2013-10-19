@@ -41,10 +41,6 @@ class CustomerForm(forms.ModelForm):
         cleaned_data = super(CustomerForm, self).clean()
 
         # Generate API Key
-        company_name = cleaned_data.get('company_name')
-        contact_name = cleaned_data.get('contact_name')
-        contact_email = cleaned_data.get('contact_mail')
-
         api_key = uuid.uuid4().get_hex()
 
         cleaned_data['api_key'] = api_key
