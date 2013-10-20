@@ -10,7 +10,7 @@
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/base.css">
     <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700,900,400italic">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
@@ -39,14 +39,16 @@
 
     </div>
 
-    <footer>
-      <nav id="contact">
-        <a id="mail" href="mailto:software@cumulonimbus.ca" title="Write us an e-mail" target="_blank"></a>
-        <a id="bird" href="https://twitter.com/Cumulonimbus_ca" title="Follow us on Twitter" target="_blank"></a>
-        <a id="gplus" href="https://plus.google.com/105785057346543310426/" title="Follow us on Google Plus" target="_blank"></a>
-        <a id="octo" href="https://github.com/Cbsoftware/" title="Follow us on GitHub" target="_blank"></a>
-      </nav>
-    </footer>
+    {% block footer %}
+      <footer>
+        <nav id="contact">
+          <a id="mail" href="mailto:software@cumulonimbus.ca" title="Write us an e-mail" target="_blank"></a>
+          <a id="bird" href="https://twitter.com/Cumulonimbus_ca" title="Follow us on Twitter" target="_blank"></a>
+          <a id="gplus" href="https://plus.google.com/105785057346543310426/" title="Follow us on Google Plus" target="_blank"></a>
+          <a id="octo" href="https://github.com/Cbsoftware/" title="Follow us on GitHub" target="_blank"></a>
+        </nav>
+      </footer>
+    {% endblock %}
 
 
 

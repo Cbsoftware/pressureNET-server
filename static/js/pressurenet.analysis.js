@@ -6,20 +6,7 @@
 
     var readingsUrl = '';
 
-    var centerLat = 0;
-    var centerLon = 0;
-    var min_latitude = 35;
-    var max_latitude = 45;
-    var min_longitude = -77;
-    var max_longitude = -65;
-    var start_time = 0;
-    var end_time = 0;
-    var zoom = 20;
-   
-    var dataPoints = [];
-    
     var defaultQueryLimit = 20000;
-    var defaultQueryIncrement = 5000;
     //var largeQueryIncrement = 10000;
     
     var map;
@@ -29,30 +16,14 @@
     PressureNET.initialize = function(config) {
         readingsUrl = config.readingsUrl;
 
-        $('#share_input').focus(function() {
-          $(this).select();
-        });
-
         $(function() {
             $("#start_date").datepicker({changeMonth: true,dateFormat: "yy/mm/dd" });
             $("#end_date").datepicker({changeMonth: true,dateFormat: "yy/mm/dd"});
             PressureNET.initializeMap();
 
             // if there are query parameters, use them
-            var hasEventParams = PressureNET.getUrlVars()['event'];
-            if(hasEventParams=='true') {
-              var latitudeParam = parseFloat(PressureNET.getUrlVars()['latitude']);
-              var longitudeParam = parseFloat(PressureNET.getUrlVars()['longitude']);
-              var start_timeParam = parseInt(PressureNET.getUrlVars()['start_time']);
-              var end_timeParam = parseInt(PressureNET.getUrlVars()['end_time']);
-              var zoomLevelParam = parseInt(PressureNET.getUrlVars()['zoomLevel']);
-              PressureNET.setMapPosition(latitudeParam, longitudeParam, zoomLevelParam, start_timeParam, end_timeParam);
-            } else {
-              PressureNET.setDates(new Date(((new Date()).getTime() - (2*86400000))), new Date(((new Date()).getTime() + 86400000)));
-              PressureNET.getLocation();
-            }
-
-          
+            PressureNET.setDates(new Date(((new Date()).getTime() - (2*86400000))), new Date(((new Date()).getTime() + 86400000)));
+            PressureNET.getLocation();
         });
     }
 
@@ -81,7 +52,6 @@
         map.setZoom(zoomLevel);
         var latLng = new google.maps.LatLng(latitude, longitude); //Makes a latlng
         map.panTo(latLng);
-        PressureNET.updateAllMapParams(map);
         PressureNET.loadAndUpdate();
     }    
 
@@ -135,133 +105,107 @@
             data: query_params,
             dataType: 'json',
             success: function(readings, status) {
-                var plot_data = [];
-                var heatmap_data = [];
-                for(var reading_i in readings) {
-                    var reading = readings[reading_i];
-                    if(reading.reading > 800) {
-                        plot_data.push([
-                            reading.daterecorded, 
-                            reading.reading
-                        ]);
-                        heatmap_data.push({
-                            location: new google.maps.LatLng(reading.latitude, reading.longitude),
-                            weight: reading.reading
-                        });
+                var heatmap_bins = {};
+
+                $(readings).each(function (index, reading) {
+                    if (reading.reading < 700) {
+                        return;
                     }
-                }
-                var heatmap = new google.maps.visualization.HeatmapLayer({
-                    data: heatmap_data
-                });
-                heatmap.setMap(map);
+                    var latitude_bin = Math.round(reading.latitude);
+                    var longitude_bin = Math.round(reading.longitude);
 
+                    var bin_key = String(latitude_bin) + ',' + String(longitude_bin);
 
-                $.plot($("#placeholder"), [plot_data],{ 
-                    lines:{show:false}, 
-                    points:{show:true},
-                    xaxis:{mode:"time"},
+                    if (heatmap_bins[bin_key]) {
+                        heatmap_bins[bin_key].readings.push(reading);
+                    } else {
+                        heatmap_bins[bin_key] = {
+                            latitude: latitude_bin + 0.5,
+                            longitude: longitude_bin + 0.5,
+                            readings: [reading]
+                        };
+                    }
                 });
-                 
-                // if the results were likely limited, let the user show more
-                var showMore = "";
-                if(readings.length%1000 == 0) {
-                    var showMore = "<a onClick='PressureNET.loadAndUpdate(1)' style='cursor:pointer'>Show More</a>";
+               
+                for (var bin_key in heatmap_bins) {
+                    var bin_readings = heatmap_bins[bin_key].readings;
+                    var bin_sum = 0.0;
+
+                    $(bin_readings).each(function (index, bin_reading) {
+                        bin_sum += bin_reading.reading; 
+                    });
+
+                    heatmap_bins[bin_key].average = bin_sum/bin_readings.length;
+
                 }
-                var share = '';
-                if(centerLat!=0 ) {
-                  share = " |  <a style='cursor:pointer;' id='dynamic_share_link' onClick='PressureNET.showShareLink(\"" + PressureNET.getShareURL() + "\")'>Share</a>";
+
+                var min_pressure = 1000.0;
+                var max_pressure = 1000.0;
+
+                for (var bin_key in heatmap_bins) {
+                    var bin_average = heatmap_bins[bin_key].average
+                    min_pressure = Math.min(min_pressure, bin_average);
+                    max_pressure = Math.max(max_pressure, bin_average);
                 }
-                $("#query_results").html("Showing " + readings.length + " results. " + showMore + share);
-                PressureNET.updateGraph(min_latitude, max_latitude, min_longitude, max_longitude, start_time, end_time, readings.length);
+
+                var pressure_range = max_pressure - min_pressure;
+
+                for (var bin_key in heatmap_bins) {
+                    var bin_latitude = heatmap_bins[bin_key].latitude;
+                    var bin_longitude = heatmap_bins[bin_key].longitude;
+                    var position = new google.maps.LatLng(bin_latitude, bin_longitude)
+
+                    var normalized_pressure = (heatmap_bins[bin_key].average - min_pressure) / pressure_range;
+
+                    var red_value = Math.round(normalized_pressure * 255).toString(16);
+                    var green_value = Math.round((1 - normalized_pressure) * 255).toString(16);
+                    
+                    //heatmap_points.push({
+                    //    location: position,
+                    //    weight: bin_average
+                    //});
+
+                    var populationOptions = {
+                      map: map,
+                      strokeWeight: 0,
+                      fillColor: '#' + red_value + green_value + '00',
+                      fillOpacity: 0.35,
+                      bounds: new google.maps.LatLngBounds(
+                          new google.maps.LatLng(bin_latitude, bin_longitude),
+                          new google.maps.LatLng(bin_latitude + 1.0, bin_longitude + 1.0)
+                      )
+                    };
+                    
+                    // Add the circle for this city to the map.
+                    new google.maps.Rectangle(populationOptions);
+                }
+
+                //var heatmap = new google.maps.visualization.HeatmapLayer({
+                //    data: heatmap_points,
+                //    dissipating: true,
+                //    radius: 200,
+                //    opacity: 0.5
+                //});
+                //
+                //heatmap.setMap(map);
             }
         });
     }
 
-    PressureNET.updateGraph = function(min_latitude, max_latitude, min_longitude, max_longitude, start_time, end_time, length) {
-      $('#min_latitude_cell').html(parseFloat(min_latitude).toFixed(6));
-      $('#max_latitude_cell').html(parseFloat(max_latitude).toFixed(6));
-      $('#min_longitude_cell').html(parseFloat(min_longitude).toFixed(6));
-      $('#max_longitude_cell').html(parseFloat(max_longitude).toFixed(6));
-      $('#start_time_cell').html($.datepicker.formatDate('MM dd yy', new Date(start_time)));
-      $('#end_time_cell').html($.datepicker.formatDate('MM dd yy', new Date(end_time)));
-      $('#resultsCount_cell').html(length);
-    }
-
-    PressureNET.showShareLink = function(link) {
-      $('#share_spot').toggle();
-      $('#share_input').val(link);
-      $('#share_input').focus();
-    }
-
-    
-    PressureNET.updateChart = function() {
-        $('#current_position').html(centerLat + ", " + centerLon + " at zoom " + zoom);
-    }
-  
-    PressureNET.updateAllMapParams = function() {
-        centerLat = map.getCenter().lat();
-        centerLon = map.getCenter().lng();
-        var bounds = map.getBounds();
-        if (typeof bounds != 'undefined') {
-          var ne = bounds.getNorthEast();
-          var sw = bounds.getSouthWest();
-          min_latitude = sw.lat();
-          max_latitude = ne.lat();
-          min_longitude = sw.lng();
-          max_longitude = ne.lng();
-        } 
-        
-        zoom = map.getZoom();
-        PressureNET.updateChart();
-    },
-
-    PressureNET.alertCumulonimbus = function() {
-      start_time = $('#start_date').datepicker('getDate').getTime();
-      end_time = $('#end_date').datepicker('getDate').getTime();
-      document.location.href = "mailto:software@cumulonimbus.ca?subject=pressureNET%20Interesting%20Data&body=" + centerLat + "%20" + centerLon + "%20" + start_time + "%20" + end_time + "%20" + zoom;
-    },
-  
-    PressureNET.getShareURL = function() {
-      start_time = $('#start_date').datepicker('getDate').getTime();
-      end_time = $('#end_date').datepicker('getDate').getTime();
-      return "http://pressurenet.cumulonimbus.ca/?event=true&latitude=" + centerLat + "&longitude=" + centerLon + "&start_time=" + start_time + "&end_time=" + end_time + "&zoomLevel=" + zoom;
-    },
-
     PressureNET.initializeMap = function() {
         var mapOptions = {
-          center: new google.maps.LatLng(42, -73), // start near nyc
           zoom: 4,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
-        map = new google.maps.Map(document.getElementById("map_canvas"),
-            mapOptions);
-      
-        var aboutToReload;
-      
-        google.maps.event.addListener(map, 'center_changed', function() {
-        /*
-            window.clearTimeout(aboutToReload);
-            PressureNET.updateAllMapParams();
-            aboutToReload = setTimeout("PressureNET.loadAndUpdate()", 1000);
-            */
-        });
+        map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 
-        google.maps.event.addListener(map, 'zoom_changed', function() {
-         /*
-             window.clearTimeout(aboutToReload);
-            PressureNET.updateAllMapParams();
-            aboutToReload = setTimeout("PressureNET.loadAndUpdate()", 1000);
-            */
+        var weatherLayer = new google.maps.weather.WeatherLayer({
+          temperatureUnits: google.maps.weather.TemperatureUnit.CELSIUS
         });
-        
-        google.maps.event.addListener(map, 'bounds_changed', function() {
-            //if(map.getZoom() > 15) {
-            //  map.setZoom(15);
-            //}
-            //window.clearTimeout(aboutToReload);
-            //PressureNET.updateAllMapParams();
-            //aboutToReload = setTimeout("PressureNET.loadAndUpdate()", 1000);
-        });
+        weatherLayer.setMap(map);
+
+        var cloudLayer = new google.maps.weather.CloudLayer();
+        cloudLayer.setMap(map);
     }
 
 }).call(this);
