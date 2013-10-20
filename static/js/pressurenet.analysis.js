@@ -157,8 +157,8 @@
 
                     var normalized_pressure = (heatmap_bins[bin_key].average - min_pressure) / pressure_range;
 
-                    var red_value = Math.round(normalized_pressure * 255).toString(16);
-                    var green_value = Math.round((1 - normalized_pressure) * 255).toString(16);
+                    var green_value = Math.round(normalized_pressure * 255).toString(16);
+                    var red_value = Math.round((1 - normalized_pressure) * 255).toString(16);
                     
                     //heatmap_points.push({
                     //    location: position,
