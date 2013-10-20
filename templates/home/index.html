@@ -1,23 +1,26 @@
 {% extends "base.html" %}
 
 {% load url from future %}
-    
+
 {% block extrahead %}
   <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false&libraries=visualization,weather"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script> 
-  <script type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script> 
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/geohash.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/rainbowvis.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script>
 {% endblock %}
 
 {% block main_content %}
-		<div id="map_canvas" class="full"></div>  
+		<div id="map_canvas"></div>
 {% endblock %}
 
 {% block extra_footer %}
     <script type="text/javascript">
-      PressureNET.initialize({
-        readingsUrl: '{% url 'readings-list' %}'
-      });
-
+        $(function () {
+            PressureNET.initialize({
+              readings_url: '{% url 'readings-list' %}'
+            });
+        });
     </script>
 {% endblock %}
 
