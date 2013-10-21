@@ -3,15 +3,49 @@
 {% load url from future %}
 
 {% block extrahead %}
-  <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false&libraries=visualization,weather"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}js/geohash.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}js/rainbowvis.js"></script>
-  <script type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/map.css">
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false&libraries=visualization,weather"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/stats.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/geohash.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/rainbowvis.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script>
 {% endblock %}
 
 {% block main_content %}
 		<div id="map_canvas"></div>
+    <div id="control_panel_container">
+        <div id="control_panel">
+            <div id="control_panel_title">Controls</div>
+            <table>
+                <tr>
+                    <td># Readings:</td>
+                    <td id="control_panel_num_readings"></td>
+                </tr>
+                <tr>
+                    <td>Min Pressure:</td>
+                    <td id="control_panel_min_pressure"></td>
+                </tr>
+                <tr>
+                    <td>Max Pressure:</td>
+                    <td id="control_panel_max_pressure"></td>
+                </tr>
+                <tr>
+                    <td>Mean Pressure:</td>
+                    <td id="control_panel_mean_pressure"></td>
+                </tr>
+                <tr>
+                    <td>Median Pressure:</td>
+                    <td id="control_panel_median_pressure"></td>
+                </tr>
+                <tr>
+                    <td>Standard Deviation:</td>
+                    <td id="control_panel_standard_deviation"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_footer %}

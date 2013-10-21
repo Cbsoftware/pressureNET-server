@@ -11,6 +11,9 @@
     PressureNET.gradient = new Rainbow();
     PressureNET.gradient.setSpectrum('#FF0000', '#0000FF', '#00FF00');
     PressureNET.rectangles = [];
+
+    PressureNET.min_pressure = 700;
+    PressureNET.max_pressure = 1100;
     PressureNET.min_hash_length = 3;
     PressureNET.max_hash_length = 7;
     PressureNET.min_zoom = 3;
@@ -106,8 +109,9 @@
     }
 
     PressureNET.filter_outliers = function (readings) {
+        return readings;
         return _(readings).filter(function (reading) {
-            return (reading.reading > 700) && (reading.reading < 1100); 
+            return (reading.reading > PressureNET.min_pressure) && (reading.reading < PressureNET.max_pressure); 
         });
     }
 
@@ -183,13 +187,13 @@
             bin.average = Stats.mean(_(bin.readings).map(function (reading) { return reading.reading; })); 
         });
 
-        var reading_pressures = _(readings).map(function (reading) { return reading.reading; });
-        var min_pressure = _(reading_pressures).min();
-        var max_pressure = _(reading_pressures).max();
-        var pressure_range = max_pressure - min_pressure;
+        PressureNET.reading_pressures = _(readings).map(function (reading) { return reading.reading; });
+        PressureNET.min_pressure = _(PressureNET.reading_pressures).min();
+        PressureNET.max_pressure = _(PressureNET.reading_pressures).max();
+        PressureNET.pressure_range = PressureNET.max_pressure - PressureNET.min_pressure;
 
         _(reading_bins).each(function (bin, bin_key) {
-            var normalized_pressure = Math.round(((bin.average - min_pressure) / pressure_range) * 100);
+            var normalized_pressure = Math.round(((bin.average - PressureNET.min_pressure) / PressureNET.pressure_range) * 100);
             var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
 
             var decoded_key = decodeGeoHash(bin_key);
@@ -218,6 +222,17 @@
             //    bottom_left
             //)
         });
+
+        PressureNET.update_control_panel();
+    }
+
+    PressureNET.update_control_panel = function () {
+        $('#control_panel_num_readings').html(PressureNET.reading_pressures.length);
+        $('#control_panel_min_pressure').html(PressureNET.min_pressure);
+        $('#control_panel_max_pressure').html(PressureNET.max_pressure);
+        $('#control_panel_mean_pressure').html(Stats.mean(PressureNET.reading_pressures));
+        $('#control_panel_median_pressure').html(Stats.median(PressureNET.reading_pressures));
+        $('#control_panel_standard_deviation').html(Stats.stdev(PressureNET.reading_pressures));
     }
 
 }).call(this);
