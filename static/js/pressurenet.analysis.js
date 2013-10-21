@@ -8,9 +8,9 @@
     PressureNET.readings_url = '';
     PressureNET.map = null;
     PressureNET.geohash_key_length = 3;
-    PressureNET.heatmap_bins = {};
     PressureNET.gradient = new Rainbow();
     PressureNET.gradient.setSpectrum('#FF0000', '#0000FF', '#00FF00');
+    PressureNET.rectangles = [];
 
     var reading_marker_colour = 'FF0000';
     PressureNET.reading_marker_image = new google.maps.MarkerImage(
@@ -39,17 +39,40 @@
 
     PressureNET.init_map = function() {
         var map_options = {
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            minZoom: 3, 
+            maxZoom: 14
         };
         PressureNET.map = new google.maps.Map(document.getElementById('map_canvas'), map_options);
 
-        var weatherLayer = new google.maps.weather.WeatherLayer({
-          temperatureUnits: google.maps.weather.TemperatureUnit.CELSIUS
-        });
-        weatherLayer.setMap(PressureNET.map);
+        //var weatherLayer = new google.maps.weather.WeatherLayer({
+        //  temperatureUnits: google.maps.weather.TemperatureUnit.CELSIUS
+        //});
+        //weatherLayer.setMap(PressureNET.map);
 
-        var cloudLayer = new google.maps.weather.CloudLayer();
-        cloudLayer.setMap(PressureNET.map);
+        //var cloudLayer = new google.maps.weather.CloudLayer();
+        //cloudLayer.setMap(PressureNET.map);
+        google.maps.event.addListener(PressureNET.map, 'zoom_changed', function() {
+            // 3 seconds after the center of the map has changed, pan back to the
+            // marker.
+            console.log(PressureNET.map.getZoom());
+            var zoom = PressureNET.map.getZoom();
+            var zoom_ratio = (zoom - 3) / 11.0;
+            var rectangle_scale = Math.round((zoom_ratio * 3.0)) + 3;
+            PressureNET.geohash_key_length = rectangle_scale;
+            PressureNET.render_readings();
+        });
+        google.maps.event.addListener(PressureNET.map, 'dragend', function() {
+            // 3 seconds after the center of the map has changed, pan back to the
+            // marker.
+            console.log(PressureNET.map.getZoom());
+            var zoom = PressureNET.map.getZoom();
+            var zoom_ratio = (zoom - 3) / 11.0;
+            var rectangle_scale = Math.round((zoom_ratio * 3.0)) + 3;
+            PressureNET.geohash_key_length = rectangle_scale;
+            PressureNET.render_readings();
+        });
+
     }
 
     PressureNET.get_location = function() {
@@ -86,6 +109,26 @@
         });
     }
 
+    PressureNET.clear_rectangles = function () {
+        _(PressureNET.rectangles).each(function (rectangle) {
+            rectangle.setMap(null);
+        });
+    }
+
+    PressureNET.filter_outliers = function (readings) {
+        return _(readings).filter(function (reading) {
+            return (reading.reading > 700) && (reading.reading < 1100); 
+        });
+    }
+
+    PressureNET.filter_visible = function (readings) {
+        return _(readings).filter(function (reading) {
+            var visible_bounds = PressureNET.map.getBounds();
+            var position = new google.maps.LatLng(reading.latitude, reading.longitude);
+            return visible_bounds.contains(position); 
+        });
+    }
+
     // Load data
     PressureNET.load_data = function() {
         end_time = new Date().getTime();
@@ -103,73 +146,78 @@
             data: query_params,
             dataType: 'json',
             success: function(readings, status) {
-
-                var readings = _(readings).filter(function (reading) { 
-                    return (reading.reading > 700) && (reading.reading < 1050); 
-                });
-
-                _(readings).each(function (reading) {
-                    var bin_key = encodeGeoHash(reading.latitude, reading.longitude).substring(0, PressureNET.geohash_key_length);
-
-                    if (PressureNET.heatmap_bins[bin_key]) {
-                        PressureNET.heatmap_bins[bin_key].readings.push(reading);
-                    } else {
-                        PressureNET.heatmap_bins[bin_key] = {
-                            readings: [reading]
-                        };
-                    }
-
-                    //var marker_body = 'Latitude: ' + reading.latitude + '<br>Longitude: ' + reading.longitude + '<br>Bin: ' + bin_key + '<br>Reading: ' + reading.reading;
-
-                    //PressureNET.add_marker(
-                    //    PressureNET.reading_marker_image,
-                    //    marker_body,
-                    //    new google.maps.LatLng(reading.latitude, reading.longitude)
-                    //)
-
-                });
-
-                _(PressureNET.heatmap_bins).each(function (bin, bin_key) {
-                    var bin_sum = _(bin.readings).reduce(function (memo, reading) { return memo + reading.reading; }, 0.0);
-                    bin.average = bin_sum/bin.readings.length;
-                });
-
-                var reading_pressures = _(readings).map(function (reading) { return reading.reading; });
-                var min_pressure = _(reading_pressures).min();
-                var max_pressure = _(reading_pressures).max();
-                var pressure_range = max_pressure - min_pressure;
-
-                _(PressureNET.heatmap_bins).each(function (bin, bin_key) {
-                    var normalized_pressure = Math.round(((bin.average - min_pressure) / pressure_range) * 100);
-                    var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
-
-                    var decoded_key = decodeGeoHash(bin_key);
-                    var bottom_left = new google.maps.LatLng(decoded_key.latitude[1], decoded_key.longitude[0]);
-                    var top_right = new google.maps.LatLng(decoded_key.latitude[0], decoded_key.longitude[1]);
-
-                    var rectangle_options = {
-                        map: PressureNET.map,
-                        strokeWeight: 0,
-                        fillColor: bin_colour,
-                        fillOpacity: 0.35,
-                        bounds: new google.maps.LatLngBounds(
-                            bottom_left,
-                            top_right
-                        )
-                    };
-
-                    // Add the circle for this city to the map.
-                    new google.maps.Rectangle(rectangle_options);
-
-                    //var marker_body = 'Key: ' + bin_key + '<br>Average: ' + bin.average + '<br>Points: ' + bin.readings.length + '<br>Colour: ' + bin_colour;;
-
-                    //PressureNET.add_marker(
-                    //    PressureNET.bin_marker_image,
-                    //    marker_body,
-                    //    bottom_left
-                    //)
-                });
+                PressureNET.readings = PressureNET.filter_outliers(readings);
+                PressureNET.render_readings();
             }
+        });
+    }
+
+    PressureNET.render_readings = function () {
+
+        PressureNET.clear_rectangles();
+
+        var readings = PressureNET.filter_visible(PressureNET.readings);
+        var reading_bins = {};
+
+        _(readings).each(function (reading) {
+            var bin_key = encodeGeoHash(reading.latitude, reading.longitude).substring(0, PressureNET.geohash_key_length);
+
+            if (reading_bins[bin_key]) {
+                reading_bins[bin_key].readings.push(reading);
+            } else {
+                reading_bins[bin_key] = {
+                    readings: [reading]
+                };
+            }
+
+            //var marker_body = 'Latitude: ' + reading.latitude + '<br>Longitude: ' + reading.longitude + '<br>Bin: ' + bin_key + '<br>Reading: ' + reading.reading;
+
+            //PressureNET.add_marker(
+            //    PressureNET.reading_marker_image,
+            //    marker_body,
+            //    new google.maps.LatLng(reading.latitude, reading.longitude)
+            //)
+
+        });
+
+        _(reading_bins).each(function (bin) {
+            bin.average = Stats.mean(_(bin.readings).map(function (reading) { return reading.reading; })); 
+        });
+
+        var reading_pressures = _(readings).map(function (reading) { return reading.reading; });
+        var min_pressure = _(reading_pressures).min();
+        var max_pressure = _(reading_pressures).max();
+        var pressure_range = max_pressure - min_pressure;
+
+        _(reading_bins).each(function (bin, bin_key) {
+            var normalized_pressure = Math.round(((bin.average - min_pressure) / pressure_range) * 100);
+            var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
+
+            var decoded_key = decodeGeoHash(bin_key);
+            var bottom_left = new google.maps.LatLng(decoded_key.latitude[1], decoded_key.longitude[0]);
+            var top_right = new google.maps.LatLng(decoded_key.latitude[0], decoded_key.longitude[1]);
+
+            var rectangle_options = {
+                map: PressureNET.map,
+                strokeWeight: 0,
+                fillColor: bin_colour,
+                fillOpacity: 0.35,
+                bounds: new google.maps.LatLngBounds(
+                    bottom_left,
+                    top_right
+                )
+            };
+
+            // Add the circle for this city to the map.
+            PressureNET.rectangles.push(new google.maps.Rectangle(rectangle_options));
+
+            //var marker_body = 'Key: ' + bin_key + '<br>Average: ' + bin.average + '<br>Points: ' + bin.readings.length + '<br>Colour: ' + bin_colour;;
+
+            //PressureNET.add_marker(
+            //    PressureNET.bin_marker_image,
+            //    marker_body,
+            //    bottom_left
+            //)
         });
     }
 
