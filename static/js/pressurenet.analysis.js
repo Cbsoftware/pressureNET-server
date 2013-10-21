@@ -9,11 +9,11 @@
     PressureNET.map = null;
     PressureNET.geohash_key_length = 3;
     PressureNET.gradient = new Rainbow();
-    PressureNET.gradient.setSpectrum('#FF0000', '#0000FF', '#00FF00');
+    PressureNET.gradient.setSpectrum('#FF0000', '#0000FF');
     PressureNET.rectangles = [];
 
-    PressureNET.min_pressure = 700;
-    PressureNET.max_pressure = 1100;
+    PressureNET.min_pressure = 0;
+    PressureNET.max_pressure = 1500;
     PressureNET.min_hash_length = 3;
     PressureNET.max_hash_length = 7;
     PressureNET.min_zoom = 3;
@@ -109,7 +109,6 @@
     }
 
     PressureNET.filter_outliers = function (readings) {
-        return readings;
         return _(readings).filter(function (reading) {
             return (reading.reading > PressureNET.min_pressure) && (reading.reading < PressureNET.max_pressure); 
         });
@@ -184,16 +183,15 @@
         });
 
         _(reading_bins).each(function (bin) {
-            bin.average = Stats.mean(_(bin.readings).map(function (reading) { return reading.reading; })); 
+            bin.average = Stats.median(_(bin.readings).map(function (reading) { return reading.reading; })); 
         });
 
         PressureNET.reading_pressures = _(readings).map(function (reading) { return reading.reading; });
-        PressureNET.min_pressure = _(PressureNET.reading_pressures).min();
-        PressureNET.max_pressure = _(PressureNET.reading_pressures).max();
-        PressureNET.pressure_range = PressureNET.max_pressure - PressureNET.min_pressure;
+        var std_dev = Stats.stdev(PressureNET.reading_pressures);
+        var median_pressure = Stats.median(PressureNET.reading_pressures);
 
         _(reading_bins).each(function (bin, bin_key) {
-            var normalized_pressure = Math.round(((bin.average - PressureNET.min_pressure) / PressureNET.pressure_range) * 100);
+            var normalized_pressure = Math.round(Stats.sigmoid((bin.average - median_pressure) / std_dev) * 100);
             var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
 
             var decoded_key = decodeGeoHash(bin_key);
@@ -228,8 +226,8 @@
 
     PressureNET.update_control_panel = function () {
         $('#control_panel_num_readings').html(PressureNET.reading_pressures.length);
-        $('#control_panel_min_pressure').html(PressureNET.min_pressure);
-        $('#control_panel_max_pressure').html(PressureNET.max_pressure);
+        $('#control_panel_min_pressure').html(_(PressureNET.reading_pressures).min());
+        $('#control_panel_max_pressure').html(_(PressureNET.reading_pressures).max());
         $('#control_panel_mean_pressure').html(Stats.mean(PressureNET.reading_pressures));
         $('#control_panel_median_pressure').html(Stats.median(PressureNET.reading_pressures));
         $('#control_panel_standard_deviation').html(Stats.stdev(PressureNET.reading_pressures));

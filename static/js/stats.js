@@ -77,4 +77,8 @@
       var fract = i - int_part
       return (1 - fract) * vals[int_part] + fract * vals[int_part + 1]
     }
+
+    Stats.sigmoid = function(x) {
+        return 1 / (1 + Math.exp(-x));
+    }
 }).call(this);
