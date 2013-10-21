@@ -148,7 +148,6 @@ a {
 	}
 
 #masthead {
-	z-index: 5;
 	color: #fff;
 	background-color: #09c;
 	padding: 0.625rem 0;
@@ -214,7 +213,6 @@ a {
 	canvas {width: 100%;}
 
 	div {
-		z-index: 2;
 		margin: 0 auto;
 		}
 
@@ -248,7 +246,6 @@ a {
   
 	#map_canvas {
 		height: 15rem;
-		z-index: 0;
 		}
 	#current_position {display: none;}
 	#placeholder {height: 15rem;}
@@ -342,7 +339,6 @@ a {
 			#success h3 {color: #fff;}
 
 footer {
-	z-index: 1;
 	max-width: 38.75rem;
 	background: #555;
 	padding: 10px;

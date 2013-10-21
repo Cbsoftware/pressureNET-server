@@ -11,6 +11,10 @@
     PressureNET.gradient = new Rainbow();
     PressureNET.gradient.setSpectrum('#FF0000', '#0000FF', '#00FF00');
     PressureNET.rectangles = [];
+    PressureNET.min_hash_length = 3;
+    PressureNET.max_hash_length = 7;
+    PressureNET.min_zoom = 3;
+    PressureNET.max_zoom = 14;
 
     var reading_marker_colour = 'FF0000';
     PressureNET.reading_marker_image = new google.maps.MarkerImage(
@@ -53,23 +57,9 @@
         //var cloudLayer = new google.maps.weather.CloudLayer();
         //cloudLayer.setMap(PressureNET.map);
         google.maps.event.addListener(PressureNET.map, 'zoom_changed', function() {
-            // 3 seconds after the center of the map has changed, pan back to the
-            // marker.
-            console.log(PressureNET.map.getZoom());
-            var zoom = PressureNET.map.getZoom();
-            var zoom_ratio = (zoom - 3) / 11.0;
-            var rectangle_scale = Math.round((zoom_ratio * 3.0)) + 3;
-            PressureNET.geohash_key_length = rectangle_scale;
             PressureNET.render_readings();
         });
         google.maps.event.addListener(PressureNET.map, 'dragend', function() {
-            // 3 seconds after the center of the map has changed, pan back to the
-            // marker.
-            console.log(PressureNET.map.getZoom());
-            var zoom = PressureNET.map.getZoom();
-            var zoom_ratio = (zoom - 3) / 11.0;
-            var rectangle_scale = Math.round((zoom_ratio * 3.0)) + 3;
-            PressureNET.geohash_key_length = rectangle_scale;
             PressureNET.render_readings();
         });
 
@@ -152,9 +142,18 @@
         });
     }
 
-    PressureNET.render_readings = function () {
+    PressureNET.update_visible_scale = function () {
+        var zoom = PressureNET.map.getZoom();
+        var zoom_ratio = (zoom - PressureNET.min_zoom) / PressureNET.max_zoom;
 
+        var hash_length_scale = PressureNET.max_hash_length - PressureNET.min_hash_length;
+        var rectangle_scale = Math.round((zoom_ratio * hash_length_scale)) + PressureNET.min_hash_length;
+        PressureNET.geohash_key_length = rectangle_scale;
+    }
+
+    PressureNET.render_readings = function () {
         PressureNET.clear_rectangles();
+        PressureNET.update_visible_scale();
 
         var readings = PressureNET.filter_visible(PressureNET.readings);
         var reading_bins = {};

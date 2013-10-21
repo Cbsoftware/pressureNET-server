@@ -72,7 +72,6 @@ a:hover {color: #09c;}
 }
 
 #masthead {
-    z-index: 5;
     color: #fff;
     background-color: #09c;
     padding: 0.625rem 0;
