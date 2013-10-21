@@ -104,10 +104,11 @@
             dataType: 'json',
             success: function(readings, status) {
 
-                $(readings).each(function (index, reading) {
-                    if (reading.reading < 700) {
-                        return;
-                    }
+                var readings = _(readings).filter(function (reading) { 
+                    return (reading.reading > 700) && (reading.reading < 1050); 
+                });
+
+                _(readings).each(function (reading) {
                     var bin_key = encodeGeoHash(reading.latitude, reading.longitude).substring(0, PressureNET.geohash_key_length);
 
                     if (PressureNET.heatmap_bins[bin_key]) {
@@ -128,41 +129,19 @@
 
                 });
 
-                for (var bin_key in PressureNET.heatmap_bins) {
-                    var bin_readings = PressureNET.heatmap_bins[bin_key].readings;
-                    var bin_sum = 0.0;
+                _(PressureNET.heatmap_bins).each(function (bin, bin_key) {
+                    var bin_sum = _(bin.readings).reduce(function (memo, reading) { return memo + reading.reading; }, 0.0);
+                    bin.average = bin_sum/bin.readings.length;
+                });
 
-                    $(bin_readings).each(function (index, bin_reading) {
-                        bin_sum += bin_reading.reading;
-                    });
-
-                    PressureNET.heatmap_bins[bin_key].average = bin_sum/bin_readings.length;
-
-                }
-
-                var min_pressure = 1000.0;
-                var max_pressure = 1000.0;
-
-                for (var bin_key in PressureNET.heatmap_bins) {
-                    var bin_average = PressureNET.heatmap_bins[bin_key].average
-                    min_pressure = Math.min(min_pressure, bin_average);
-                    max_pressure = Math.max(max_pressure, bin_average);
-                }
-
+                var reading_pressures = _(readings).map(function (reading) { return reading.reading; });
+                var min_pressure = _(reading_pressures).min();
+                var max_pressure = _(reading_pressures).max();
                 var pressure_range = max_pressure - min_pressure;
 
-                for (var bin_key in PressureNET.heatmap_bins) {
-                    var bin = PressureNET.heatmap_bins[bin_key];
-
+                _(PressureNET.heatmap_bins).each(function (bin, bin_key) {
                     var normalized_pressure = Math.round(((bin.average - min_pressure) / pressure_range) * 100);
-
                     var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
-
-                    //heatmap_points.push({
-                    //    location: position,
-                    //    weight: bin.average
-                    //});
-
 
                     var decoded_key = decodeGeoHash(bin_key);
                     var bottom_left = new google.maps.LatLng(decoded_key.latitude[1], decoded_key.longitude[0]);
@@ -189,16 +168,7 @@
                     //    marker_body,
                     //    bottom_left
                     //)
-                }
-
-                //var heatmap = new google.maps.visualization.HeatmapLayer({
-                //    data: heatmap_points,
-                //    dissipating: true,
-                //    radius: 200,
-                //    opacity: 0.5
-                //});
-                //
-                //heatmap.setMap(PressureNET.map);
+                });
             }
         });
     }
