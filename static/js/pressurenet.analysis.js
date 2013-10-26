@@ -7,29 +7,26 @@
     // Globals
     PressureNET.readings_url = '';
     PressureNET.map = null;
-    PressureNET.geohash_key_length = 3;
+
     PressureNET.gradient = new Rainbow();
     PressureNET.gradient.setSpectrum('#00FF00', '#FF0000');
+
     PressureNET.rectangles = [];
 
     PressureNET.min_pressure = 0;
     PressureNET.max_pressure = 1500;
+
     PressureNET.min_hash_length = 3;
-    PressureNET.max_hash_length = 7;
+    PressureNET.max_hash_length = 5;
+    PressureNET.geohash_key_length = PressureNET.max_has_length;
+    PressureNET.interpolation_enabled = true;
+    PressureNET.interpolation_passes = 10;
+
     PressureNET.min_zoom = 3;
     PressureNET.max_zoom = 14;
 
-    var reading_marker_colour = 'FF0000';
     PressureNET.reading_marker_image = new google.maps.MarkerImage(
-        'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + reading_marker_colour,
-        new google.maps.Size(21, 34),
-        new google.maps.Point(0,0),
-        new google.maps.Point(10, 34)
-    );
-
-    var bin_marker_colour = '0000FF';
-    PressureNET.bin_marker_image = new google.maps.MarkerImage(
-        'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + bin_marker_colour,
+        'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|FF0000',
         new google.maps.Size(21, 34),
         new google.maps.Point(0,0),
         new google.maps.Point(10, 34)
@@ -39,15 +36,28 @@
     PressureNET.initialize = function(config) {
         PressureNET.readings_url = config.readings_url;
 
+        PressureNET.setup_controls();
         PressureNET.init_map();
         PressureNET.get_location();
         PressureNET.load_data();
     }
 
+    PressureNET.setup_controls = function () {
+        $('#control_panel_interpolation_enabled').on('change', function (event) {
+            PressureNET.interpolation_enabled = $(event.target).is(':checked');
+            PressureNET.update_map();
+        });
+
+        $('#control_panel_interpolation_passes').on('change', function (event) {
+            PressureNET.interpolation_passes = parseInt($(event.target).val());
+            PressureNET.update_map();
+        });
+    }
+
     PressureNET.init_map = function() {
         var map_options = {
             mapTypeId: google.maps.MapTypeId.ROADMAP,
-            minZoom: 3, 
+            minZoom: 3,
             maxZoom: 14
         };
         PressureNET.map = new google.maps.Map(document.getElementById('map_canvas'), map_options);
@@ -108,17 +118,21 @@
         });
     }
 
-    PressureNET.filter_outliers = function (readings) {
+    PressureNET.is_visible = function (latitude, longitude) {
+        var visible_bounds = PressureNET.map.getBounds();
+        var position = new google.maps.LatLng(latitude, longitude);
+        return visible_bounds.contains(position);
+    }
+
+    PressureNET.filter_outlying_readings = function (readings) {
         return _(readings).filter(function (reading) {
-            return (reading.reading > PressureNET.min_pressure) && (reading.reading < PressureNET.max_pressure); 
+            return (reading.reading > PressureNET.min_pressure) && (reading.reading < PressureNET.max_pressure);
         });
     }
 
-    PressureNET.filter_visible = function (readings) {
+    PressureNET.filter_visible_readings = function (readings) {
         return _(readings).filter(function (reading) {
-            var visible_bounds = PressureNET.map.getBounds();
-            var position = new google.maps.LatLng(reading.latitude, reading.longitude);
-            return visible_bounds.contains(position); 
+            return PressureNET.is_visible(reading.latitude, reading.longitude);
         });
     }
 
@@ -139,7 +153,7 @@
             data: query_params,
             dataType: 'json',
             success: function(readings, status) {
-                PressureNET.readings = PressureNET.filter_outliers(readings);
+                PressureNET.readings = PressureNET.filter_outlying_readings(readings);
                 PressureNET.update_map();
             }
         });
@@ -155,12 +169,13 @@
     }
 
     PressureNET.update_map = function () {
+        console.log('updating map');
         PressureNET.clear_rectangles();
         PressureNET.update_visible_scale();
 
 
-        var visible_readings = PressureNET.filter_visible(PressureNET.readings);
-        
+        var visible_readings = PressureNET.filter_visible_readings(PressureNET.readings);
+
         PressureNET.calculate_bins(visible_readings);
         PressureNET.calculate_neighbours();
         PressureNET.render_bins(visible_readings);
@@ -182,7 +197,7 @@
         });
 
         _(PressureNET.reading_bins).each(function (bin) {
-            bin.average = Stats.median(_(bin.readings).map(function (reading) { return reading.reading; })); 
+            bin.average = Stats.median(_(bin.readings).map(function (reading) { return reading.reading; }));
         });
     }
 
@@ -205,34 +220,43 @@
     PressureNET.calculate_neighbours = function () {
         var directions = ['top', 'bottom', 'left', 'right'];
 
-        for (var pass=0; pass < 10; pass++) {
+        if (!PressureNET.interpolation_enabled) {
+            return;
+        }
+
+        for (var pass=0; pass < PressureNET.interpolation_passes; pass++) {
+            console.log('interpolation pass ' + pass);
             _(PressureNET.reading_bins).each(function (bin, bin_key) {
                 _(directions).each(function (direction) {
                     var adjacent_key = calculateAdjacent(bin_key, direction);
+                    var adjacent_position = decodeGeoHash(adjacent_key);
+                    var adjacent_latitude = adjacent_position.latitude[2];
+                    var adjacent_longitude = adjacent_position.longitude[2];
+                    var adjacent_visible = PressureNET.is_visible(adjacent_latitude, adjacent_longitude);
 
-                    if (!PressureNET.reading_bins[adjacent_key]) {
-                        var neighbour_averages = _(directions).map(function (neighbour_direction) {
-                            var neighbour_key = calculateAdjacent(adjacent_key, neighbour_direction);
-                            var neighbour = PressureNET.reading_bins[neighbour_key];
-
-                            if (neighbour) {
-                                return neighbour.average;
-                            }
-                        });
-
-                        var filtered_averages = _(neighbour_averages).filter(function (neighbour_average) {
-                            return neighbour_average;
-                        });
-
-                        if (filtered_averages.length >= 2) {
-                            var adjacent_pressure = Stats.mean(filtered_averages);
-                            PressureNET.reading_bins[adjacent_key] = {
-                                average: adjacent_pressure,
-                                readings: [],
-                                interpolated: pass
-                            };
-                        }
+                    if (PressureNET.reading_bins[adjacent_key] || !adjacent_visible) {
+                        return;
                     }
+
+                    var neighbour_averages = _(directions).map(function (neighbour_direction) {
+                        var neighbour_key = calculateAdjacent(adjacent_key, neighbour_direction);
+                        var neighbour = PressureNET.reading_bins[neighbour_key];
+
+                        if (neighbour) {
+                            return neighbour.average;
+                        }
+                    });
+
+                    var filtered_averages = _(neighbour_averages).filter(function (neighbour_average) {
+                        return neighbour_average;
+                    });
+
+                    var adjacent_pressure = Stats.mean(filtered_averages);
+                    PressureNET.reading_bins[adjacent_key] = {
+                        average: adjacent_pressure,
+                        readings: [],
+                        interpolated: pass
+                    };
                 });
             });
         }

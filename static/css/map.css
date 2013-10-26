@@ -1,4 +1,9 @@
 /* Date range inputs */
+
+.clearfix {
+    clear: both;
+}
+
 #map_canvas {
     height: 100%;
     width: 100%;
@@ -23,4 +28,11 @@
     font-size: 20px;
     font-weight: bold;
     text-align: center;
+}
+
+#control_panel_info {
+    float: left;
+}
+
+#control_panel_controls {
 }

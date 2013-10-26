@@ -18,7 +18,7 @@
     <div id="control_panel_container">
         <div id="control_panel">
             <div id="control_panel_title">Controls</div>
-            <table>
+            <table id="control_panel_info">
                 <tr>
                     <td># Readings:</td>
                     <td id="control_panel_num_readings"></td>
@@ -44,6 +44,15 @@
                     <td id="control_panel_standard_deviation"></td>
                 </tr>
             </table>
+            <table id="control_panel_controls">
+                <tr>
+                    <td>Interpolation</td>
+                    <td><input id="control_panel_interpolation_enabled" type="checkbox" checked></td>
+                    <td>Passes</td>
+                    <td><input id="control_panel_interpolation_passes" type="text" value="0"></td>
+                </tr>
+            </table>
+            <div class="clearfix"></div>
         </div>
     </div>
 {% endblock %}
