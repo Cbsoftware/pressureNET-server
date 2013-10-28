@@ -17,10 +17,11 @@
     PressureNET.max_pressure = 1500;
 
     PressureNET.min_hash_length = 3;
-    PressureNET.max_hash_length = 5;
+    PressureNET.max_hash_length = 12;
     PressureNET.geohash_key_length = PressureNET.max_has_length;
     PressureNET.interpolation_enabled = true;
     PressureNET.interpolation_passes = 10;
+    PressureNET.max_opacity = 0.65;
 
     PressureNET.min_zoom = 3;
     PressureNET.max_zoom = 14;
@@ -201,22 +202,6 @@
         });
     }
 
-    PressureNET.render_bins = function (readings) {
-
-        PressureNET.reading_pressures = _(readings).map(function (reading) { return reading.reading; });
-        PressureNET.reading_std_dev = Stats.stdev(PressureNET.reading_pressures);
-        PressureNET.reading_median = Stats.median(PressureNET.reading_pressures);
-
-        _(PressureNET.reading_bins).each(function (bin, bin_key) {
-            var normalized_pressure = Math.round(Stats.sigmoid((bin.average - PressureNET.reading_median) / PressureNET.reading_std_dev) * 100);
-            var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
-
-            PressureNET.draw_rectangle(bin_key, bin_colour);
-        });
-
-        PressureNET.update_control_panel();
-    }
-
     PressureNET.calculate_neighbours = function () {
         var directions = ['top', 'bottom', 'left', 'right'];
 
@@ -261,8 +246,30 @@
             });
         }
     }
+    
+    PressureNET.render_bins = function (readings) {
 
-    PressureNET.draw_rectangle = function (bin_key, bin_colour) {
+        PressureNET.reading_pressures = _(readings).map(function (reading) { return reading.reading; });
+        PressureNET.reading_std_dev = Stats.stdev(PressureNET.reading_pressures);
+        PressureNET.reading_median = Stats.median(PressureNET.reading_pressures);
+
+        _(PressureNET.reading_bins).each(function (bin, bin_key) {
+            var normalized_pressure = Math.round(Stats.sigmoid((bin.average - PressureNET.reading_median) / PressureNET.reading_std_dev) * 100);
+            var bin_colour = PressureNET.gradient.colourAt(normalized_pressure);
+            var bin_opacity = PressureNET.max_opacity;
+
+            if (bin.interpolated) {
+                var bin_opacity = (1 - (bin.interpolated/PressureNET.interpolation_passes)) * PressureNET.max_opacity;
+            }
+
+            PressureNET.draw_rectangle(bin_key, bin_colour, bin_opacity);
+        });
+
+        PressureNET.update_control_panel();
+    }
+
+
+    PressureNET.draw_rectangle = function (bin_key, bin_colour, bin_opacity) {
         var decoded_key = decodeGeoHash(bin_key);
         var bottom_left = new google.maps.LatLng(decoded_key.latitude[1], decoded_key.longitude[0]);
         var top_right = new google.maps.LatLng(decoded_key.latitude[0], decoded_key.longitude[1]);
@@ -271,7 +278,7 @@
             map: PressureNET.map,
             strokeWeight: 0,
             fillColor: bin_colour,
-            fillOpacity: 0.65,
+            fillOpacity: bin_opacity ? bin_opacity: PressureNET.max_opacity,
             bounds: new google.maps.LatLngBounds(
                 bottom_left,
                 top_right
