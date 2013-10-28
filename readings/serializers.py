@@ -14,6 +14,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
             'daterecorded',
             'latitude',
             'longitude',
+            'altitude',
         )
 
 
@@ -25,6 +26,7 @@ class ReadingLiveSerializer(serializers.ModelSerializer):
             'reading',
             'latitude',
             'longitude',
+            'altitude',
             'daterecorded',
             'user_id',
             'tzoffset',
