@@ -4,42 +4,13 @@
 {% load customers_tags %}
 
 {% block extrahead %}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.livestream.js"></script>
   <script type="text/javascript">
-
-    $(function() {
-
-      var success = window.location.search;
-      if ( success == '?success=1' ) {
-        $( '#signup-form' ).hide();
-        $( '#success' ).fadeIn( 'slow' );
-      }
-
-      if ( {% if form.errors %}true{% else %}false{% endif %} ) {
-        $( '.error-log, .error-label' ).show();
-      }
-
-      $( '#legal-title a' ).click(function(e) {
-        $( '#legal-notes' ).slideToggle( 'fast' );
-        e.preventDefault();
+      $(function () {
+          PressureNET.livestream(
+          {% if form.errors %}true{% else %}false{% endif %}
+          );
       });
-
-      function showDescription() {
-          var selected = $('input[type="radio"]:checked');
-          selected.each(function () {
-              var description = $(this).data('desc');
-              $(this).parent().parent().find('.descriptions p').text(description);
-          });
-      };
-
-      showDescription();
-
-      $( '.choices input[type="radio"]' ).click(function() {
-        showDescription();
-        showPlans();
-      });
-
-    });
-
   </script>
 {% endblock %}
 
