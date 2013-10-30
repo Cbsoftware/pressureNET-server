@@ -8,10 +8,12 @@ To activate your index dashboard add the following to your settings.py::
 import random
 
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 from django.core.cache import cache
 
 
 from grappelli.dashboard import modules, Dashboard
+from grappelli.dashboard.utils import get_admin_site_name
 
 
 class CacheModule(modules.DashboardModule):
@@ -37,8 +39,10 @@ class PressureNETIndexDashboard(Dashboard):
     """
     Custom index dashboard for www.
     """
-
+    
     def init_with_context(self, context):
+        site_name = get_admin_site_name(context)
+        
         # append a group for "Administration" & "Applications"
         #self.children.append(modules.Group(
         #    _('Group: Administration & Applications'),
@@ -59,7 +63,7 @@ class PressureNETIndexDashboard(Dashboard):
         #        )
         #    ]
         #))
-
+        
         # append an app list module for "Administration"
         self.children.append(modules.ModelList(
             _('Administration'),
@@ -67,7 +71,7 @@ class PressureNETIndexDashboard(Dashboard):
             collapsible=True,
             models=('django.contrib.*',),
         ))
-
+        
         # append an app list module for "Applications"
         self.children.append(modules.ModelList(
             _('Readings'),
@@ -75,7 +79,7 @@ class PressureNETIndexDashboard(Dashboard):
             column=1,
             models=('readings.*',),
         ))
-
+        
         # append an app list module for "Applications"
         self.children.append(modules.ModelList(
             _('Customers'),
@@ -83,6 +87,7 @@ class PressureNETIndexDashboard(Dashboard):
             column=1,
             models=('customers.*',),
         ))
+
 
         # Cache module
         self.children.append(CacheModule(
@@ -141,3 +146,5 @@ class PressureNETIndexDashboard(Dashboard):
             collapsible=False,
             column=3,
         ))
+
+

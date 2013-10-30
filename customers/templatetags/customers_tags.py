@@ -8,7 +8,7 @@ register = template.Library()
 
 @register.assignment_tag
 def get_customer_types():
-    return customers_choices.CUSTOMER_FORM_TYPES
+    return customers_choices.CUSTOMER_FORM_TYPES 
 
 
 @register.assignment_tag

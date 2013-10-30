@@ -1,4 +1,5 @@
 import datetime
+import time
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -9,7 +10,7 @@ import factory
 
 from readings import choices as readings_choices
 from readings.models import Reading, Condition
-from utils.time_utils import to_unix
+from utils.time_utils import to_unix, from_unix 
 
 
 class ReadingFactory(factory.Factory):
