@@ -177,38 +177,6 @@ RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_ENDPOINT', ''),
 }
 
-# Loggly Logging
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'json': {
-            '()': 'jsonlogger.JsonFormatter',
-            'format': """
-                %(threadName)s %(name)s %(thread)d %(created)f 
-                %(process)d %(processName)s %(relativeCreated)f 
-                %(module)s %(funcName)s %(levelno)d %(msecs)f
-                %(pathname)s %(lineno)d %(asctime)s %(message)s 
-                %(filename)s %(levelname)s
-            """
-        }
-    },
-    'handlers': {
-        'loggly': {
-            'level': 'ERROR',
-            'class': 'hoover.LogglyHttpHandler',
-            'token': '9ca83edf-d155-4424-940c-083abfb303ec', 
-        }
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['loggly'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    },
-}
-
 try:
     from settings_local import *
 except:
