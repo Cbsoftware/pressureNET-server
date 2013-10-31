@@ -26,64 +26,6 @@
     
     var currentQueryLimit = defaultQueryLimit;
 
-    var events = [{
-        eventName: "Sandy",
-        eventDates: [new Date(), new Date()],
-        eventTime: "October - November 2012",
-        eventDescription: "Sandy was a category 2...",
-        eventLink: "http://en.wikipedia.org/wiki/Hurricane_Sandy",
-        pointsOfInterest: [{
-          pointName: "New York", 
-          latitude: 40.670345225,
-          longitude: -73.9425720,
-          start_time: (new  Date(2012, 9, 25)).getTime(),
-          end_time: (new  Date(2012, 10, 01)).getTime(),
-          zoomLevel: 11
-        }, {
-          pointName: "New Jersey",
-          latitude: 39.9977615,
-          longitude: -74.7212280,
-          start_time: (new  Date(2012, 9, 29)).getTime(),
-          end_time: (new  Date(2012, 10, 01)).getTime(),
-          zoomLevel: 9
-        }, { // 39.291382453532435 -76.48104933520496 1351396800000 1351742400000 10
-          pointName: "Baltimore",
-          latitude: 39.291382453532435,
-          longitude: -76.48104933520496,
-          start_time: 1351396800000,
-          end_time: 1351742400000,
-          zoomLevel: 10
-        }]
-    }, { // 29.989573859470866 -91.0675109863281 1346040000000 1346558400000 8
-        eventName: "Isaac",
-        eventDates: [new Date(), new Date()],
-        eventTime: "Summer 2012",
-        eventDescription: "Isaac was a ...",
-        eventLink: "http://en.wikipedia.org/wiki/Hurricane_Isaac_(2012)",
-        pointsOfInterest: [{
-          pointName: "Louisiana",
-          latitude: 29.989573859470866,
-          longitude: -91.0675109863281,
-          start_time: 1346040000000,
-          end_time: 1346558400000,
-          zoomLevel: 8
-        }]
-    }, { // 39.98355761483058 -74.95125427246091 1352091600000 1352610000000 10
-         // boston: 42.326689434570994 -71.50360717773435 1352178000000 1352610000000 9 
-        eventName: "Post-Sandy Nor'easter",
-        eventDates: [new Date(), new Date()],
-        eventTime: "November 2012",
-        eventDescription: "After Sandy, ...",
-        eventLink: "http://en.wikipedia.org/wiki/November_2012_nor'easter",
-        pointsOfInterest: [{
-          pointName: "Boston",
-          latitude: 42.326689434570994,
-          longitude: -71.50360717773435,
-          start_time: 1352178000000,
-          end_time: 1352610000000,
-          zoomLevel: 9
-        }]
-      }];
     
 
     PressureNET.initialize = function(config) {
@@ -144,28 +86,6 @@
         PressureNET.updateAllMapParams(map);
         PressureNET.loadAndUpdate();
     }    
-
-    PressureNET.loadEventInfo = function(eventName) {
-      var eventId = 0;
-      if(eventName=="sandy") {
-        eventId = 0;
-      } else if(eventName=="isaac") {
-        eventId = 1;
-      } else if(eventName=="noreaster") {
-        eventId = 2;
-      } 
-      $('#event_title_text').html(events[eventId].eventName);
-      $('#event_date_text').html(events[eventId].eventTime);
-      $('#event_link_text').html('<a href="' + events[eventId].eventLink + '">' + events[eventId].eventName + ' on Wikipedia</a>');
-      
-      var eventDescription = ''; //events[eventId].eventDescription;
-      
-      for(x = 0; x < events[eventId].pointsOfInterest.length; x++) {
-          eventDescription += "<br><a href='#query_results' style='cursor:pointer' onClick='PressureNET.setMapPosition(" + events[eventId].pointsOfInterest[x].latitude + ", " + events[eventId].pointsOfInterest[x].longitude + ", " + events[eventId].pointsOfInterest[x].zoomLevel + ", " + events[eventId].pointsOfInterest[x].start_time + ", " + events[eventId].pointsOfInterest[x].end_time + ")'>" + events[eventId].pointsOfInterest[x].pointName + "</a>";
-      }
-      
-      $('#event_main_text').html(eventDescription);
-    }
 
     PressureNET.dateRange = function() {
         var start = new Date($('#start_date').val());
