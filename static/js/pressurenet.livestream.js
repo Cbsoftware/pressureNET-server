@@ -32,7 +32,6 @@
 
         $( '.choices input[type="radio"]' ).click(function() {
             showDescription();
-            showPlans();
         });
 
 
