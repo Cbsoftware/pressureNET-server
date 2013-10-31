@@ -12,9 +12,10 @@ ServiceEndpoint=https://elasticbeanstalk.us-east-1.amazonaws.com
 SolutionStack=32bit Amazon Linux running Python
 
 [branches]
+master=PressureNET-Live
 beanstalk=PressureNET-Live
 develop=PressureNET-Staging
-master=PressureNET-Live
+loggly=PressureNET-Staging
 
 [branch:beanstalk]
 EnvironmentName=PressureNET-Live
