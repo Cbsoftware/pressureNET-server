@@ -17,7 +17,7 @@
     PressureNET.max_pressure = 1500;
 
     PressureNET.min_hash_length = 3;
-    PressureNET.max_hash_length = 12;
+    PressureNET.max_hash_length = 5;
     PressureNET.geohash_key_length = PressureNET.max_has_length;
     PressureNET.interpolation_enabled = true;
     PressureNET.interpolation_passes = 10;
