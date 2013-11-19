@@ -180,7 +180,7 @@ RAVEN_CONFIG = {
 # Loggly Logging
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
         'loggly': {
             'format':'loggly: %(message)s',
@@ -196,7 +196,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        '':{
+        'loggly':{
             'handlers': ['syslog'],
             'propagate': True,
             'level': 'DEBUG',

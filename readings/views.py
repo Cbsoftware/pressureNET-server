@@ -21,6 +21,10 @@ from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, C
 from readings.models import Reading, ReadingSync, Condition
 
 
+import logging
+logger = logging.getLogger('loggly')
+
+
 def add_from_pressurenet(request):
     """
     Data is incoming from pressureNET.
@@ -78,6 +82,7 @@ def add_from_pressurenet(request):
 class FilteredListAPIView(ListAPIView):
 
     def get_queryset(self):
+        logger.info('Making Filtered List API Call')
         serializer = self.get_serializer_class()
         queryset = super(FilteredListAPIView, self).get_queryset()
 
