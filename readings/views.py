@@ -90,7 +90,7 @@ class FilteredListAPIView(ListAPIView):
             queryset = queryset.only(*fields)
         
         logger.info(json.dumps({
-            'timestamp': datetime.datetime.now().isoformat(),
+            'timestamp': datetime.datetime.utcnow().isoformat(),
             'group': 'Django',
             'type': 'QueryCount',
             'value': queryset.count(),
