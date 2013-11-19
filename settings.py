@@ -1,5 +1,5 @@
 import os
-
+from logging.handlers import SysLogHandler
 # Django settings for pressurenet project.
 
 DEBUG = False 
@@ -187,18 +187,18 @@ LOGGING = {
         },
     },
     'handlers': {
-        'logging.handlers.SysLogHandler': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.SysLogHandler',
-            'facility': 'local5',
+        'syslog': {
+            'level':'DEBUG',
+            'class':'logging.handlers.SysLogHandler',
             'formatter': 'loggly',
+            'facility': SysLogHandler.LOG_LOCAL2,
+            'address': '/dev/log',
         },
     },
     'loggers': {
         '':{
-            'handlers': ['logging.handlers.SysLogHandler'],
+            'handlers': ['syslog'],
             'propagate': True,
-            'format':'loggly: %(message)s',
             'level': 'DEBUG',
         },
     }
