@@ -177,31 +177,29 @@ RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_ENDPOINT', ''),
 }
 
+# Loggly Logging
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        'loggly': {
+            'format':'loggly: %(message)s',
         },
     },
     'handlers': {
-        'console':{
+        'logging.handlers.SysLogHandler': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+            'class': 'logging.handlers.SysLogHandler',
+            'facility': 'local5',
+            'formatter': 'loggly',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
+        '':{
+            'handlers': ['logging.handlers.SysLogHandler'],
             'propagate': True,
+            'format':'loggly: %(message)s',
             'level': 'DEBUG',
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
         },
     }
 }
