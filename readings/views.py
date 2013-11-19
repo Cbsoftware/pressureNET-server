@@ -82,13 +82,19 @@ def add_from_pressurenet(request):
 class FilteredListAPIView(ListAPIView):
 
     def get_queryset(self):
-        logger.info('Making Filtered List API Call')
         serializer = self.get_serializer_class()
         queryset = super(FilteredListAPIView, self).get_queryset()
 
         if hasattr(serializer.Meta, 'fields'):
             fields = serializer.Meta.fields
             queryset = queryset.only(*fields)
+        
+        logger.info(json.dumps({
+            'timestamp': datetime.datetime.now().isoformat(),
+            'group': 'Django',
+            'type': 'QueryCount',
+            'value': queryset.count(),
+        }))
 
         return queryset
 
