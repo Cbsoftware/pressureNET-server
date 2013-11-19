@@ -88,7 +88,8 @@ class FilteredListAPIView(ListAPIView):
         if hasattr(serializer.Meta, 'fields'):
             fields = serializer.Meta.fields
             queryset = queryset.only(*fields)
-        
+       
+        logger.info('Listing %s items' % (queryset.count(),))
         logger.info(json.dumps({
             'timestamp': datetime.datetime.now().isoformat(),
             'group': 'Django',
