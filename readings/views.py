@@ -89,13 +89,6 @@ class FilteredListAPIView(ListAPIView):
             fields = serializer.Meta.fields
             queryset = queryset.only(*fields)
         
-        logger.info(json.dumps({
-            'timestamp': datetime.datetime.utcnow().isoformat(),
-            'group': 'Django',
-            'type': 'QueryCount',
-            'value': queryset.count(),
-        }))
-
         return queryset
 
 
