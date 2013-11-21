@@ -1,5 +1,5 @@
 import os
-
+from logging.handlers import SysLogHandler
 # Django settings for pressurenet project.
 
 DEBUG = False 
@@ -177,31 +177,29 @@ RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_ENDPOINT', ''),
 }
 
+# Loggly Logging
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        'loggly': {
+            'format':'loggly: %(message)s',
         },
     },
     'handlers': {
-        'console':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
+        'syslog': {
+            'level':'DEBUG',
+            'class':'logging.handlers.SysLogHandler',
+            'formatter': 'loggly',
+            'facility': SysLogHandler.LOG_LOCAL2,
+            'address': '/dev/log',
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
+        'loggly':{
+            'handlers': ['syslog'],
             'propagate': True,
             'level': 'DEBUG',
-        },
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
         },
     }
 }

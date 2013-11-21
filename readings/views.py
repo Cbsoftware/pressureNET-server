@@ -21,6 +21,10 @@ from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, C
 from readings.models import Reading, ReadingSync, Condition
 
 
+import logging
+logger = logging.getLogger('loggly')
+
+
 def add_from_pressurenet(request):
     """
     Data is incoming from pressureNET.
@@ -84,6 +88,13 @@ class FilteredListAPIView(ListAPIView):
         if hasattr(serializer.Meta, 'fields'):
             fields = serializer.Meta.fields
             queryset = queryset.only(*fields)
+        
+        logger.info(json.dumps({
+            'timestamp': datetime.datetime.utcnow().isoformat(),
+            'group': 'Django',
+            'type': 'QueryCount',
+            'value': queryset.count(),
+        }))
 
         return queryset
 
