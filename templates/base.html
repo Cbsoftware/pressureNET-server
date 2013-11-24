@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700,900,400italic">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
-    
+
     {% block extrahead %}
     {% endblock %}
   </head>
@@ -65,6 +65,10 @@
 
     {% block extra_footer %}
     {% endblock %}
+
+    {% if debug %}
+        <script src="//{{ request.META.SERVER_NAME }}:35729/livereload.js"></script>
+    {% endif %}
 
   </body>
 </html>

@@ -2,7 +2,7 @@ import os
 from logging.handlers import SysLogHandler
 # Django settings for pressurenet project.
 
-DEBUG = False 
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -90,7 +90,7 @@ STATICFILES_DIRS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY', 'TODO') 
+SECRET_KEY = os.environ.get('SECRET_KEY', 'TODO')
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'templates/'),
@@ -125,6 +125,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
     'django.core.context_processors.i18n',
+    'django.core.context_processors.debug',
     'django.contrib.messages.context_processors.messages',
     'django.core.context_processors.static',
 )
@@ -155,7 +156,7 @@ INSTALLED_APPS = (
 )
 
 # AWS Settings
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '') 
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY', '')
 
 # Grappelli Admin
