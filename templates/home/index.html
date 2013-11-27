@@ -1,3 +1,63 @@
-{% block main_content %}
-    <h1>...</h1>
-{% endblock main_content %}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row hero">
+        <div class="hero-image col-lg-4 col-lg-offset-1 col-md-4 col-md-offset-1 col-sm-4">
+            <img src="{{ STATIC_URL }}images/landing/phone.png" alt="">
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-8">
+            <h2 class="hero-tagline">
+                We're building <span class="logotype">pressure<strong>NET</strong></span>
+            </h2>
+
+            <p class="lead">
+                We want a true, accurate weather forecast. Big meteorology companies
+                are satisfied with 80% accuracy.
+            </p>
+
+            <p>
+                Through pressureNET we're collecting air pressure readings from phones
+                all over the world. We're collaborating with researchers to develop
+                weather models that user our readings to create forecasts.
+            </p>
+
+            <p>
+                If you have a barometer in your Android device, help science out and
+                <a href="#TODO">get the app!</a> If you're a developer or researcher,
+                <a href="#TODO">check out the tools we have for you here</a>.
+            </p>
+
+            <p>
+                <a href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork">
+                  <img alt="Android app on Google Play" src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
+                </a>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="row press">
+        <h2 class="press-head">pressure<strong>NET</strong> in the media</h2>
+
+        <div class="col-sm-4 press-callout">
+            <img src="http://placehold.it/150x150" alt="">
+            <p class="press-callout-quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+
+        <div class="col-sm-4 press-callout">
+            <img src="http://placehold.it/150x150" alt="">
+            <p class="press-callout-quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+
+        <div class="col-sm-4 press-callout">
+            <img src="http://placehold.it/150x150" alt="">
+            <p class="press-callout-quote">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+
+    </div>
+
+</div>
+{% endblock content %}

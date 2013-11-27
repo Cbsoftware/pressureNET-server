@@ -1,5 +1,3 @@
-{% load url from future %}
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -10,45 +8,47 @@
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{{ STATIC_URL }}lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
-    <link rel="stylesheet" type="text/css" href="http://code.jquery.com/ui/1.10.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,700,900,400italic">
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
 
-    {% block extrahead %}
-    {% endblock %}
+    {% block extra_head %} {% endblock extra_head  %}
+
   </head>
 
   <body>
-    <header id="masthead">
-      <h1 id="site-title"><a href="/">pressure<span>NET</span></a></h1>
-      <nav>
-        <a href="{% url 'home-about' %}">About</a>
-        <a href="{% url 'customers-livestream'%}">Developers</a>
-        <a href="https://github.com/cbsoftware" target="_blank">GitHub</a>
-        <a id="link-cb" class="link-logo" href="http://cumulonimbus.ca">Cumulonimbus</a>
-        <a id="link-gp" class="link-logo" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" target="_blank">Download pressureNET</a>
-      </nav>
-    </header>
+    <div class="header">
+        <div class="container">
+            <ul class="nav nav-pills pull-right">
+                <li><a href="#TODO">Visualize</a></li>
+                <li><a href="#TODO">About</a></li>
+                <li><a href="#TODO">Developers</a></li>
+                <li><a href="#TODO">Blog</a></li>
+            </ul>
 
-    <div id="main" class="group">
-
-      {% block main_content %}
-      {% endblock %}
-
+            <h1>
+                <img src="{{ STATIC_URL }}images/pressurenet-logo-small.png" alt="pressurenet logo">
+                <span class="logotype">pressure<strong>NET</strong></span>
+            </h1>
+        </div>
     </div>
 
-    <footer>
-      <nav id="contact">
-        <a id="mail" href="mailto:software@cumulonimbus.ca" title="Write us an e-mail" target="_blank"></a>
-        <a id="bird" href="https://twitter.com/Cumulonimbus_ca" title="Follow us on Twitter" target="_blank"></a>
-        <a id="gplus" href="https://plus.google.com/105785057346543310426/" title="Follow us on Google Plus" target="_blank"></a>
-        <a id="octo" href="https://github.com/Cbsoftware/" title="Follow us on GitHub" target="_blank"></a>
-      </nav>
-    </footer>
+        {% block content %} {% endblock content %}
 
+    <div class="footer">
+        <div class="container">
+            {# TODO: social media icons #}
+            <div class="social-media pull-right">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+            </div>
 
+            <p>Copyright &copy; 2013 Cumulonimbus Inc.</p>
+        </div>
+    </div>
 
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -63,8 +63,10 @@
 
     </script>
 
-    {% block extra_footer %}
-    {% endblock %}
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+
+    {% block extra_js %} {% endblock extra_js %}
 
     {% if debug %}
         <script src="//{{ request.META.SERVER_NAME }}:35729/livereload.js"></script>
