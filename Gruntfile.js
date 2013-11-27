@@ -40,6 +40,9 @@ module.exports = function(grunt) {
         less: {
             files: ['<%= static_dir %>less/**/*.less'],
             tasks: ['clean:css', 'less']
+        },
+        templates: {
+            files: ['templates/**/*.html']
         }
     }
 
