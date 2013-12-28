@@ -11,6 +11,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key 
 
 from utils.time_utils import to_unix, from_unix
+from utils.loggly import loggly
 
 LOG_DURATION = 2 * 60 * 1000
 

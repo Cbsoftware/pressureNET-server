@@ -21,10 +21,6 @@ from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, C
 from readings.models import Reading, ReadingSync, Condition
 
 
-import logging
-logger = logging.getLogger('loggly')
-
-
 def add_from_pressurenet(request):
     """
     Data is incoming from pressureNET.

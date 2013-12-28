@@ -1,4 +1,6 @@
 import datetime
+import random
+import uuid
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
@@ -12,40 +14,47 @@ from readings.models import Reading, Condition
 from utils.time_utils import to_unix
 
 
-class ReadingFactory(factory.Factory):
-    FACTORY_FOR = Reading
-
-    date = to_unix(datetime.datetime.now())
-    user_id = 'abc'
-    latitude = 1.0
-    longitude = 1.0
-    altitude = 1.0
-    daterecorded = to_unix(datetime.datetime.now())
-    tzoffset = 0.0
+class DateLocationMeasurementFactory(factory.Factory):
+    date = factory.LazyAttribute(
+        lambda reading: datetime.datetime.now()
+    )
+    user_id = factory.LazyAttribute(
+        lambda reading: uuid.uuid4().get_hex()
+    )
+    latitude = factory.LazyAttribute(
+        lambda reading: (random.random() * 180) - 90
+    )
+    longitude = factory.LazyAttribute(
+        lambda reading: (random.random() * 360) - 180
+    )
+    altitude = factory.LazyAttribute(
+        lambda reading: random.random() * 300
+    )
+    daterecorded = factory.LazyAttribute(
+        lambda reading: to_unix(datetime.datetime.now())
+    )
+    tzoffset = factory.LazyAttribute(
+        lambda reading: random.randint(0, 100) * 1000
+    )
     client_key = 'ca.cumulonimbus.barometernetwork'
     sharing = readings_choices.SHARING_PUBLIC
-    provider = ''
+    provider = 'gps'
 
-    reading = 1.0
+
+class ReadingFactory(DateLocationMeasurementFactory):
+    FACTORY_FOR = Reading
+
+    reading = factory.LazyAttribute(
+        lambda reading: (random.random() * 300) + 800
+    )
     reading_accuracy = 1.0
     observation_type = 'pressure'
     observation_unit = 'mbars'
     location_accuracy = 0.0
 
 
-class ConditionFactory(factory.Factory):
+class ConditionFactory(DateLocationMeasurementFactory):
     FACTORY_FOR = Condition
-
-    date = to_unix(datetime.datetime.now())
-    user_id = 'abc'
-    latitude = 1.0
-    longitude = 1.0
-    altitude = 1.0
-    daterecorded = to_unix(datetime.datetime.now())
-    tzoffset = 0.0
-    client_key = 'ca.cumulonimbus.barometernetwork'
-    sharing = readings_choices.SHARING_PUBLIC
-    provider = ''
 
     accuracy = 1.0
     general_condition = 'condition'
