@@ -43,6 +43,7 @@ class ConditionForm(forms.ModelForm):
             'general_condition',
             'windy',
             'fog_thickness',
+            'cloud_type',
             'precipitation_type',
             'precipitation_amount',
             'precipitation_unit',
