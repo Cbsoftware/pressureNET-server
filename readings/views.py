@@ -19,6 +19,7 @@ from readings.forms import ReadingForm, ConditionForm
 from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
 from readings.models import Reading, ReadingSync, Condition
+from utils.time_utils import to_unix
 
 
 import logging
@@ -184,7 +185,7 @@ class LoggedLocationListView(FilteredListAPIView):
                 call_log = CustomerCallLog.objects.filter(customer=customer).order_by('-timestamp')[:1].get()
                 last_customerapi_call_time = call_log.timestamp
             except CustomerCallLog.DoesNotExist:
-                last_customerapi_call_time = datetime.datetime.now() - datetime.timedelta(hours=1)
+                last_customerapi_call_time = to_unix(datetime.datetime.now() - datetime.timedelta(hours=1))
 
             queryset = queryset.filter(
                 daterecorded__gte=last_customerapi_call_time

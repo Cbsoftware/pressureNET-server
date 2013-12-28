@@ -3,3 +3,4 @@
 settings_local*.py
 .DS_Store
 .elasticbeanstalk/
+node_modules/
