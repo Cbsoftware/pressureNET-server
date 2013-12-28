@@ -59,6 +59,7 @@ class ConditionListSerializer(serializers.ModelSerializer):
             'longitude',
             'altitude',
             'daterecorded',
+            'tzoffset',
             'general_condition',
             'windy',
             'fog_thickness',
