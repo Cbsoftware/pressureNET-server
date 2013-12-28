@@ -48,6 +48,7 @@ class Condition(DateLocationMeasurementModel):
     general_condition = models.CharField(max_length=255)
     windy = models.CharField(max_length=255)
     fog_thickness = models.CharField(max_length=255)
+    cloud_type = models.CharField(max_length=255)
     precipitation_type = models.CharField(max_length=255)
     precipitation_amount = models.FloatField()
     precipitation_unit = models.CharField(max_length=255)

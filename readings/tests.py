@@ -343,6 +343,7 @@ class CreateConditionTests(TestCase):
             'client_key': 'abc',
             'general_condition': 'abc',
             'windy': 'abc',
+            'cloud_type': 'abc',
             'fog_thickness': 'abc',
             'precipitation_type': 'abc',
             'precipitation_amount': 1.0,
