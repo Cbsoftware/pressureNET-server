@@ -58,13 +58,14 @@ class ConditionFactory(DateLocationMeasurementFactory):
 
     accuracy = 1.0
     general_condition = 'condition'
-    windy = ''
-    fog_thickness = ''
-    precipitation_type = ''
+    windy = 'abc'
+    cloud_type = 'abc'
+    fog_thickness = 'abc'
+    precipitation_type = 'abc'
     precipitation_amount = 1.0
-    precipitation_unit = ''
-    thunderstorm_intensity = ''
-    user_comment = ''
+    precipitation_unit = 'abc'
+    thunderstorm_intensity = 'abc'
+    user_comment = 'abc'
 
 
 class DateLocationFilteredListTests(object):
@@ -302,22 +303,7 @@ class ReadingLiveTests(TestCase):
 class CreateReadingTests(TestCase):
 
     def get_post_data(self):
-        return {
-            'user_id': 'abc',
-            'latitude': 1.0,
-            'longitude': 1.0,
-            'altitude': 1.0,
-            'reading': 1.0,
-            'reading_accuracy': 1.0,
-            'provider': 'abc',
-            'observation_type': 'abc',
-            'observation_unit': 'abc',
-            'sharing': readings_choices.SHARING_PUBLIC,
-            'daterecorded': 123,
-            'tzoffset': 123,
-            'location_accuracy': 1.0,
-            'client_key': 'abc',
-        }
+        return ReadingFactory.attributes()
 
     def test_create_reading_inserts_into_db(self):
         post_data = self.get_post_data()
@@ -330,27 +316,7 @@ class CreateReadingTests(TestCase):
 class CreateConditionTests(TestCase):
 
     def get_post_data(self):
-        return {
-            'user_id': 'abc',
-            'latitude': 1.0,
-            'longitude': 1.0,
-            'altitude': 1.0,
-            'daterecorded': 123,
-            'tzoffset': 123,
-            'accuracy': 1.0,
-            'provider': 'abc',
-            'sharing': readings_choices.SHARING_PUBLIC,
-            'client_key': 'abc',
-            'general_condition': 'abc',
-            'windy': 'abc',
-            'cloud_type': 'abc',
-            'fog_thickness': 'abc',
-            'precipitation_type': 'abc',
-            'precipitation_amount': 1.0,
-            'precipitation_unit': 'abc',
-            'thunderstorm_intensity': 'abc',
-            'user_comment': 'abc',
-        }
+        return ConditionFactory.attributes()
 
     def test_create_reading_inserts_into_db(self):
         post_data = self.get_post_data()
