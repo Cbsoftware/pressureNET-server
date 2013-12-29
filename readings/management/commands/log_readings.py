@@ -6,81 +6,139 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import simplejson as json
 
-from boto.sqs.connection import SQSConnection
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key 
+from readings.serializers import ReadingListSerializer
 
 from utils.time_utils import to_unix, from_unix
 from utils.loggly import loggly
+from utils.queue import get_queue, get_from_queue
+from utils.s3 import get_bucket, write_to_bucket
 
-LOG_DURATION = 2 * 60 * 1000
+
+class ReadingQueueAggregator(object):
+
+    def __init__(self):
+        self.queue = get_queue()
+        self.public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
+        self.private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
+        self.reading_blocks = defaultdict(dict)
+        self.removed_messages = {}
+
+    def is_expired(self, timestamp):
+        now = datetime.datetime.now()
+        threshold = 2 * settings.READINGS_LOG_DURATION
+        diff = (now - from_unix(timestamp)).seconds * 1000
+        return diff > threshold
+
+    def handle_message(self, reading_message):
+        reading_body = reading_message.get_body()
+
+        try:
+            reading_json = json.loads(reading_body)
+        except ValueError:
+            print 'Unable to parse JSON message'
+            self.queue.delete_message(reading_message)
+            return None
+
+        if type(reading_json) is not dict:
+            print 'No data dictionary found'
+            self.queue.delete_message(reading_message)
+            return None
+
+        if 'daterecorded' not in reading_json:
+            print 'Could not locate daterecorded field'
+            self.queue.delete_message(reading_message)
+            return None
+
+        reading_date = int(reading_json['daterecorded'])
+        reading_date_offset = reading_date % settings.READINGS_LOG_DURATION
+        block_key = reading_date - reading_date_offset
+     
+        if self.is_expired(block_key):
+            print 'Received expired message from ', from_unix(block_key)
+            self.queue.delete_message(reading_message)
+            return None
+
+        self.reading_blocks[block_key][reading_message.id] = reading_message
+
+    def get_block_filename(self, block_key):
+        block_date = from_unix(block_key)
+        return '%s.json' % ('-'.join((
+            '%04d' % (block_date.year),
+            '%02d' % (block_date.month),
+            '%02d' % (block_date.day),
+            '%02d' % (block_date.hour),
+            '%02d' % (block_date.minute),
+        )))
+
+    def persist_block_public(self, block_key):
+        s3_key = self.get_block_filename(block_key)
+        public_data = []
+
+        for message in self.reading_blocks[block_key].values():
+            message_data = json.loads(message.get_body())
+
+            filtered_data = dict([
+                (key, value) for (key, value) in message_data.items() 
+                    if key in ReadingListSerializer.Meta.fields
+            ])
+
+            public_data.append(filtered_data)
+
+        s3_data = json.dumps(public_data)
+        return write_to_bucket(self.public_bucket, s3_key, s3_data)
+    
+    def delete_block(self, block_key):
+        while self.reading_blocks[block_key].values():
+            response = self.queue.delete_message_batch(self.reading_blocks[block_key].values()[:10])
+
+            for deleted_reading in response.results:
+                del self.reading_blocks[block_key][deleted_reading['id']]
+                self.removed_messages[deleted_reading['id']] = True
+
+        del self.reading_blocks[block_key]
+
+    def persist_block_private(self, block_key):
+        s3_key = self.get_block_filename(block_key)
+        s3_data = json.dumps([
+            json.loads(message.get_body()) for message in self.reading_blocks[block_key].values()
+        ])
+        return write_to_bucket(self.private_bucket, s3_key, s3_data)
+
+    def handle_block(self, block_key):
+        public_success = self.persist_block_public(block_key)
+        private_success = self.persist_block_private(block_key)
+
+        if public_success and private_success:
+            print 'Persisting %s messages from %s to s3' % (
+                len(self.reading_blocks[block_key]),
+                from_unix(block_key),
+            )
+
+            self.delete_block(block_key)
+
+    def receive_messages(self):
+        reading_messages = get_from_queue() 
+
+        if not reading_messages:
+            time.sleep(1)
+
+        for reading_message in reading_messages:
+            self.handle_message(reading_message)
+
+    def persist_data(self):
+        for block_key in self.reading_blocks.keys():
+            if self.is_expired(block_key):
+                self.handle_block(block_key)
+
+    def run(self):
+        while True:
+            self.receive_messages()
+            self.persist_data()
 
 
 class Command(BaseCommand):
-    help = 'Checks code for errors'
+    help = 'Aggregate Readings from a queue and persist them to S3'
 
     def handle(self, *args, **options):
-        sqs_conn = SQSConnection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-        s3_conn = S3Connection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
-        queue = sqs_conn.get_queue('pressurenet-readings-dev')
-        bucket = s3_conn.get_bucket('pressurenet-live')
-
-        reading_logs = defaultdict(dict)
-        removed_messages = {}
-
-        while True:
-
-            reading_messages = queue.get_messages(num_messages=10)
-
-            if not reading_messages:
-                time.sleep(1)
-
-            for reading_message in reading_messages:
-                reading_body = reading_message.get_body()
-
-                try:
-                    reading_json = json.loads(reading_body)
-                except:
-                    print 'Unable to parse JSON message'
-                    queue.delete_message(reading_message)
-                    continue
-
-                if type(reading_json) is not dict:
-                    print 'No data dictionary found'
-                    queue.delete_message(reading_message)
-                    continue
-
-                reading_date = reading_json['daterecorded']
-                reading_date_offset = reading_date % LOG_DURATION
-                reading_date_block = reading_date - reading_date_offset
-                
-                if reading_message.id in removed_messages:
-                    print 'Received duplicate message from ', from_unix(reading_date_block)
-                    queue.delete_message(reading_message)
-                    continue
-
-                reading_logs[reading_date_block][reading_message.id] = reading_message
-
-            for log_block in reading_logs.keys():
-                block_startdate = from_unix(log_block)
-
-                if (datetime.datetime.now() - block_startdate).seconds > (2 * (LOG_DURATION/1000.0)):
-                    s3_file = Key(bucket)
-                    s3_file.key = str(block_startdate)
-
-                    s3_data = json.dumps([json.loads(message.get_body()) for message in reading_logs[log_block].values()])
-                    s3_file.set_contents_from_string(s3_data)
-
-                    print 'Persisting %s messages from %s to s3' % (
-                        len(reading_logs[log_block]),
-                        block_startdate,
-                    )
-
-                    while reading_logs[log_block].values():
-                        response = queue.delete_message_batch(reading_logs[log_block].values()[:10])
-
-                        for deleted_reading in response.results:
-                            del reading_logs[log_block][deleted_reading['id']]
-                            removed_messages[deleted_reading['id']] = True
-
-                    del reading_logs[log_block]
+        aggregator = ReadingQueueAggregator()
+        aggregator.run()

@@ -23,11 +23,11 @@ DEFAULT_FROM_EMAIL = 'pressureNET API <livestream@cumulonimbus.ca>'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('RDS_DB_NAME', ''),
-        'USER': os.environ.get('RDS_USERNAME', ''),
-        'PASSWORD': os.environ.get('RDS_PASSWORD', ''),
-        'HOST': os.environ.get('RDS_HOSTNAME', ''),
-        'PORT': os.environ.get('RDS_PORT', ''),
+        'NAME': os.environ.get('RDS_DB_NAME'),
+        'USER': os.environ.get('RDS_USERNAME'),
+        'PASSWORD': os.environ.get('RDS_PASSWORD'),
+        'HOST': os.environ.get('RDS_HOSTNAME'),
+        'PORT': os.environ.get('RDS_PORT'),
     }
 }
 
@@ -155,8 +155,14 @@ INSTALLED_APPS = (
 )
 
 # AWS Settings
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '') 
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY', '')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID') 
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
+
+# SQS Queue
+SQS_QUEUE = os.environ.get('SQS_QUEUE')
+
+# S3 Buckets
+S3_BUCKET = os.environ.get('S3_BUCKET')
 
 # Grappelli Admin
 GRAPPELLI_ADMIN_TITLE = 'PressureNET Admin'
@@ -174,7 +180,7 @@ MAX_CALL_LENGTH = 10000
 
 # Sentry Logging
 RAVEN_CONFIG = {
-    'dsn': os.environ.get('SENTRY_ENDPOINT', ''),
+    'dsn': os.environ.get('SENTRY_ENDPOINT'),
 }
 
 # Loggly Logging

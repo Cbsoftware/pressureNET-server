@@ -19,7 +19,9 @@ from readings.forms import ReadingForm, ConditionForm
 from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
 from readings.models import Reading, ReadingSync, Condition
+
 from utils.time_utils import to_unix
+from utils.queue import add_to_queue
 
 
 def add_from_pressurenet(request):
@@ -241,6 +243,11 @@ class JSONCreateView(CreateView):
 class CreateReadingView(JSONCreateView):
     model = Reading
     form = ReadingForm
+
+    def form_valid(self, form):
+        # Add data to SQS queue
+        add_to_queue(form.data)
+        return super(CreateReadingView, self).form_valid(form)
 
 create_reading = csrf_exempt(CreateReadingView.as_view())
 
