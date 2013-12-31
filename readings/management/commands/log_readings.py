@@ -24,7 +24,7 @@ class ReadingQueueAggregator(object):
         self.removed_messages = {}
 
     def is_expired(self, timestamp):
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now()
         threshold = 2 * settings.READINGS_LOG_DURATION
         diff = (now - from_unix(timestamp)).seconds * 1000
         return diff > threshold
