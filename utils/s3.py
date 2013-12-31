@@ -11,9 +11,10 @@ def get_bucket(bucket_name):
     return s3_conn.get_bucket(bucket_name)
 
 
-def write_to_bucket(bucket, key, content):
+def write_to_bucket(bucket, key, content, content_type):
     s3_file = Key(bucket)
     s3_file.key = str(key)
+    s3_file.content_type = content_type
 
     s3_data = content 
     s3_file.set_contents_from_string(s3_data)

@@ -85,7 +85,7 @@ class ReadingQueueAggregator(object):
             public_data.append(filtered_data)
 
         s3_data = json.dumps(public_data)
-        return write_to_bucket(self.public_bucket, s3_key, s3_data)
+        return write_to_bucket(self.public_bucket, s3_key, s3_data, 'application/json')
     
     def delete_block(self, block_key):
         while self.reading_blocks[block_key].values():
@@ -102,7 +102,7 @@ class ReadingQueueAggregator(object):
         s3_data = json.dumps([
             json.loads(message.get_body()) for message in self.reading_blocks[block_key].values()
         ])
-        return write_to_bucket(self.private_bucket, s3_key, s3_data)
+        return write_to_bucket(self.private_bucket, s3_key, s3_data, 'application/json')
 
     def handle_block(self, block_key):
         public_success = self.persist_block_public(block_key)
