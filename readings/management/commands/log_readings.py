@@ -61,14 +61,7 @@ class ReadingQueueAggregator(object):
         self.reading_blocks[block_key][reading_message.id] = reading_message
 
     def get_block_filename(self, block_key):
-        block_date = from_unix(block_key)
-        return '%s.json' % ('-'.join((
-            '%04d' % (block_date.year),
-            '%02d' % (block_date.month),
-            '%02d' % (block_date.day),
-            '%02d' % (block_date.hour),
-            '%02d' % (block_date.minute),
-        )))
+        return block_key
 
     def persist_block_public(self, block_key):
         s3_key = self.get_block_filename(block_key)
