@@ -61,7 +61,7 @@ class ReadingQueueAggregator(object):
         self.reading_blocks[block_key][reading_message.id] = reading_message
 
     def get_block_filename(self, block_key):
-        return block_key
+        return '%s.json' % (block_key,)
 
     def persist_block_public(self, block_key):
         s3_key = self.get_block_filename(block_key)
