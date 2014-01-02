@@ -4,6 +4,8 @@ from django.utils import simplejson as json
 from boto.sqs.connection import SQSConnection
 from boto.sqs.message import Message
 
+from utils.loggly import loggly
+
 
 sqs_conn = SQSConnection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
 

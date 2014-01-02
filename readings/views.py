@@ -276,13 +276,13 @@ class JSONCreateView(CreateView):
 
 class CreateReadingView(JSONCreateView):
     model = Reading
-    form = ReadingForm
+    form_class = ReadingForm
 
 create_reading = csrf_exempt(CreateReadingView.as_view())
 
 
 class CreateConditionView(JSONCreateView):
     model = Condition
-    form = ConditionForm
+    form_class = ConditionForm
 
 create_condition = csrf_exempt(CreateConditionView.as_view())

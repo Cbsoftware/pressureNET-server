@@ -41,6 +41,13 @@ class ReadingForm(LoggedForm):
     def save(self, *args, **kwargs):
         # Add data to SQS queue
         add_to_queue(self.data)
+
+        loggly(
+            view='create',
+            event='sent to queue',
+            model='Reading',
+        )
+
         return super(ReadingForm, self).save(*args, **kwargs)
 
 

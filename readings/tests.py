@@ -2,6 +2,7 @@ import datetime
 import random
 import uuid
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
@@ -11,6 +12,8 @@ import factory
 
 from readings import choices as readings_choices
 from readings.models import Reading, Condition
+
+from utils.queue import get_queue, get_from_queue
 from utils.time_utils import to_unix
 
 
@@ -302,6 +305,19 @@ class ReadingLiveTests(TestCase):
 
 class CreateReadingTests(TestCase):
 
+    def clear_queue(self):
+        if 'live' in settings.SQS_QUEUE:
+            raise Exception('Attempting to test against live queue')
+
+        queue = get_queue()
+        queue.clear()
+
+    def setUp(self):
+        self.clear_queue()
+
+    def tearDown(self):
+        self.clear_queue()
+
     def get_post_data(self):
         return ReadingFactory.attributes()
 
@@ -309,8 +325,13 @@ class CreateReadingTests(TestCase):
         post_data = self.get_post_data()
         response = self.client.post(reverse('readings-create-reading'), post_data)
 
+        response_json = json.loads(response.content)
+        self.assertTrue(response_json['success'])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Reading.objects.count(), 1)
+
+        queued_messages = get_from_queue()
+        self.assertEqual(len(queued_messages), 1)
 
 
 class CreateConditionTests(TestCase):
