@@ -65,6 +65,10 @@ def add_from_pressurenet(request):
             client_key=raw_client_key,
             location_accuracy=raw_location_accuracy,
             reading_accuracy=raw_reading_accuracy,
+            altitude=0.0,
+            observation_unit='mbar',
+            observation_type='pressure',
+            provider='network',
         ))
 
         if reading_form.is_valid():
@@ -97,7 +101,7 @@ class FilteredListAPIView(ListAPIView):
         if hasattr(serializer.Meta, 'fields'):
             fields = serializer.Meta.fields
             queryset = queryset.only(*fields)
-        
+
         return queryset
 
 
@@ -234,20 +238,40 @@ reading_live = ReadingLiveView.as_view()
 
 class JSONCreateView(CreateView):
 
+    def log_response(self, response):
+        loggly(
+            view='create',
+            model=self.model.__name__,
+            response=response,
+        )
+
     def form_valid(self, form):
         form.save()
-        response = json.dumps({
+
+        response = {
             'success': True,
             'errors': '',
-        })
-        return HttpResponse(response, mimetype='application/json')
+        }
+
+        self.log_response(response)
+
+        return HttpResponse(
+            json.dumps(response),
+            mimetype='application/json'
+        )
 
     def form_invalid(self, form):
-        response = json.dumps({
+        response = {
             'success': False,
             'errors': form._errors,
-        })
-        return HttpResponse(response, mimetype='application/json')
+        }
+
+        self.log_response(response)
+
+        return HttpResponse(
+            json.dumps(response),
+            mimetype='application/json'
+        )
 
 
 class CreateReadingView(JSONCreateView):
