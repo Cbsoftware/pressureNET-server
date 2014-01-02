@@ -6,7 +6,18 @@ from utils.queue import add_to_queue
 from utils.loggly import loggly
 
 
-class ReadingForm(forms.ModelForm):
+class LoggedForm(forms.ModelForm):
+
+    def save(self, *args, **kwargs):
+        loggly(
+            view='create',
+            model=self.Meta.model.__name__,
+            event='save',
+        )
+        return super(LoggedForm, self).save(*args, **kwargs)
+
+
+class ReadingForm(LoggedForm):
 
     class Meta:
         model = Reading
@@ -30,14 +41,10 @@ class ReadingForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         # Add data to SQS queue
         add_to_queue(self.data)
-        loggly(
-            view='create reading',
-            event='created, added to queue',
-        )
         return super(ReadingForm, self).save(*args, **kwargs)
 
 
-class ConditionForm(forms.ModelForm):
+class ConditionForm(LoggedForm):
 
     class Meta:
         model = Condition
@@ -62,10 +69,3 @@ class ConditionForm(forms.ModelForm):
             'thunderstorm_intensity',
             'user_comment',
         )
-
-    def save(self, *args, **kwargs):
-        loggly(
-            view='create condition',
-            event='created',
-        )
-        return super(ConditionForm, self).save(*args, **kwargs)
