@@ -21,7 +21,7 @@ from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, C
 from readings.models import Reading, ReadingSync, Condition
 
 from utils.time_utils import to_unix
-from utils.queue import add_to_queue
+from utils.loggly import loggly
 
 
 def add_from_pressurenet(request):
@@ -54,7 +54,7 @@ def add_from_pressurenet(request):
             raw_reading_accuracy = reading_data[9]
         except:
             pass
-        this_reading = Reading(
+        reading_form = ReadingForm(dict(
             latitude=raw_latitude,
             longitude=raw_longitude,
             reading=raw_reading,
@@ -65,16 +65,26 @@ def add_from_pressurenet(request):
             client_key=raw_client_key,
             location_accuracy=raw_location_accuracy,
             reading_accuracy=raw_reading_accuracy,
-        )
+        ))
 
-        try:
-            this_reading.save()
-            count += 1
-        except:
-            continue
+        if reading_form.is_valid():
+            reading_form.save()
+        else:
+            loggly(
+                view='add_reading_from_pressurenet',
+                event='invalid form',
+                errors=reading_form._errors,
+            )
+
+        count += 1
 
     processing_time = time.time() - start
     ReadingSync.objects.create(readings=count, processing_time=processing_time)
+    loggly(
+        view='add_reading_from_pressurenet',
+        event='save',
+        count=count,
+    )
     return HttpResponse('okay go, count ' + str(count))
 
 
@@ -243,11 +253,6 @@ class JSONCreateView(CreateView):
 class CreateReadingView(JSONCreateView):
     model = Reading
     form = ReadingForm
-
-    def form_valid(self, form):
-        # Add data to SQS queue
-        add_to_queue(form.data)
-        return super(CreateReadingView, self).form_valid(form)
 
 create_reading = csrf_exempt(CreateReadingView.as_view())
 

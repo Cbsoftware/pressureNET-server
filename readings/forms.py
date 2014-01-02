@@ -2,6 +2,8 @@ from django import forms
 
 from readings.models import Reading, Condition
 
+from utils.queue import add_to_queue
+
 
 class ReadingForm(forms.ModelForm):
 
@@ -23,6 +25,11 @@ class ReadingForm(forms.ModelForm):
             'location_accuracy',
             'client_key',
         )
+
+    def save(self, *args, **kwargs):
+        # Add data to SQS queue
+        add_to_queue(self.data)
+        return super(ReadingForm, self).save(*args, **kwargs)
 
 
 class ConditionForm(forms.ModelForm):
