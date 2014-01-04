@@ -10,14 +10,14 @@ from readings.serializers import ReadingListSerializer
 
 from utils.time_utils import to_unix, from_unix
 from utils.loggly import loggly
-from utils.queue import get_queue, get_from_queue
+from utils.queue import get_queue
 from utils.s3 import get_bucket, write_to_bucket
 
 
 class ReadingQueueAggregator(object):
 
     def __init__(self):
-        self.queue = get_queue()
+        self.queue = get_queue(settings.SQS_QUEUE)
         self.public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
         self.private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
         self.reading_blocks = defaultdict(dict)
@@ -52,7 +52,7 @@ class ReadingQueueAggregator(object):
         reading_date = int(reading_json['daterecorded'])
         reading_date_offset = reading_date % settings.READINGS_LOG_DURATION
         block_key = reading_date - reading_date_offset
-     
+
         if self.is_expired(block_key):
             print 'Received expired message from ', from_unix(block_key)
             self.queue.delete_message(reading_message)
@@ -71,7 +71,7 @@ class ReadingQueueAggregator(object):
             message_data = json.loads(message.get_body())
 
             filtered_data = dict([
-                (key, value) for (key, value) in message_data.items() 
+                (key, value) for (key, value) in message_data.items()
                     if key in ReadingListSerializer.Meta.fields
             ])
 
@@ -79,7 +79,7 @@ class ReadingQueueAggregator(object):
 
         s3_data = json.dumps(public_data)
         return write_to_bucket(self.public_bucket, s3_key, s3_data, 'application/json')
-    
+
     def delete_block(self, block_key):
         while self.reading_blocks[block_key].values():
             response = self.queue.delete_message_batch(self.reading_blocks[block_key].values()[:10])
@@ -110,7 +110,7 @@ class ReadingQueueAggregator(object):
             self.delete_block(block_key)
 
     def receive_messages(self):
-        reading_messages = get_from_queue() 
+        reading_messages = self.queue.get_messages(num_messages=10)
 
         if not reading_messages:
             time.sleep(1)

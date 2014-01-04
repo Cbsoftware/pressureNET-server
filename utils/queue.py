@@ -9,15 +9,10 @@ from utils.loggly import loggly
 
 sqs_conn = SQSConnection(settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY)
 
-def get_queue():
-    return sqs_conn.get_queue(settings.SQS_QUEUE)
+def get_queue(queue_name):
+    return sqs_conn.get_queue(queue_name)
 
-def add_to_queue(data):
-    queue = get_queue()
+def add_to_queue(queue, data):
     message = Message()
     message.set_body(json.dumps(data))
     return queue.write(message)
-    
-def get_from_queue(num_messages=10):
-    queue = get_queue()
-    return queue.get_messages(num_messages=10)

@@ -1,8 +1,9 @@
 from django import forms
+from django.conf import settings
 
 from readings.models import Reading, Condition
 
-from utils.queue import add_to_queue
+from utils.queue import get_queue, add_to_queue
 from utils.loggly import loggly
 
 
@@ -40,7 +41,8 @@ class ReadingForm(LoggedForm):
 
     def save(self, *args, **kwargs):
         # Add data to SQS queue
-        add_to_queue(self.cleaned_data)
+        queue = get_queue(settings.SQS_QUEUE)
+        add_to_queue(queue, self.cleaned_data)
 
         loggly(
             view='create',

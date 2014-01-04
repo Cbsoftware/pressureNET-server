@@ -13,7 +13,7 @@ import factory
 from readings import choices as readings_choices
 from readings.models import Reading, Condition
 
-from utils.queue import get_queue, get_from_queue
+from utils.queue import get_queue
 from utils.time_utils import to_unix
 
 
@@ -305,12 +305,15 @@ class ReadingLiveTests(TestCase):
 
 class CreateReadingTests(TestCase):
 
+    def __init__(self, *args, **kwargs):
+        self.queue = get_queue(settings.SQS_QUEUE)
+        return super(CreateReadingTests, self).__init__(*args, **kwargs)
+
     def clear_queue(self):
         if 'live' in settings.SQS_QUEUE:
             raise Exception('Attempting to test against live queue')
 
-        queue = get_queue()
-        queue.clear()
+        self.queue.clear()
 
     def setUp(self):
         self.clear_queue()
@@ -330,7 +333,7 @@ class CreateReadingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Reading.objects.count(), 1)
 
-        queued_messages = get_from_queue()
+        queued_messages = self.queue.get_messages(num_messages=10)
         self.assertEqual(len(queued_messages), 1)
 
 
