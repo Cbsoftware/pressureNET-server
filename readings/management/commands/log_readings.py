@@ -1,6 +1,6 @@
-from collections import defaultdict
 import datetime
 import time
+from collections import defaultdict
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
@@ -9,9 +9,10 @@ from django.utils import simplejson as json
 from readings.serializers import ReadingListSerializer
 
 from utils.time_utils import to_unix, from_unix
+from utils.compression import gzip_compress, gzip_decompress
 from utils.loggly import loggly
 from utils.queue import get_queue
-from utils.s3 import get_bucket, write_to_bucket
+from utils.s3 import get_bucket, read_from_bucket, write_to_bucket
 
 
 def hash_dict(data):
@@ -61,16 +62,21 @@ class S3Handler(object):
         new_data = [json.loads(message.get_body()) for message in new_messages]
         filtered_data = self.filter_data(new_data)
 
-        existing_file = self.bucket.get_key(filename)
-        if existing_file:
+        existing_content = read_from_bucket(self.bucket, filename)
+        if existing_content:
             print 'Existing data found, merging'
-            existing_content = existing_file.get_contents_as_string()
             existing_data = json.loads(existing_content)
 
             filtered_data = self.merge_data(filtered_data, existing_data)
 
         output_content = json.dumps(filtered_data)
-        write_to_bucket(self.bucket, filename, output_content, 'application/json')
+        write_to_bucket(
+            self.bucket,
+            filename,
+            output_content,
+            'application/json',
+            compress=True,
+        )
 
         print 'Persisted %s messages from %s to %s' % (
             len(filtered_data),
@@ -130,7 +136,8 @@ class QueueAggregator(object):
     def delete_block(self, block_key):
         print 'Deleting block', block_key
         while self.blocks[block_key]:
-            response = self.queue.delete_message_batch(self.blocks[block_key].values()[:10])
+            messages = self.blocks[block_key].values()[:10]
+            response = self.queue.delete_message_batch(messages)
 
             for deleted_reading in response.results:
                 deleted_id = deleted_reading['id']
