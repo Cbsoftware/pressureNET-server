@@ -21,8 +21,9 @@ def hash_dict(data):
 
 class S3Handler(object):
 
-    def __init__(self, bucket, allowed_fields=None):
+    def __init__(self, bucket, path, allowed_fields=None):
         self.bucket = bucket
+        self.path = path
         self.allowed_fields = allowed_fields
 
     def filter_data(self, data):
@@ -57,7 +58,7 @@ class S3Handler(object):
 
     def handle(self, key, new_messages):
         print 'Persisting %s to S3' % (key,)
-        filename = '%s.json' % (key,)
+        filename = '%s%s.json' % (self.path, key,)
 
         new_data = [json.loads(message.get_body()) for message in new_messages]
         filtered_data = self.filter_data(new_data)
@@ -185,11 +186,15 @@ class Command(BaseCommand):
         public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
         public_handler = S3Handler(
             public_bucket,
+            'pressure/raw/10minute/',
             allowed_fields=ReadingListSerializer.Meta.fields
         )
 
         private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
-        private_handler = S3Handler(private_bucket)
+        private_handler = S3Handler(
+            private_bucket,
+            'pressure/raw/10minute/',
+        )
 
         queue = get_queue(settings.SQS_QUEUE)
         aggregator = QueueAggregator(
