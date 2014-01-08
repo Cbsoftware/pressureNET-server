@@ -162,9 +162,6 @@ AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
 # SQS Queue
 SQS_QUEUE = os.environ.get('SQS_QUEUE')
 
-# S3 Buckets
-S3_BUCKET = os.environ.get('S3_BUCKET')
-
 # Grappelli Admin
 GRAPPELLI_ADMIN_TITLE = 'PressureNET Admin'
 
