@@ -44,20 +44,22 @@ class S3Handler(object):
         return filtered_data
 
     def merge_data(self, data1, data2):
-        print 'Merging %s and %s readings' % (
-            len(data1),
-            len(data2),
-        )
         dict1 = dict([(hash_dict(record), record) for record in data1])
         dict2 = dict([(hash_dict(record), record) for record in data2])
 
         dict1.update(dict2)
 
-        print 'Merged %s readings' % (len(dict1),)
+        loggly(
+            view='s3handler',
+            event='merge',
+            model='Reading',
+            data1=len(data1),
+            data2=len(data2),
+            merged=len(dict1),
+        )
         return dict1.values()
 
     def handle(self, key, new_messages):
-        print 'Persisting %s to S3' % (key,)
         filename = '%s%s.json' % (self.path, key,)
 
         new_data = [json.loads(message.get_body()) for message in new_messages]
@@ -65,9 +67,7 @@ class S3Handler(object):
 
         existing_content = read_from_bucket(self.bucket, filename)
         if existing_content:
-            print 'Existing data found, merging'
             existing_data = json.loads(existing_content)
-
             filtered_data = self.merge_data(filtered_data, existing_data)
 
         output_content = json.dumps(filtered_data)
@@ -79,10 +79,12 @@ class S3Handler(object):
             compress=True,
         )
 
-        print 'Persisted %s messages from %s to %s' % (
-            len(filtered_data),
-            from_unix(key),
-            self.bucket,
+        loggly(
+            view='s3handler',
+            event='persist',
+            model='Reading',
+            bucket=str(self.bucket),
+            messages=len(filtered_data),
         )
 
 
@@ -101,17 +103,52 @@ class QueueAggregator(object):
         try:
             message_data = json.loads(message_body)
         except ValueError:
-            print 'Unable to parse JSON message'
+            loggly(
+                view='aggregator',
+                event='handle_message',
+                model='Reading',
+                error='Unable to parse JSON message',
+            )
             self.queue.delete_message(message)
             return None
 
         if type(message_data) is not dict:
-            print 'No data dictionary found'
+            loggly(
+                view='aggregator',
+                event='handle_message',
+                model='Reading',
+                error='No data dictionary found',
+            )
             self.queue.delete_message(message)
             return None
 
         if 'daterecorded' not in message_data:
-            print 'Could not locate daterecorded field'
+            loggly(
+                view='aggregator',
+                event='handle_message',
+                model='Reading',
+                error='Could not locate daterecorded field',
+            )
+            self.queue.delete_message(message)
+            return None
+
+        if message.id in self.persisted_messages:
+            loggly(
+                view='aggregator',
+                event='handle_message',
+                model='Reading',
+                error='Received duplicate message from %s' % (from_unix(block_key),),
+            )
+            self.queue.delete_message(message)
+            return None
+
+        if type(message_data['daterecorded']) is not long:
+            loggly(
+                view='aggregator',
+                event='handle_message',
+                model='Reading',
+                error='%s is not an valid timestamp' % (message_data['daterecorded'],),
+            )
             self.queue.delete_message(message)
             return None
 
@@ -119,23 +156,15 @@ class QueueAggregator(object):
         message_date_offset = message_date % settings.READINGS_LOG_DURATION
         block_key = message_date - message_date_offset
 
-        if message.id in self.persisted_messages:
-            print 'Received duplicate message from ', from_unix(block_key)
-            self.queue.delete_message(message)
-            return None
-
         self.blocks[block_key][message.id] = message
 
     def handle_block(self, block_key):
-        print 'Handling block', block_key
         for handler in self.handlers:
             handler.handle(block_key, self.blocks[block_key].values())
-        print 'Handled block', block_key
 
         self.delete_block(block_key)
 
     def delete_block(self, block_key):
-        print 'Deleting block', block_key
         while self.blocks[block_key]:
             messages = self.blocks[block_key].values()[:10]
             response = self.queue.delete_message_batch(messages)
@@ -146,7 +175,6 @@ class QueueAggregator(object):
                 self.persisted_messages.add(deleted_id)
 
         del self.blocks[block_key]
-        print 'Deleted block', block_key
 
     def receive_messages(self):
         messages = self.queue.get_messages(num_messages=10)
@@ -169,7 +197,12 @@ class QueueAggregator(object):
             self.handle_block(block_key)
 
         self.last_handled_date = datetime.datetime.now()
-        print 'Persisted %s messages' % (len(self.persisted_messages),)
+        loggly(
+            view='aggregator',
+            event='handle_blocks',
+            model='Reading',
+            count=len(self.persisted_messages),
+        )
 
     def run(self):
         while True:
