@@ -14,6 +14,7 @@ PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 MANAGERS = ADMINS
 
 ALLOWED_HOSTS = (
+    'pressurenet.io',
     'pressurenet.cumulonimbus.ca',
     'pressurenet-staging.elasticbeanstalk.com'
 )
