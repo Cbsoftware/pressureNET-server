@@ -7,7 +7,6 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import simplejson as json
 
-import geohash
 
 from readings.serializers import ReadingListSerializer
 
@@ -17,6 +16,7 @@ from utils.loggly import Logger
 from utils.queue import get_queue
 from utils.s3 import get_bucket, read_from_bucket, write_to_bucket
 from utils.statistics import mean, median, std_dev
+from utils import geohash
 
 
 # Utility functions
