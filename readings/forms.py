@@ -4,15 +4,13 @@ from django.conf import settings
 from readings.models import Reading, Condition
 
 from utils.queue import get_queue, add_to_queue
-from utils.loggly import loggly
+from utils.loggly import Logger
 
 
-class LoggedForm(forms.ModelForm):
+class LoggedForm(Logger, forms.ModelForm):
 
     def save(self, *args, **kwargs):
-        loggly(
-            view='create',
-            model=self.Meta.model.__name__,
+        self.log(
             event='save',
         )
         return super(LoggedForm, self).save(*args, **kwargs)
@@ -44,10 +42,8 @@ class ReadingForm(LoggedForm):
         queue = get_queue(settings.SQS_QUEUE)
         add_to_queue(queue, self.cleaned_data)
 
-        loggly(
-            view='create',
+        self.log(
             event='sent to queue',
-            model='Reading',
         )
 
         return super(ReadingForm, self).save(*args, **kwargs)

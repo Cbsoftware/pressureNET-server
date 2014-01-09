@@ -1,4 +1,5 @@
 import datetime
+import math
 import time
 from collections import defaultdict
 
@@ -6,27 +7,89 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import simplejson as json
 
+import geohash
+
 from readings.serializers import ReadingListSerializer
 
 from utils.time_utils import to_unix, from_unix
 from utils.compression import gzip_compress, gzip_decompress
-from utils.loggly import loggly
+from utils.loggly import Logger
 from utils.queue import get_queue
 from utils.s3 import get_bucket, read_from_bucket, write_to_bucket
+from utils.statistics import mean, median, std_dev
 
 
+# Utility functions
 def hash_dict(data):
-    return hash(''.join([str(value) for value in data.values()]))
+    return '%s%s%s' % (
+        data['latitude'],
+        data['longitude'],
+        data['daterecorded'],
+    )
 
 
-class S3Handler(object):
+# handlers
+class S3Handler(Logger):
 
-    def __init__(self, bucket, path, allowed_fields=None):
+    def __init__(self, bucket=None, input_path=None, output_path=None):
         self.bucket = bucket
-        self.path = path
-        self.allowed_fields = allowed_fields
+        self.input_path = input_path
+        self.output_path = output_path
 
-    def filter_data(self, data):
+    def merge_data(self, existing_data, new_data):
+        existing_dict = dict([(hash_dict(record), record) for record in existing_data])
+        new_dict = dict([(hash_dict(record), record) for record in new_data])
+
+        existing_dict.update(new_dict)
+
+        self.log(
+            event='merge',
+            existing_data=len(existing_data),
+            new_data=len(new_data),
+            merged=len(existing_dict),
+        )
+
+        return existing_dict.values()
+
+    def process_data(self, data):
+        return data
+
+    def handle(self, key, data):
+        input_file = '%s%s.json' % (self.input_path, key)
+        output_file = '%s%s.json' % (self.output_path, key)
+
+        existing_content = read_from_bucket(self.bucket, input_file)
+        if existing_content:
+            existing_data = json.loads(existing_content)
+            data = self.merge_data(existing_data, data)
+
+        processed_data = self.process_data(data)
+
+        output_content = json.dumps(processed_data)
+
+        write_to_bucket(
+            self.bucket,
+            output_file,
+            output_content,
+            'application/json',
+            compress=True,
+        )
+
+        self.log(
+            event='write to s3',
+            filename=output_file,
+            bucket=str(self.bucket),
+            messages=len(processed_data),
+        )
+
+
+class S3FilteredHandler(S3Handler):
+
+    def __init__(self, allowed_fields=None, **kwargs):
+        self.allowed_fields = allowed_fields
+        super(S3FilteredHandler, self).__init__(**kwargs)
+
+    def process_data(self, data):
         if self.allowed_fields:
             filtered_data = []
 
@@ -43,52 +106,40 @@ class S3Handler(object):
 
         return filtered_data
 
-    def merge_data(self, data1, data2):
-        dict1 = dict([(hash_dict(record), record) for record in data1])
-        dict2 = dict([(hash_dict(record), record) for record in data2])
 
-        dict1.update(dict2)
+class S3StatisticHandler(S3Handler):
 
-        loggly(
-            view='s3handler',
-            event='merge',
-            model='Reading',
-            data1=len(data1),
-            data2=len(data2),
-            merged=len(dict1),
-        )
-        return dict1.values()
+    def process_data(self, data):
+        geo_sorted = defaultdict(list)
 
-    def handle(self, key, new_messages):
-        filename = '%s%s.json' % (self.path, key,)
+        for data_point in data:
+            geo_key = geohash.encode(
+                data_point['latitude'],
+                data_point['longitude'],
+                precision=5,
+            )
+            geo_sorted[geo_key].append(data_point)
 
-        new_data = [json.loads(message.get_body()) for message in new_messages]
-        filtered_data = self.filter_data(new_data)
+        statistics = {}
 
-        existing_content = read_from_bucket(self.bucket, filename)
-        if existing_content:
-            existing_data = json.loads(existing_content)
-            filtered_data = self.merge_data(filtered_data, existing_data)
+        for geo_key, data_points in geo_sorted.items():
+            readings = [data_point['reading'] for data_point in data_points]
+            if len(readings) == 2:
+                import pdb
+                pdb.set_trace()
+            statistics[geo_key] = {
+                'min': min(readings),
+                'max': max(readings),
+                'mean': mean(readings),
+                'median': median(readings),
+                'std_dev': std_dev(readings),
+                'samples': len(readings),
+            }
 
-        output_content = json.dumps(filtered_data)
-        write_to_bucket(
-            self.bucket,
-            filename,
-            output_content,
-            'application/json',
-            compress=True,
-        )
-
-        loggly(
-            view='s3handler',
-            event='persist',
-            model='Reading',
-            bucket=str(self.bucket),
-            messages=len(filtered_data),
-        )
+        return statistics
 
 
-class QueueAggregator(object):
+class QueueAggregator(Logger):
 
     def __init__(self, queue, handlers=None):
         self.queue = queue
@@ -103,50 +154,33 @@ class QueueAggregator(object):
         try:
             message_data = json.loads(message_body)
         except ValueError:
-            loggly(
-                view='aggregator',
+            self.log(
                 event='handle_message',
-                model='Reading',
                 error='Unable to parse JSON message',
             )
             self.queue.delete_message(message)
             return None
 
         if type(message_data) is not dict:
-            loggly(
+            self.log(
                 view='aggregator',
                 event='handle_message',
-                model='Reading',
                 error='No data dictionary found',
             )
             self.queue.delete_message(message)
             return None
 
         if 'daterecorded' not in message_data:
-            loggly(
-                view='aggregator',
+            self.log(
                 event='handle_message',
-                model='Reading',
                 error='Could not locate daterecorded field',
             )
             self.queue.delete_message(message)
             return None
 
-        if message.id in self.persisted_messages:
-            loggly(
-                view='aggregator',
-                event='handle_message',
-                model='Reading',
-                error='Received duplicate message from %s' % (from_unix(block_key),),
-            )
-            self.queue.delete_message(message)
-            return None
-
         if type(message_data['daterecorded']) is not long:
-            loggly(
-                view='aggregator',
+            self.log(
                 event='handle_message',
-                model='Reading',
                 error='%s is not an valid timestamp' % (message_data['daterecorded'],),
             )
             self.queue.delete_message(message)
@@ -156,11 +190,21 @@ class QueueAggregator(object):
         message_date_offset = message_date % settings.READINGS_LOG_DURATION
         block_key = message_date - message_date_offset
 
+        if message.id in self.persisted_messages:
+            self.log(
+                event='handle_message',
+                error='Received duplicate message from %s' % (from_unix(block_key),),
+            )
+            self.queue.delete_message(message)
+            return None
+
         self.blocks[block_key][message.id] = message
 
     def handle_block(self, block_key):
+        block_messages = self.blocks[block_key].values()
+        block_data = [json.loads(message.get_body()) for message in block_messages]
         for handler in self.handlers:
-            handler.handle(block_key, self.blocks[block_key].values())
+            handler.handle(block_key, block_data)
 
         self.delete_block(block_key)
 
@@ -197,10 +241,8 @@ class QueueAggregator(object):
             self.handle_block(block_key)
 
         self.last_handled_date = datetime.datetime.now()
-        loggly(
-            view='aggregator',
+        self.log(
             event='handle_blocks',
-            model='Reading',
             count=len(self.persisted_messages),
         )
 
@@ -217,16 +259,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
-        public_handler = S3Handler(
-            public_bucket,
-            'pressure/raw/10minute/',
+        public_handler = S3FilteredHandler(
+            bucket=public_bucket,
+            input_path='pressure/raw/10minute/',
+            output_path='pressure/raw/10minute/',
             allowed_fields=ReadingListSerializer.Meta.fields
+        )
+
+        public_stat_handler = S3StatisticHandler(
+            bucket=public_bucket,
+            input_path='pressure/raw/10minute/',
+            output_path='pressure/statistics/10minute/',
         )
 
         private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
         private_handler = S3Handler(
-            private_bucket,
-            'pressure/raw/10minute/',
+            bucket=private_bucket,
+            input_path='pressure/raw/10minute/',
+            output_path='pressure/raw/10minute/',
         )
 
         queue = get_queue(settings.SQS_QUEUE)
@@ -234,7 +284,8 @@ class Command(BaseCommand):
             queue,
             handlers=(
                 public_handler,
-                private_handler
+                public_stat_handler,
+                private_handler,
             ),
         )
 

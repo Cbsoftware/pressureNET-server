@@ -21,7 +21,7 @@ from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, C
 from readings.models import Reading, ReadingSync, Condition
 
 from utils.time_utils import to_unix
-from utils.loggly import loggly
+from utils.loggly import loggly, Logger
 
 
 def add_from_pressurenet(request):
@@ -236,12 +236,10 @@ class ReadingLiveView(APIKeyViewMixin, LoggedLocationListView):
 reading_live = ReadingLiveView.as_view()
 
 
-class JSONCreateView(CreateView):
+class JSONCreateView(Logger, CreateView):
 
     def log_response(self, response):
-        loggly(
-            view='create',
-            model=self.model.__name__,
+        self.log(
             response=response,
         )
 
