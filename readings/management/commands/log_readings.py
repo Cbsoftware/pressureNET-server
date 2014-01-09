@@ -124,9 +124,6 @@ class S3StatisticHandler(S3Handler):
 
         for geo_key, data_points in geo_sorted.items():
             readings = [data_point['reading'] for data_point in data_points]
-            if len(readings) == 2:
-                import pdb
-                pdb.set_trace()
             statistics[geo_key] = {
                 'min': min(readings),
                 'max': max(readings),
