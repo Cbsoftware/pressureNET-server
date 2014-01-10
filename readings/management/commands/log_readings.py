@@ -138,14 +138,18 @@ class S3StatisticHandler(S3Handler):
 
 class QueueAggregator(Logger):
 
-    def __init__(self, queue, handlers=None):
-        self.queue = queue
-        self.blocks = defaultdict(dict)
+    def __init__(self, duration=None, handlers=None):
+        self.duration = duration
         self.handlers = handlers
-        self.persisted_messages = set()
+
+        self.blocks = defaultdict(dict)
+        self.completed_messages = set()
         self.last_handled_date = datetime.datetime.now()
 
     def handle_message(self, message):
+        if message.id in self.completed_messages:
+            return None
+
         message_body = message.get_body()
 
         try:
@@ -155,7 +159,7 @@ class QueueAggregator(Logger):
                 event='handle_message',
                 error='Unable to parse JSON message',
             )
-            self.queue.delete_message(message)
+            self.completed_messages.add(message.id)
             return None
 
         if type(message_data) is not dict:
@@ -164,7 +168,7 @@ class QueueAggregator(Logger):
                 event='handle_message',
                 error='No data dictionary found',
             )
-            self.queue.delete_message(message)
+            self.completed_messages.add(message.id)
             return None
 
         if 'daterecorded' not in message_data:
@@ -172,7 +176,7 @@ class QueueAggregator(Logger):
                 event='handle_message',
                 error='Could not locate daterecorded field',
             )
-            self.queue.delete_message(message)
+            self.completed_messages.add(message.id)
             return None
 
         if type(message_data['daterecorded']) is not long:
@@ -180,42 +184,55 @@ class QueueAggregator(Logger):
                 event='handle_message',
                 error='%s is not an valid timestamp' % (message_data['daterecorded'],),
             )
-            self.queue.delete_message(message)
+            self.completed_messages.add(message.id)
             return None
 
         message_date = int(message_data['daterecorded'])
-        message_date_offset = message_date % settings.READINGS_LOG_DURATION
+        message_date_offset = message_date % self.duration
         block_key = message_date - message_date_offset
-
-        if message.id in self.persisted_messages:
-            self.log(
-                event='handle_message',
-                error='Received duplicate message from %s' % (from_unix(block_key),),
-            )
-            self.queue.delete_message(message)
-            return None
-
         self.blocks[block_key][message.id] = message
 
     def handle_block(self, block_key):
         block_messages = self.blocks[block_key].values()
         block_data = [json.loads(message.get_body()) for message in block_messages]
+
         for handler in self.handlers:
             handler.handle(block_key, block_data)
 
         self.delete_block(block_key)
 
     def delete_block(self, block_key):
-        while self.blocks[block_key]:
-            messages = self.blocks[block_key].values()[:10]
-            response = self.queue.delete_message_batch(messages)
-
-            for deleted_reading in response.results:
-                deleted_id = deleted_reading['id']
-                del self.blocks[block_key][deleted_id]
-                self.persisted_messages.add(deleted_id)
-
+        messages = self.blocks[block_key].values()
+        message_ids = [message.id for message in messages]
+        self.completed_messages = self.completed_messages.union(set(message_ids))
         del self.blocks[block_key]
+
+    def should_handle_blocks(self):
+        now = datetime.datetime.now()
+        elapsed = (now - self.last_handled_date).seconds * 1000
+        return elapsed > self.duration
+
+    def handle_blocks(self):
+        if self.should_handle_blocks():
+            for block_key in self.blocks.keys():
+                self.handle_block(block_key)
+
+            self.last_handled_date = datetime.datetime.now()
+            self.log(
+                event='handle_blocks',
+                count=len(self.completed_messages),
+            )
+
+    def remove_message(self, message_id):
+        self.completed_messages.remove(message_id)
+
+
+class QueueHandler(Logger):
+
+    def __init__(self, queue, aggregators):
+        self.queue = queue
+        self.aggregators = aggregators
+        self.messages = {}
 
     def receive_messages(self):
         messages = self.queue.get_messages(num_messages=10)
@@ -224,31 +241,38 @@ class QueueAggregator(Logger):
             time.sleep(1)
 
         for message in messages:
-            self.handle_message(message)
+            if message.id not in self.messages:
+                self.messages[message.id] = message
 
-    def should_handle_blocks(self):
-        now = datetime.datetime.now()
-        elapsed = (now - self.last_handled_date).seconds * 1000
-        return elapsed > settings.READINGS_LOG_DURATION
+                for aggregator in self.aggregators:
+                    aggregator.handle_message(message)
 
-    def handle_blocks(self):
-        self.persisted_messages = set()
+        for aggregator in self.aggregators:
+            aggregator.handle_blocks()
 
-        for block_key in self.blocks.keys():
-            self.handle_block(block_key)
+    def delete_messages(self):
+        completed_message_ids = [aggregator.completed_messages for aggregator in self.aggregators]
+        unique_message_ids = reduce(lambda set1, set2: set1.intersection(set2), completed_message_ids)
+        completed_messages = dict([(message_id, self.messages[message_id]) for message_id in unique_message_ids])
 
-        self.last_handled_date = datetime.datetime.now()
-        self.log(
-            event='handle_blocks',
-            count=len(self.persisted_messages),
-        )
+        while completed_messages:
+            message_batch = completed_messages.values()[:10]
+            response = self.queue.delete_message_batch(message_batch)
+            print 'Deleted', response.results
+
+            for deleted_reading in response.results:
+                deleted_id = deleted_reading['id']
+                del completed_messages[deleted_id]
+                del self.messages[deleted_id]
+
+                for aggregator in self.aggregators:
+                    aggregator.remove_message(deleted_id)
 
     def run(self):
         while True:
             self.receive_messages()
+            self.delete_messages()
 
-            if self.should_handle_blocks():
-                self.handle_blocks()
 
 
 class Command(BaseCommand):
@@ -256,34 +280,44 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
-        public_handler = S3FilteredHandler(
-            bucket=public_bucket,
-            input_path='pressure/raw/10minute/',
-            output_path='pressure/raw/10minute/',
-            allowed_fields=ReadingListSerializer.Meta.fields
-        )
-
-        public_stat_handler = S3StatisticHandler(
-            bucket=public_bucket,
-            input_path='pressure/raw/10minute/',
-            output_path='pressure/statistics/10minute/',
-        )
-
         private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
-        private_handler = S3Handler(
-            bucket=private_bucket,
-            input_path='pressure/raw/10minute/',
-            output_path='pressure/raw/10minute/',
-        )
+
+        aggregators = []
+        for duration_label, duration_time in settings.LOG_DURATIONS:
+            public_handler = S3FilteredHandler(
+                bucket=public_bucket,
+                input_path='pressure/raw/%s/' % (duration_label,),
+                output_path='pressure/raw/%s/' % (duration_label,),
+                allowed_fields=ReadingListSerializer.Meta.fields
+            )
+
+            public_stat_handler = S3StatisticHandler(
+                bucket=public_bucket,
+                input_path='pressure/raw/%s/' % (duration_label,),
+                output_path='pressure/statistics/%s/' % (duration_label,),
+            )
+
+            private_handler = S3Handler(
+                bucket=private_bucket,
+                input_path='pressure/raw/%s/' % (duration_label,),
+                output_path='pressure/raw/%s/' % (duration_label,),
+            )
+
+            aggregator = QueueAggregator(
+                duration=duration_time,
+                handlers=(
+                    public_handler,
+                    public_stat_handler,
+                    private_handler,
+                ),
+            )
+
+            aggregators.append(aggregator)
 
         queue = get_queue(settings.SQS_QUEUE)
-        aggregator = QueueAggregator(
+        self.queue_handler = QueueHandler(
             queue,
-            handlers=(
-                public_handler,
-                public_stat_handler,
-                private_handler,
-            ),
+            aggregators=aggregators,
         )
 
-        aggregator.run()
+        self.queue_handler.run()
