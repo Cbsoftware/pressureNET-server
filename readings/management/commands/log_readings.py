@@ -198,7 +198,7 @@ class QueueAggregator(Logger):
         messages = self.blocks[block_key].values()
         message_ids = [message.id for message in messages]
         self.completed_messages = self.completed_messages.union(set(message_ids))
-        del self.blocks[block_key]
+        self.blocks.pop(block_key)
 
     def should_handle_blocks(self):
         now = datetime.datetime.now()
@@ -225,7 +225,8 @@ class QueueHandler(Logger):
     def __init__(self, queue, aggregators):
         self.queue = queue
         self.aggregators = aggregators
-        self.messages = {}
+        self.active_messages = {}
+        self.deleted_messages = set()
 
     def receive_messages(self):
         messages = self.queue.get_messages(num_messages=10)
@@ -234,8 +235,11 @@ class QueueHandler(Logger):
             time.sleep(1)
 
         for message in messages:
-            if message.id not in self.messages:
-                self.messages[message.id] = message
+            if message.id in self.deleted_messages:
+                self.queue.delete_message(message)
+
+            elif message.id not in self.active_messages:
+                self.active_messages[message.id] = message
 
                 for aggregator in self.aggregators:
                     aggregator.handle_message(message)
@@ -244,33 +248,32 @@ class QueueHandler(Logger):
             aggregator.handle_blocks()
 
     def delete_messages(self):
-        completed_message_ids = [aggregator.completed_messages for aggregator in self.aggregators]
-        unique_message_ids = reduce(lambda set1, set2: set1.intersection(set2), completed_message_ids)
-        completed_messages = dict([(message_id, self.messages[message_id]) for message_id in unique_message_ids])
+        completed_message_groups = [aggregator.completed_messages for aggregator in self.aggregators]
+        completed_message_ids = set.intersection(*completed_message_groups)
 
-        while completed_messages:
-            message_batch = completed_messages.values()[:10]
-            response = self.queue.delete_message_batch(message_batch)
+        if completed_message_ids:
+            self.deleted_messages = set()
 
-            for deleted_reading in response.results:
-                deleted_id = deleted_reading['id']
-                del completed_messages[deleted_id]
-                del self.messages[deleted_id]
+            for completed_message_id in completed_message_ids:
+                completed_message = self.active_messages[completed_message_id]
+
+                self.queue.delete_message(completed_message)
+
+                self.deleted_messages.add(completed_message_id)
+                self.active_messages.pop(completed_message_id)
 
                 for aggregator in self.aggregators:
-                    aggregator.remove_message(deleted_id)
+                    aggregator.remove_message(completed_message_id)
 
-        if unique_message_ids:
             self.log(
                 event='deleted_messages',
-                count=len(unique_message_ids),
+                count=len(completed_message_ids),
             )
 
     def run(self):
         while True:
             self.receive_messages()
             self.delete_messages()
-
 
 
 class Command(BaseCommand):
@@ -282,6 +285,7 @@ class Command(BaseCommand):
 
         aggregators = []
         for duration_label, duration_time in settings.LOG_DURATIONS:
+
             public_handler = S3FilteredHandler(
                 bucket=public_bucket,
                 input_path='pressure/raw/%s/' % (duration_label,),
