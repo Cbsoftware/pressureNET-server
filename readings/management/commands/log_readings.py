@@ -42,13 +42,6 @@ class S3Handler(Logger):
 
         existing_dict.update(new_dict)
 
-        self.log(
-            event='merge',
-            existing_data=len(existing_data),
-            new_data=len(new_data),
-            merged=len(existing_dict),
-        )
-
         return existing_dict.values()
 
     def process_data(self, data):
@@ -258,7 +251,6 @@ class QueueHandler(Logger):
         while completed_messages:
             message_batch = completed_messages.values()[:10]
             response = self.queue.delete_message_batch(message_batch)
-            print 'Deleted', response.results
 
             for deleted_reading in response.results:
                 deleted_id = deleted_reading['id']
@@ -267,6 +259,12 @@ class QueueHandler(Logger):
 
                 for aggregator in self.aggregators:
                     aggregator.remove_message(deleted_id)
+
+        if unique_message_ids:
+            self.log(
+                event='deleted_messages',
+                count=len(unique_message_ids),
+            )
 
     def run(self):
         while True:
