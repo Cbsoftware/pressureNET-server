@@ -20,9 +20,8 @@ from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
 from readings.models import Reading, ReadingSync, Condition
 
-
-import logging
-logger = logging.getLogger('loggly')
+from utils.time_utils import to_unix
+from utils.loggly import loggly, Logger
 
 
 def add_from_pressurenet(request):
@@ -55,7 +54,7 @@ def add_from_pressurenet(request):
             raw_reading_accuracy = reading_data[9]
         except:
             pass
-        this_reading = Reading(
+        reading_form = ReadingForm(dict(
             latitude=raw_latitude,
             longitude=raw_longitude,
             reading=raw_reading,
@@ -66,16 +65,30 @@ def add_from_pressurenet(request):
             client_key=raw_client_key,
             location_accuracy=raw_location_accuracy,
             reading_accuracy=raw_reading_accuracy,
-        )
+            altitude=0.0,
+            observation_unit='mbar',
+            observation_type='pressure',
+            provider='network',
+        ))
 
-        try:
-            this_reading.save()
-            count += 1
-        except:
-            continue
+        if reading_form.is_valid():
+            reading_form.save()
+        else:
+            loggly(
+                view='add_reading_from_pressurenet',
+                event='invalid form',
+                errors=reading_form._errors,
+            )
+
+        count += 1
 
     processing_time = time.time() - start
     ReadingSync.objects.create(readings=count, processing_time=processing_time)
+    loggly(
+        view='add_reading_from_pressurenet',
+        event='save',
+        count=count,
+    )
     return HttpResponse('okay go, count ' + str(count))
 
 
@@ -88,7 +101,7 @@ class FilteredListAPIView(ListAPIView):
         if hasattr(serializer.Meta, 'fields'):
             fields = serializer.Meta.fields
             queryset = queryset.only(*fields)
-        
+
         return queryset
 
 
@@ -184,7 +197,7 @@ class LoggedLocationListView(FilteredListAPIView):
                 call_log = CustomerCallLog.objects.filter(customer=customer).order_by('-timestamp')[:1].get()
                 last_customerapi_call_time = call_log.timestamp
             except CustomerCallLog.DoesNotExist:
-                last_customerapi_call_time = datetime.datetime.now() - datetime.timedelta(hours=1)
+                last_customerapi_call_time = to_unix(datetime.datetime.now() - datetime.timedelta(hours=1))
 
             queryset = queryset.filter(
                 daterecorded__gte=last_customerapi_call_time
@@ -223,33 +236,51 @@ class ReadingLiveView(APIKeyViewMixin, LoggedLocationListView):
 reading_live = ReadingLiveView.as_view()
 
 
-class JSONCreateView(CreateView):
+class JSONCreateView(Logger, CreateView):
+
+    def log_response(self, response):
+        self.log(
+            response=response,
+        )
 
     def form_valid(self, form):
         form.save()
-        response = json.dumps({
+
+        response = {
             'success': True,
             'errors': '',
-        })
-        return HttpResponse(response, mimetype='application/json')
+        }
+
+        self.log_response(response)
+
+        return HttpResponse(
+            json.dumps(response),
+            mimetype='application/json'
+        )
 
     def form_invalid(self, form):
-        response = json.dumps({
+        response = {
             'success': False,
             'errors': form._errors,
-        })
-        return HttpResponse(response, mimetype='application/json')
+        }
+
+        self.log_response(response)
+
+        return HttpResponse(
+            json.dumps(response),
+            mimetype='application/json'
+        )
 
 
 class CreateReadingView(JSONCreateView):
     model = Reading
-    form = ReadingForm
+    form_class = ReadingForm
 
 create_reading = csrf_exempt(CreateReadingView.as_view())
 
 
 class CreateConditionView(JSONCreateView):
     model = Condition
-    form = ConditionForm
+    form_class = ConditionForm
 
 create_condition = csrf_exempt(CreateConditionView.as_view())
