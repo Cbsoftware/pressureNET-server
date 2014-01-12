@@ -1,5 +1,4 @@
 Django==1.5.1
-Geohash==1.0rc1
 MySQL-python==1.2.3
 South==0.7.6
 URLObject==2.1.0
