@@ -7,6 +7,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import simplejson as json
 
+from boto.exception import SQSError
 
 from readings.serializers import ReadingListSerializer
 
@@ -142,6 +143,10 @@ class QueueAggregator(Logger):
         self.blocks = defaultdict(lambda: defaultdict(dict))
         self.last_handled_date = datetime.datetime.now()
 
+        self.log(
+            event='initializing',
+        )
+
     def handle_message(self, message):
         if message.id in self.active_messages:
             return None
@@ -233,7 +238,13 @@ class QueueAggregator(Logger):
         )
 
     def receive_messages(self):
-        messages = self.queue.get_messages(num_messages=10)
+        try:
+            messages = self.queue.get_messages(num_messages=10)
+        except SQSError, e:
+            self.log(
+                error=str(e),
+            )
+            return None
 
         if not messages:
             time.sleep(1)
@@ -248,11 +259,16 @@ class QueueAggregator(Logger):
 
     def run(self):
         while True:
-            self.receive_messages()
+            try:
+                self.receive_messages()
 
-            if self.should_handle_blocks():
-                self.handle_blocks()
-                self.delete_blocks()
+                if self.should_handle_blocks():
+                    self.handle_blocks()
+                    self.delete_blocks()
+            except Exception, e:
+                self.log(
+                    error=str(e),
+                )
 
 
 class Command(BaseCommand):
