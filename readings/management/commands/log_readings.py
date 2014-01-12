@@ -27,6 +27,15 @@ def hash_dict(data):
         data['daterecorded'],
     )
 
+def merge_datasets(*datasets):
+    result = {}
+
+    for dataset in datasets:
+        hashed_dataset = dict([(hash_dict(record), record) for record in dataset])
+        result.update(hashed_dataset) 
+
+    return result.values()
+
 
 # handlers
 class S3Handler(Logger):
@@ -35,14 +44,6 @@ class S3Handler(Logger):
         self.bucket = bucket
         self.input_path = input_path
         self.output_path = output_path
-
-    def merge_data(self, existing_data, new_data):
-        existing_dict = dict([(hash_dict(record), record) for record in existing_data])
-        new_dict = dict([(hash_dict(record), record) for record in new_data])
-
-        existing_dict.update(new_dict)
-
-        return existing_dict.values()
 
     def process_data(self, data):
         return data
@@ -54,7 +55,7 @@ class S3Handler(Logger):
         existing_content = read_from_bucket(self.bucket, input_file)
         if existing_content:
             existing_data = json.loads(existing_content)
-            data = self.merge_data(existing_data, data)
+            data = merge_datasets(existing_data, data)
 
         processed_data = self.process_data(data)
 
@@ -129,7 +130,7 @@ class S3StatisticHandler(S3Handler):
         return statistics
 
 
-class QueueAggregator(Logger):
+class RawAggregator(Logger):
 
     def __init__(self, duration=None, handlers=None):
         self.duration = duration
@@ -206,8 +207,10 @@ class QueueAggregator(Logger):
         return elapsed > self.duration
 
     def handle_blocks(self):
+        block_keys = []
         if self.should_handle_blocks():
-            for block_key in self.blocks.keys():
+            block_keys = self.blocks.keys()
+            for block_key in block_keys:
                 self.handle_block(block_key)
 
             self.last_handled_date = datetime.datetime.now()
@@ -216,15 +219,72 @@ class QueueAggregator(Logger):
                 count=len(self.completed_messages),
             )
 
+        return block_keys
+
     def remove_message(self, message_id):
         self.completed_messages.remove(message_id)
 
 
+class RollupAggregator(Logger):
+
+    def __init__(self, input_bucket=None, input_path=None, duration=None, handlers=None):
+        self.input_bucket = input_bucket
+        self.input_path = input_path
+        self.duration = duration
+        self.handlers = handlers
+
+        self.blocks = defaultdict(set)
+        self.last_handled_date = datetime.datetime.now()
+
+    def handle_message(self, input_block_key):
+        input_block_key_offset = input_block_key % self.duration
+        output_block_key = input_block_key - input_block_key_offset
+        self.blocks[output_block_key].add(input_block_key)
+
+    def handle_block(self, output_block_key):
+        input_block_keys = self.blocks[output_block_key]
+        all_input_datasets = []
+
+        for input_block_key in input_block_keys:
+            input_file = '%s%s.json' % (self.input_path, input_block_key)
+            input_content = read_from_bucket(self.input_bucket, input_file)
+            input_dataset = json.loads(input_content)
+            all_input_datasets.append(input_dataset)
+
+        output_block_data = merge_datasets(*all_input_datasets) 
+
+        for handler in self.handlers:
+            handler.handle(output_block_key, output_block_data)
+
+        self.delete_block(output_block_key)
+
+    def delete_block(self, block_key):
+        self.blocks.pop(block_key)
+
+    def should_handle_blocks(self):
+        now = datetime.datetime.now()
+        elapsed = (now - self.last_handled_date).seconds * 1000
+        return elapsed > self.duration
+
+    def handle_blocks(self):
+        if self.should_handle_blocks():
+            block_keys = self.blocks.keys()
+            for block_key in block_keys:
+                self.handle_block(block_key)
+
+            self.last_handled_date = datetime.datetime.now()
+            self.log(
+                event='handle_blocks',
+                count=len(block_keys),
+            )
+
+
 class QueueHandler(Logger):
 
-    def __init__(self, queue, aggregators):
+    def __init__(self, queue, aggregator, rollups):
         self.queue = queue
-        self.aggregators = aggregators
+        self.aggregator = aggregator
+        self.rollups = rollups
         self.active_messages = {}
         self.deleted_messages = set()
 
@@ -240,16 +300,20 @@ class QueueHandler(Logger):
 
             elif message.id not in self.active_messages:
                 self.active_messages[message.id] = message
+                self.aggregator.handle_message(message)
 
-                for aggregator in self.aggregators:
-                    aggregator.handle_message(message)
+    def handle_blocks(self):
+        handled_block_keys = self.aggregator.handle_blocks()
 
-        for aggregator in self.aggregators:
-            aggregator.handle_blocks()
+        for handled_block_key in handled_block_keys:
+            for rollup in self.rollups:
+                rollup.handle_message(handled_block_key)
+
+        for rollup in self.rollups:
+            rollup.handle_blocks()
 
     def delete_messages(self):
-        completed_message_groups = [aggregator.completed_messages for aggregator in self.aggregators]
-        completed_message_ids = set.intersection(*completed_message_groups)
+        completed_message_ids = set(self.aggregator.completed_messages)
 
         if completed_message_ids:
             self.deleted_messages = set()
@@ -262,8 +326,7 @@ class QueueHandler(Logger):
                 self.deleted_messages.add(completed_message_id)
                 self.active_messages.pop(completed_message_id)
 
-                for aggregator in self.aggregators:
-                    aggregator.remove_message(completed_message_id)
+                self.aggregator.remove_message(completed_message_id)
 
             self.log(
                 event='deleted_messages',
@@ -273,6 +336,7 @@ class QueueHandler(Logger):
     def run(self):
         while True:
             self.receive_messages()
+            self.handle_blocks()
             self.delete_messages()
 
 
@@ -283,30 +347,62 @@ class Command(BaseCommand):
         public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
         private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
 
-        aggregators = []
-        for duration_label, duration_time in settings.LOG_DURATIONS:
+        log_duration_label, log_duration_time = settings.LOG_DURATIONS
 
+        public_handler = S3FilteredHandler(
+            bucket=public_bucket,
+            input_path='pressure/raw/%s/' % (log_duration_label,),
+            output_path='pressure/raw/%s/' % (log_duration_label,),
+            allowed_fields=ReadingListSerializer.Meta.fields
+        )
+
+        public_stat_handler = S3StatisticHandler(
+            bucket=public_bucket,
+            input_path='pressure/raw/%s/' % (log_duration_label,),
+            output_path='pressure/statistics/%s/' % (log_duration_label,),
+        )
+
+        private_handler = S3Handler(
+            bucket=private_bucket,
+            input_path='pressure/raw/%s/' % (log_duration_label,),
+            output_path='pressure/raw/%s/' % (log_duration_label,),
+        )
+
+        aggregator = RawAggregator(
+            duration=log_duration_time,
+            handlers=(
+                public_handler,
+                public_stat_handler,
+                private_handler,
+            ),
+        )
+
+        rollups = []
+        for rollup_duration_label, rollup_duration_time in settings.ROLLUP_DURATIONS:
+            
             public_handler = S3FilteredHandler(
                 bucket=public_bucket,
-                input_path='pressure/raw/%s/' % (duration_label,),
-                output_path='pressure/raw/%s/' % (duration_label,),
+                input_path='pressure/raw/%s/' % (rollup_duration_label,),
+                output_path='pressure/raw/%s/' % (rollup_duration_label,),
                 allowed_fields=ReadingListSerializer.Meta.fields
             )
 
             public_stat_handler = S3StatisticHandler(
                 bucket=public_bucket,
-                input_path='pressure/raw/%s/' % (duration_label,),
-                output_path='pressure/statistics/%s/' % (duration_label,),
+                input_path='pressure/raw/%s/' % (rollup_duration_label,),
+                output_path='pressure/statistics/%s/' % (rollup_duration_label,),
             )
 
             private_handler = S3Handler(
                 bucket=private_bucket,
-                input_path='pressure/raw/%s/' % (duration_label,),
-                output_path='pressure/raw/%s/' % (duration_label,),
+                input_path='pressure/raw/%s/' % (rollup_duration_label,),
+                output_path='pressure/raw/%s/' % (rollup_duration_label,),
             )
 
-            aggregator = QueueAggregator(
-                duration=duration_time,
+            rollup = RollupAggregator(
+                input_bucket=private_bucket,
+                input_path='pressure/raw/%s/' % (log_duration_label,),
+                duration=rollup_duration_time,
                 handlers=(
                     public_handler,
                     public_stat_handler,
@@ -314,12 +410,14 @@ class Command(BaseCommand):
                 ),
             )
 
-            aggregators.append(aggregator)
+            rollups.append(rollup)
+
 
         queue = get_queue(settings.SQS_QUEUE)
         self.queue_handler = QueueHandler(
             queue,
-            aggregators=aggregators,
+            aggregator=aggregator,
+            rollups=rollups,
         )
 
         self.queue_handler.run()
