@@ -242,8 +242,10 @@ class QueueAggregator(Logger):
             messages = self.queue.get_messages(num_messages=10)
         except SQSError, e:
             self.log(
+                event='receive_messages',
                 error=str(e),
             )
+            time.sleep(1)
             return None
 
         if not messages:
