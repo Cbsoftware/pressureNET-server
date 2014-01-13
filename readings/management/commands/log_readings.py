@@ -148,6 +148,14 @@ class QueueAggregator(Logger):
         )
 
     def handle_message(self, message):
+        if message.id in self.persisted_messages:
+            self.log(
+                event='handle_message',
+                error='Received deleted message',
+            )
+            self.queue.delete_message(message)
+            return None
+
         if message.id in self.active_messages:
             return None
 
@@ -188,14 +196,6 @@ class QueueAggregator(Logger):
             self.queue.delete_message(message)
             return None
 
-        if message.id in self.persisted_messages:
-            self.log(
-                event='handle_message',
-                error='Received deleted message',
-            )
-            self.queue.delete_message(message)
-            return None
-
         self.active_messages[message.id] = message
         message_date = message_data['daterecorded']
 
@@ -223,18 +223,27 @@ class QueueAggregator(Logger):
         )
 
     def delete_blocks(self):
+        start = time.time()
+
         self.persisted_messages = set()
 
-        for active_message in self.active_messages.values():
-            self.queue.delete_message(active_message)
-            self.persisted_messages.add(active_message.id)
+        while self.active_messages:
+            messages = self.active_messages.values()[:10]
+            response = self.queue.delete_message_batch(messages)
 
-        self.active_messages = {}
+            for deleted in response.results:
+                deleted_id = deleted['id']
+
+                self.active_messages.pop(deleted_id)
+                self.persisted_messages.add(deleted_id)
+
         self.blocks = defaultdict(lambda: defaultdict(dict))
+        end = time.time()
 
         self.log(
             event='delete_messages',
             count=len(self.persisted_messages),
+            time=(end - start),
         )
 
     def receive_messages(self):
