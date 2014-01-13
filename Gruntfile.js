@@ -11,7 +11,7 @@ module.exports = function(grunt) {
             options: {
                 compress: true
             },
-            src: ['<%= static_dir %>less/style.less'],
+            src: ['<%= static_dir %>less/pressurenet.less'],
             dest: '<%= static_dir %>css/style.css'
         }
     },
