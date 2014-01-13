@@ -49,6 +49,8 @@ class S3Handler(Logger):
         return data
 
     def handle(self, duration_label, key, data):
+        start = time.time()
+
         input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
         output_file = '%s%s/%s.json' % (self.output_path, duration_label, key)
 
@@ -69,10 +71,13 @@ class S3Handler(Logger):
             compress=True,
         )
 
+        end = time.time()
+
         self.log(
             event='write to s3',
             filename=output_file,
             duration=duration_label,
+            time=(end - start),
             bucket=str(self.bucket),
             messages=len(processed_data),
         )
@@ -213,14 +218,19 @@ class QueueAggregator(Logger):
             handler.handle(duration_label, block_key, block_data)
 
     def handle_blocks(self):
+        start = time.time()
+
         for duration_label, duration_time in self.log_durations:
             for block_key in self.blocks[duration_label].keys():
                 self.handle_block(duration_label, block_key)
 
         self.last_handled_date = datetime.datetime.now()
+
+        end = time.time()
         self.log(
             event='handle_blocks',
             count=len(self.active_messages),
+            time=(end - start),
         )
 
     def delete_blocks(self):
@@ -239,6 +249,7 @@ class QueueAggregator(Logger):
                 self.persisted_messages.add(deleted_id)
 
         self.blocks = defaultdict(lambda: defaultdict(dict))
+
         end = time.time()
 
         self.log(
