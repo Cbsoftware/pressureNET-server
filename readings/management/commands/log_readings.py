@@ -1,6 +1,7 @@
 import datetime
 import math
 import time
+from multiprocessing.dummy import Pool
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
@@ -155,10 +156,6 @@ class QueueAggregator(Logger):
 
     def handle_message(self, message):
         if message.id in self.persisted_messages:
-            self.log(
-                event='handle_message',
-                error='Received deleted message',
-            )
             self.queue.delete_message(message)
             return None
 
@@ -211,18 +208,19 @@ class QueueAggregator(Logger):
             block_key = message_date - message_date_offset
             self.blocks[duration_label][block_key][message.id] = message_data
 
-    def handle_block(self, duration_label, block_key):
-        block_data = self.blocks[duration_label][block_key].values()
-
-        for handler in self.handlers:
-            handler.handle(duration_label, block_key, block_data)
-
     def handle_blocks(self):
         start = time.time()
 
+        pool = Pool(20)
         for duration_label, duration_time in self.log_durations:
             for block_key in self.blocks[duration_label].keys():
-                self.handle_block(duration_label, block_key)
+                block_data = self.blocks[duration_label][block_key].values()
+
+                for handler in self.handlers:
+                    pool.apply_async(handler.handle, (duration_label, block_key, block_data))
+
+        pool.close()
+        pool.join()
 
         self.last_handled_date = datetime.datetime.now()
 
@@ -237,9 +235,8 @@ class QueueAggregator(Logger):
         start = time.time()
 
         self.persisted_messages = set()
-
-        while self.active_messages:
-            messages = self.active_messages.values()[:10]
+        
+        def batch_delete(messages):
             response = self.queue.delete_message_batch(messages)
 
             for deleted in response.results:
@@ -247,6 +244,20 @@ class QueueAggregator(Logger):
 
                 self.active_messages.pop(deleted_id)
                 self.persisted_messages.add(deleted_id)
+
+        pool = Pool(20)
+
+        def group_by(items, length):
+            while items:
+                yield items[:length]
+                items = items[length:]
+
+        message_batches = group_by(self.active_messages.values(), 10)
+
+        pool.map(batch_delete, message_batches)
+
+        pool.close()
+        pool.join()
 
         self.blocks = defaultdict(lambda: defaultdict(dict))
 
