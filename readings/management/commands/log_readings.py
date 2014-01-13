@@ -72,6 +72,7 @@ class S3Handler(Logger):
         self.log(
             event='write to s3',
             filename=output_file,
+            duration=duration_label,
             bucket=str(self.bucket),
             messages=len(processed_data),
         )
