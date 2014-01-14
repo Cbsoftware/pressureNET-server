@@ -243,14 +243,15 @@ class QueueAggregator(Logger):
         active_messages = self.active_messages.values()
         active_message_ids = self.active_messages.keys()
 
-        message_batches = group_by(active_messages, 10)
+        if active_messages:
+            message_batches = group_by(active_messages, 10)
 
-        pool = Pool(settings.THREADPOOL_SIZE)
+            pool = Pool(settings.THREADPOOL_SIZE)
 
-        pool.map(self.queue.delete_message_batch, message_batches)
+            pool.map(self.queue.delete_message_batch, message_batches)
 
-        pool.close()
-        pool.join()
+            pool.close()
+            pool.join()
 
         self.active_messages = {}
         self.persisted_messages = set(active_message_ids)
