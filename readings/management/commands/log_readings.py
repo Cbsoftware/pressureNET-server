@@ -30,6 +30,12 @@ def hash_dict(data):
     )
 
 
+def group_by(items, length):
+    while items:
+        yield items[:length]
+        items = items[length:]
+
+
 # handlers
 class S3Handler(Logger):
 
@@ -211,7 +217,7 @@ class QueueAggregator(Logger):
     def handle_blocks(self):
         start = time.time()
 
-        pool = Pool(20)
+        pool = Pool(settings.THREADPOOL_SIZE)
         for duration_label, duration_time in self.log_durations:
             for block_key in self.blocks[duration_label].keys():
                 block_data = self.blocks[duration_label][block_key].values()
@@ -234,31 +240,20 @@ class QueueAggregator(Logger):
     def delete_blocks(self):
         start = time.time()
 
-        self.persisted_messages = set()
-        
-        def batch_delete(messages):
-            response = self.queue.delete_message_batch(messages)
+        active_messages = self.active_messages.values()
+        active_message_ids = self.active_messages.keys()
 
-            for deleted in response.results:
-                deleted_id = deleted['id']
+        message_batches = group_by(active_messages, 10)
 
-                self.active_messages.pop(deleted_id)
-                self.persisted_messages.add(deleted_id)
+        pool = Pool(settings.THREADPOOL_SIZE)
 
-        pool = Pool(20)
-
-        def group_by(items, length):
-            while items:
-                yield items[:length]
-                items = items[length:]
-
-        message_batches = group_by(self.active_messages.values(), 10)
-
-        pool.map(batch_delete, message_batches)
+        pool.map(self.queue.delete_message_batch, message_batches)
 
         pool.close()
         pool.join()
 
+        self.active_messages = {}
+        self.persisted_messages = set(active_message_ids)
         self.blocks = defaultdict(lambda: defaultdict(dict))
 
         end = time.time()
