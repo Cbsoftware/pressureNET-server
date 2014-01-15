@@ -106,3 +106,35 @@ def encode(latitude, longitude, precision=12):
             bit = 0
             ch = 0
     return ''.join(geohash)
+
+
+def bounding_box_hashes(min_lat, min_lon, max_lat, max_lon, length):
+    top_left = encode(min_lat, min_lon, precision=length)
+    decoded = decode_exactly(top_left)
+    delta = decoded[2]
+
+    hashes = set()
+
+    curr_lat = min_lat
+    curr_lon = min_lon
+    while curr_lat <= max_lat:
+        while curr_lon <= max_lon:
+            hashes.add(encode(curr_lat, curr_lon, precision=length))
+            curr_lon += delta
+        curr_lat += delta
+        curr_lon = min_lon
+
+    return list(hashes)
+
+def bounding_box_hash(min_lat, min_lon, max_lat, max_lon):
+    center_lat = ((max_lat - min_lat)/2) + min_lat
+    center_lon = ((max_lon - min_lon)/2) + min_lon
+    width = abs(max_lat - min_lat)
+
+    for geohash_length in range(5, 0, -1):
+        geohash = encode(center_lat, center_lon, precision=geohash_length)
+        geohash_lat, geohash_lon, geohash_width_err, geohash_height_err = decode_exactly(geohash)
+        if (2 * geohash_width_err) > width:
+            break
+
+    return geohash
