@@ -23,7 +23,15 @@
 				<label for="end_date">To</label>
 				<input readonly="true" type="text" id="end_date" name="end_date" class="dateselector" placeholder="End Date">
 			</div>
-			<input type="button" id="load" value="Load" onClick="PressureNET.loadAndUpdate(0);">
+      <div class="half">
+        <label for="log_duration">By</label>
+        <select class="duration_select" name="log_duration" id="log_duration">
+            <option value="10minute">10 Minutes</option>
+            <option value="hourly">1 Hour</option>
+            <option value="daily">1 Day</option>
+        </select>
+      </div>
+			<input type="button" id="load" value="Load" onClick="PressureNET.loadAndUpdate();">
 		</div>
 
 		<div id="query_results" class="full"></div>
@@ -42,6 +50,10 @@
 
 			<table class="graph_info_table">
 				<tr>
+					<th>Sensors</th>
+					<td id="resultsCount_cell" colspan="3"></td>
+				</tr>
+				<tr>
 					<th>Latitude</th>
 					<td id="min_latitude_cell"></td>
 					<td class="center">to</td>
@@ -59,10 +71,6 @@
 					<td class="center">to</td>
 					<td id="end_time_cell"></td>
 				</tr>
-				<tr>
-					<th>Measurements</th>
-					<td id="resultsCount_cell" colspan="3"></td>
-				</tr>
 			</table>
 		</div>
 
@@ -71,7 +79,7 @@
 {% block extra_footer %}
     <script type="text/javascript">
       PressureNET.initialize({
-        readingsUrl: '{% url 'readings-stats' %}'
+        statisticsUrl: '{% url 'readings-stats' %}'
       });
 
     </script>

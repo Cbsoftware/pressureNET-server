@@ -45,7 +45,7 @@ td, th {padding: 0.3125rem;}
 .form-field {
 	float: left;
 	width: 18.75rem;
-	padding: 0 0.625rem; 
+	padding: 0 0.625rem;
 	}
 
 label {
@@ -239,11 +239,16 @@ a {
 	#date-range label {width: 4rem;}
 	#date-range input[type="text"] {width: 14.5rem;}
 
+  .duration_select {
+      width: 14.5rem;
+      margin-top: 5px;
+  }
+
 
 	#query_results, #share_spot {background-color: #ddd;}
     #share_spot {display:none;}
 		#share_input {width: 100%;}
-  
+
 	#map_canvas {
 		height: 15rem;
 		z-index: 0;
@@ -409,3 +414,4 @@ footer {
       #bird {background-position: -32px top;}
       #gplus {background-position: -64px top;}
       #octo {background-position: right top;}
+
