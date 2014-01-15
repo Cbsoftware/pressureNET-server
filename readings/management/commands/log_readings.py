@@ -1,5 +1,4 @@
 import datetime
-import math
 import time
 from multiprocessing.dummy import Pool
 from collections import defaultdict
@@ -12,8 +11,7 @@ from boto.exception import SQSError
 
 from readings.serializers import ReadingListSerializer
 
-from utils.time_utils import to_unix, from_unix
-from utils.compression import gzip_compress, gzip_decompress
+from utils.dynamodb import get_conn, write_items
 from utils.loggly import Logger
 from utils.queue import get_queue
 from utils.s3 import get_bucket, read_from_bucket, write_to_bucket
@@ -36,13 +34,8 @@ def group_by(items, length):
         items = items[length:]
 
 
-# handlers
-class S3Handler(Logger):
-
-    def __init__(self, bucket=None, input_path=None, output_path=None):
-        self.bucket = bucket
-        self.input_path = input_path
-        self.output_path = output_path
+# Handlers
+class DataHandler(Logger):
 
     def merge_data(self, existing_data, new_data):
         existing_dict = dict([(hash_dict(record), record) for record in existing_data])
@@ -51,6 +44,14 @@ class S3Handler(Logger):
         existing_dict.update(new_dict)
 
         return existing_dict.values()
+
+
+class S3Handler(DataHandler):
+
+    def __init__(self, bucket=None, input_path=None, output_path=None):
+        self.bucket = bucket
+        self.input_path = input_path
+        self.output_path = output_path
 
     def process_data(self, data):
         return data
@@ -86,7 +87,7 @@ class S3Handler(Logger):
             duration=duration_label,
             time=(end - start),
             bucket=str(self.bucket),
-            messages=len(processed_data),
+            count=len(processed_data),
         )
 
 
@@ -114,23 +115,32 @@ class S3FilteredHandler(S3Handler):
         return filtered_data
 
 
-class S3StatisticHandler(S3Handler):
+class DynamoDBHandler(DataHandler):
+
+    def __init__(self, conn=None, table=None, bucket=None, input_path=None):
+        self.conn = conn
+        self.table = table
+        self.bucket = bucket
+        self.input_path = input_path
 
     def process_data(self, data):
         geo_sorted = defaultdict(list)
 
         for data_point in data:
-            geo_key = geohash.encode(
-                data_point['latitude'],
-                data_point['longitude'],
-                precision=5,
-            )
-            geo_sorted[geo_key].append(data_point)
+            for geo_key_length in range(1, 6):
+                geo_key = geohash.encode(
+                    data_point['latitude'],
+                    data_point['longitude'],
+                    precision=geo_key_length,
+                )
+                geo_sorted[geo_key].append(data_point)
 
         statistics = {}
 
         for geo_key, data_points in geo_sorted.items():
             readings = [data_point['reading'] for data_point in data_points]
+            unique_users = len(set([data_point['user_id'] for data_point in data_points]))
+
             statistics[geo_key] = {
                 'min': min(readings),
                 'max': max(readings),
@@ -138,9 +148,46 @@ class S3StatisticHandler(S3Handler):
                 'median': median(readings),
                 'std_dev': std_dev(readings),
                 'samples': len(readings),
+                'users': unique_users,
             }
 
         return statistics
+
+    def handle(self, duration_label, key, data):
+        start = time.time()
+
+        input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
+
+        existing_content = read_from_bucket(self.bucket, input_file)
+        if existing_content:
+            existing_data = json.loads(existing_content)
+            data = self.merge_data(existing_data, data)
+
+        processed_data = self.process_data(data)
+
+        put_items = [
+            self.table.new_item(
+                hash_key='%s-%s' % (duration_label, geo_key),
+                range_key=key,
+                attrs=stats,
+            ) for geo_key, stats in processed_data.items()]
+
+        pool = Pool(settings.THREADPOOL_SIZE)
+        for batch_items in group_by(put_items, 25):
+            pool.apply_async(write_items, (self.conn, self.table, batch_items))
+
+        pool.close()
+        pool.join()
+
+        end = time.time()
+
+        self.log(
+            event='write to dynamodb',
+            table=str(self.table),
+            duration=duration_label,
+            time=(end - start),
+            count=len(put_items),
+        )
 
 
 class QueueAggregator(Logger):
@@ -289,16 +336,11 @@ class QueueAggregator(Logger):
 
     def run(self):
         while True:
-            try:
-                self.receive_messages()
+            self.receive_messages()
 
-                if self.should_handle_blocks():
-                    self.handle_blocks()
-                    self.delete_blocks()
-            except Exception, e:
-                self.log(
-                    error=str(e),
-                )
+            if self.should_handle_blocks():
+                self.handle_blocks()
+                self.delete_blocks()
 
 
 class Command(BaseCommand):
@@ -308,32 +350,35 @@ class Command(BaseCommand):
         public_bucket = get_bucket(settings.S3_PUBLIC_BUCKET)
         private_bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
 
-        public_handler = S3FilteredHandler(
+        public_s3_handler = S3FilteredHandler(
             bucket=public_bucket,
             input_path='pressure/raw/',
             output_path='pressure/raw/',
             allowed_fields=ReadingListSerializer.Meta.fields
         )
 
-        public_stat_handler = S3StatisticHandler(
-            bucket=public_bucket,
-            input_path='pressure/raw/',
-            output_path='pressure/statistics/',
-        )
-
-        private_handler = S3Handler(
+        private_s3_handler = S3Handler(
             bucket=private_bucket,
             input_path='pressure/raw/',
             output_path='pressure/raw/',
+        )
+
+        dynamodb_conn = get_conn()
+        statistics_table = dynamodb_conn.get_table(settings.DYNAMODB_TABLE)
+        public_dynamodb_handler = DynamoDBHandler(
+            conn=dynamodb_conn,
+            table=statistics_table,
+            bucket=private_bucket,
+            input_path='pressure/raw/',
         )
 
         queue = get_queue(settings.SQS_QUEUE)
         aggregator = QueueAggregator(
             queue=queue,
             handlers=(
-                public_handler,
-                public_stat_handler,
-                private_handler,
+                public_s3_handler,
+                private_s3_handler,
+                public_dynamodb_handler,
             ),
             persist_duration=settings.LOG_PERSIST_DURATION,
             log_durations=settings.LOG_DURATIONS,
