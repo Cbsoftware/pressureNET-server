@@ -154,40 +154,48 @@ class DynamoDBHandler(DataHandler):
         return statistics
 
     def handle(self, duration_label, key, data):
-        start = time.time()
+        try:
+            start = time.time()
 
-        input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
+            input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
 
-        existing_content = read_from_bucket(self.bucket, input_file)
-        if existing_content:
-            existing_data = json.loads(existing_content)
-            data = self.merge_data(existing_data, data)
+            existing_content = read_from_bucket(self.bucket, input_file)
+            if existing_content:
+                existing_data = json.loads(existing_content)
+                data = self.merge_data(existing_data, data)
 
-        processed_data = self.process_data(data)
+            processed_data = self.process_data(data)
 
-        put_items = [
-            self.table.new_item(
-                hash_key='%s-%s' % (duration_label, geo_key),
-                range_key=key,
-                attrs=stats,
-            ) for geo_key, stats in processed_data.items()]
+            put_items = [
+                self.table.new_item(
+                    hash_key='%s-%s' % (duration_label, geo_key),
+                    range_key=key,
+                    attrs=stats,
+                ) for geo_key, stats in processed_data.items()]
 
-        pool = Pool(settings.THREADPOOL_SIZE)
-        for batch_items in group_by(put_items, 25):
-            pool.apply_async(write_items, (self.conn, self.table, batch_items))
+            pool = Pool(settings.THREADPOOL_SIZE)
+            for batch_items in group_by(put_items, 25):
+                pool.apply_async(write_items, (self.conn, self.table, batch_items))
 
-        pool.close()
-        pool.join()
+            pool.close()
+            pool.join()
 
-        end = time.time()
+            end = time.time()
 
-        self.log(
-            event='write to dynamodb',
-            table=str(self.table),
-            duration=duration_label,
-            time=(end - start),
-            count=len(put_items),
-        )
+            self.log(
+                event='write to dynamodb',
+                table=str(self.table),
+                duration=duration_label,
+                time=(end - start),
+                count=len(put_items),
+            )
+        except Exception, e:
+            self.log(
+                event='write to dynamodb',
+                table=str(self.table),
+                duration=duration_label,
+                error=str(e),
+            )
 
 
 class QueueAggregator(Logger):
