@@ -127,6 +127,7 @@
             max_longitude: max_longitude,
             start_time: start_time,
             end_time: end_time,
+            zoom : map.getZoom(),
             limit: currentQueryLimit
         };
 
@@ -141,7 +142,7 @@
                 var count = 0;
                 for(var reading_i in readings) {
                     var reading = readings[reading_i];
-                    plot_data.push([reading.daterecorded, reading.reading]);
+                    plot_data.push([reading.timestamp, reading.median]);
                 }
 
                 $.plot($("#placeholder"), [plot_data],{ 

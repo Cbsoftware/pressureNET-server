@@ -22,6 +22,8 @@ from readings.models import Reading, ReadingSync, Condition
 
 from utils.time_utils import to_unix
 from utils.loggly import loggly, Logger
+from utils.dynamodb import get_item
+from utils.geohash import bounding_box_hash
 
 
 def add_from_pressurenet(request):
@@ -111,6 +113,23 @@ class ReadingListView(FilteredListAPIView):
     filter_class = ReadingListFilter
 
 reading_list = cache_page(ReadingListView.as_view(), settings.CACHE_TIMEOUT)
+
+def reading_list(request):
+    duration_label = '10minute'
+    start_time = int(request.GET['start_time'])
+    end_time = int(request.GET['end_time'])
+    min_lat = float(request.GET['min_latitude'])
+    max_lat = float(request.GET['max_latitude'])
+    min_lon = float(request.GET['min_longitude'])
+    max_lon = float(request.GET['max_longitude'])
+
+    geohash = bounding_box_hash(min_lat, min_lon, max_lat, max_lon)
+
+    hash_key = '%s-%s' % (duration_label, geohash)
+
+    stats = get_item(hash_key, start_time, end_time)
+
+    return HttpResponse(json.dumps(stats), mimetype='application/json')
 
 
 class ConditionListView(FilteredListAPIView):
