@@ -37,6 +37,10 @@ def group_by(items, length):
 # Handlers
 class DataHandler(Logger):
 
+    def __init__(self, bucket=None, input_path=None):
+        self.bucket = bucket
+        self.input_path = input_path
+
     def merge_data(self, existing_data, new_data):
         existing_dict = dict([(hash_dict(record), record) for record in existing_data])
         new_dict = dict([(hash_dict(record), record) for record in new_data])
@@ -45,31 +49,59 @@ class DataHandler(Logger):
 
         return existing_dict.values()
 
+    def get_existing_data(self, duration_label, key):
+        input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
 
-class S3Handler(DataHandler):
-
-    def __init__(self, bucket=None, input_path=None, output_path=None):
-        self.bucket = bucket
-        self.input_path = input_path
-        self.output_path = output_path
+        existing_content = read_from_bucket(self.bucket, input_file)
+        if existing_content:
+            return json.loads(existing_content)
 
     def process_data(self, data):
         return data
 
-    def handle(self, duration_label, key, data):
-        start = time.time()
+    def write_data(self, data):
+        return 'no output'
 
-        input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
+    def handle(self, duration_label, key, data):
+        try:
+            start = time.time()
+
+            existing_data = self.get_existing_data(duration_label, key)
+            if existing_data:
+                data = self.merge_data(existing_data, data)
+
+            processed_data = self.process_data(data)
+
+            output = self.write_data(duration_label, key, processed_data)
+
+            end = time.time()
+
+            self.log(
+                output=output,
+                duration=duration_label,
+                time=(end - start),
+                count=len(processed_data),
+                bucket=str(self.bucket),
+            )
+        except Exception, e:
+            self.log(
+                error=str(e)
+            )
+
+
+class S3Handler(DataHandler):
+
+    def __init__(self, output_path=None, **kwargs):
+        self.output_path = output_path
+        super(S3Handler, self).__init__(**kwargs)
+
+    def process_data(self, data):
+        return data
+
+    def write_data(self, duration_label, key, data):
         output_file = '%s%s/%s.json' % (self.output_path, duration_label, key)
 
-        existing_content = read_from_bucket(self.bucket, input_file)
-        if existing_content:
-            existing_data = json.loads(existing_content)
-            data = self.merge_data(existing_data, data)
-
-        processed_data = self.process_data(data)
-
-        output_content = json.dumps(processed_data)
+        output_content = json.dumps(data)
 
         write_to_bucket(
             self.bucket,
@@ -79,15 +111,12 @@ class S3Handler(DataHandler):
             compress=True,
         )
 
-        end = time.time()
+        return output_file
 
-        self.log(
+    def log(self, **kwargs):
+        super(S3Handler, self).log(
             event='write to s3',
-            filename=output_file,
-            duration=duration_label,
-            time=(end - start),
-            bucket=str(self.bucket),
-            count=len(processed_data),
+            **kwargs
         )
 
 
@@ -117,11 +146,10 @@ class S3FilteredHandler(S3Handler):
 
 class DynamoDBHandler(DataHandler):
 
-    def __init__(self, conn=None, table=None, bucket=None, input_path=None):
+    def __init__(self, conn=None, table=None, **kwargs):
         self.conn = conn
         self.table = table
-        self.bucket = bucket
-        self.input_path = input_path
+        super(DynamoDBHandler, self).__init__(**kwargs)
 
     def process_data(self, data):
         geo_sorted = defaultdict(list)
@@ -153,49 +181,25 @@ class DynamoDBHandler(DataHandler):
 
         return statistics
 
-    def handle(self, duration_label, key, data):
-        try:
-            start = time.time()
+    def write_data(self, duration_label, key, data):
+        put_items = [
+            self.table.new_item(
+                hash_key='%s-%s' % (duration_label, geo_key),
+                range_key=key,
+                attrs=stats,
+            ) for geo_key, stats in data.items()]
 
-            input_file = '%s%s/%s.json' % (self.input_path, duration_label, key)
+        for batch_items in group_by(put_items, 25):
+            write_items(self.conn, self.table, batch_items)
 
-            existing_content = read_from_bucket(self.bucket, input_file)
-            if existing_content:
-                existing_data = json.loads(existing_content)
-                data = self.merge_data(existing_data, data)
+        return '%s: %s' % (duration_label, key)
 
-            processed_data = self.process_data(data)
-
-            put_items = [
-                self.table.new_item(
-                    hash_key='%s-%s' % (duration_label, geo_key),
-                    range_key=key,
-                    attrs=stats,
-                ) for geo_key, stats in processed_data.items()]
-
-            pool = Pool(settings.THREADPOOL_SIZE)
-            for batch_items in group_by(put_items, 25):
-                pool.apply_async(write_items, (self.conn, self.table, batch_items))
-
-            pool.close()
-            pool.join()
-
-            end = time.time()
-
-            self.log(
-                event='write to dynamodb',
-                table=str(self.table),
-                duration=duration_label,
-                time=(end - start),
-                count=len(put_items),
-            )
-        except Exception, e:
-            self.log(
-                event='write to dynamodb',
-                table=str(self.table),
-                duration=duration_label,
-                error=str(e),
-            )
+    def log(self, **kwargs):
+        super(DynamoDBHandler, self).log(
+            event='write to dynamodb',
+            table=str(self.table),
+            **kwargs
+        )
 
 
 class QueueAggregator(Logger):
