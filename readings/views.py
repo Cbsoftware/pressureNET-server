@@ -114,7 +114,7 @@ class ReadingListView(FilteredListAPIView):
 
 reading_list = cache_page(ReadingListView.as_view(), settings.CACHE_TIMEOUT)
 
-def reading_list(request):
+def reading_stats(request):
     duration_label = '10minute'
     start_time = int(request.GET['start_time'])
     end_time = int(request.GET['end_time'])

@@ -2,7 +2,7 @@ import os
 from logging.handlers import SysLogHandler
 # Django settings for pressurenet project.
 
-DEBUG = False 
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -91,7 +91,7 @@ STATICFILES_DIRS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('SECRET_KEY', 'TODO') 
+SECRET_KEY = os.environ.get('SECRET_KEY', 'TODO')
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'templates/'),
@@ -156,11 +156,27 @@ INSTALLED_APPS = (
 )
 
 # AWS Settings
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID') 
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
 
 # SQS Queue
 SQS_QUEUE = os.environ.get('SQS_QUEUE')
+
+# S3 Bucket
+S3_PUBLIC_BUCKET = os.environ.get('S3_PUBLIC_BUCKET')
+S3_PRIVATE_BUCKET = os.environ.get('S3_PRIVATE_BUCKET')
+
+# DynamoDB
+DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE')
+
+# S3 Readings Log Duration in milliseconds
+THREADPOOL_SIZE = 10
+LOG_PERSIST_DURATION = 10 * 60 * 1000
+LOG_DURATIONS = (
+    ('10minute', (10 * 60 * 1000)),
+    ('hourly', (60 * 60 * 1000)),
+    ('daily', (24 * 60 * 60 * 1000)),
+)
 
 # Grappelli Admin
 GRAPPELLI_ADMIN_TITLE = 'PressureNET Admin'
