@@ -4,102 +4,116 @@
 {% load customers_tags %}
 
 
+{% load widget_tweaks %}
+
+
 {% block content %}
 <div class="container">
     {% get_customer_types as customer_types %}
     {% get_customer_plans as customer_plans %}
 
-    <div id="success">
-      <h3>Thanks for signing up!</h3>
-      <p>You'll receive your API key by e-mail shortly.</p>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>What we provide</h2>
+            <hr/>
+            <p>We offer a pressureNET API and SDK to developers. Our Live API allows access to our global dataset of atmospheric pressure with simple HTTPS requests. Our SDK is <a href="https://github.com/Cbsoftware/pressureNET-SDK/" target="_blank">open source on GitHub</a> and enables developers to include pressureNET’s core functionality inside their apps to collect and distribute Android sensor data.</p>
+
+            <p>We’re going to ensure that our live data is as accessible as possible. If there’s anything that we can do to make the API service or SDK package easier to use, please let us know as we intend to improve them based on your feedback.</p>
+            <p>Documentation is available for the <a href="/static/docs/pressureNET_Live_API_2_1.pdf" target="_blank">API (pdf)</a> as well as the <a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md" target="_blank">SDK</a>. In order to use these services, please sign up for an API key below.</p>
+        </div>
     </div>
 
-    <div id="live-intro" class="full">
-      <h3>pressureNET Developers</h3>
-
-        <p>We offer a pressureNET API and SDK to developers. Our Live API allows access to our global dataset of atmospheric pressure with simple HTTPS requests. Our SDK is <a href="https://github.com/Cbsoftware/pressureNET-SDK/" target="_blank">open source on GitHub</a> and enables developers to include pressureNET’s core functionality inside their apps to collect and distribute Android sensor data.</p> 
-
-        <p>We’re going to ensure that our live data is as accessible as possible. If there’s anything that we can do to make the API service or SDK package easier to use, please let us know as we intend to improve them based on your feedback.</p>
-        <p>Documentation is available for the <a href="{{ STATIC_URL }}docs/pressureNET_Live_API_2_1.pdf" target="_blank">API (pdf)</a> as well as the <a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md" target="_blank">SDK</a>. In order to use these services, please sign up for an API key below.</p>
-
-      <h4 id="legal-title"><a class="closed">Legal Notes</a></h4>
-      <ul id="legal-notes">
-        <li>Cumulonimbus has been primarily motivated by and is committed foremost to improving the world and advancing scientific progress. We are therefore happy to supply our live stream free of charge for scientific and non-commercial use only.</li>
-        <li>We are proud to have been providing a continuous live stream to researchers at the University of Washington. However, in a project like this, technical or human error can interrupt, distort, or otherwise interfere with our live stream, and Cumulonimbus makes no representations as to the quality, consistency, or continuity of our live stream, whether affected by negligence or otherwise. Cumulonimbus assumes no liability whatsoever in supplying our live stream free of charge to researchers.</li>
-        <li>We reserve all rights to the data supplied in our live stream and may withdraw access to the live stream at any time and for any reason.</li>
-        <li>Please let us know if you’d like to redistribute the data supplied in our live stream, and we’ll be happy to discuss!</li>
-        <li>As the project grows, our operational needs may change, so we may charge a fee for our live stream in the future. We will of course always remain foremost committed to promoting scientific progress, so we will ever endeavour to help advance your research objectives.</li>
-        <li>By accepting use of our live stream, you accept the terms above.</li>
-      </ul>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Register</h2>
+            <hr/>
+        </div>
     </div>
 
-    <form id="signup-form" class="signup full" method="POST" action="{% url 'customers-developers' %}">
+    <form class="form-horizontal" role="form" method="POST" action="{% url 'customers-developers' %}">
 
-      {% csrf_token %}
+        {% csrf_token %}
 
-      <ul class="error-log full">
-          Please correct the highlighted errors.
-      </ul>
-
-      <div class="full required-example">Required</div>
-
-      <div id="customer-type" class="full">
-        <h4 class="required-label">Select the applicable option:</h4>
-
-        <div id="customer-choices" class="choices">
-          {% for customer_type_value, customer_type_name, customer_type_desc in customer_types %}
-              <input id="customer-type-{{ customer_type_value }}" name="customer_type" class="required"
-                  {% if form.customer_type.value %}
-                      {% ifequal form.customer_type.value customer_type_value %}checked="checked"{% endifequal %}
-                  {% else %}
-                      {% ifequal forloop.counter0 0 %}checked="checked"{% endifequal %}
-                  {% endif %}
-                  type="radio" value="{{ customer_type_value }}" data-desc="{{ customer_type_desc }}" />
-              <label for="customer-type-{{ customer_type_value }}">{{ customer_type_name }}</label>
-          {% endfor %}
+        <div class="form-group col-md-12">
+            <label class="control-label col-sm-2">
+                Type
+            </label>
+            <div class="col-sm-10">
+                {% for customer_type in customer_types %}
+                    <label class="control-label">
+                        <input name="customer_type"
+                            {% if form.customer_type.value %}
+                                {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
+                            {% else %}
+                                {% ifequal forloop.counter0 0 %}checked="checked"{% endifequal %}
+                            {% endif %}
+                            type="radio" value="{{ customer_type.id }}"/>
+                        {{ customer_type.name }}
+                    </label>
+                    <p>
+                        {{ customer_type.description }}
+                    </p>
+                {% endfor %}
+            </div>
         </div>
-        <div id="customer-descriptions" class="descriptions">
-          <p></p>
+
+        <div class="form-group {% if form.contact_name.errors %}has-error{% endif %}">
+            <label class="control-label col-sm-2" for="id_contact_name">Name</label>
+            <div class="col-sm-10">
+                {% render_field form.contact_name class="form-control" %}
+            </div>
+            <label class="control-label col-sm-10 col-sm-offset-2" for="id_contact_name">
+                {% for error in form.contact_name.errors %}
+                    {{ error }}
+                {% endfor %}
+            </label>
         </div>
-      </div>
 
-      <div id="form-name" class="form-field {% if form.contact_name.errors %}error{% endif %}">
-        <label for="id_contact_name" class="required-label">Name</label>
-        {{ form.contact_name }}
-        <label for="id_contact_name" class="error-label">
-            {{ form.contact_name.errors }}
-        </label>
-      </div>
+        <div class="form-group {% if form.contact_mail.errors %}has-error{% endif %}">
+            <label class="control-label col-sm-2" for="id_contact_mail">E-mail</label>
+            <div class="col-sm-10">
+                {% render_field form.contact_mail class="form-control" %}
+            </div>
+            <label class="control-label col-sm-10 col-sm-offset-2" for="id_contact_mail">
+                {% for error in form.contact_mail.errors %}
+                    {{ error }}
+                {% endfor %}
+            </label>
+        </div>
 
-      <div id="form-mail" class="form-field {% if form.contact_mail.errors %}error{% endif %}">
-        <label for="id_contact_mail" class="required-label">E-mail</label>
-        {{ form.contact_mail }}
-        <label for="id_contact_mail" class="error-label">
-            {{ form.contact_mail.errors }}
-        </label>
-      </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="id_company_name">Organization</label>
+            <div class="col-sm-10">
+                {% render_field form.company_name class="form-control" %}
+            </div>
+        </div>
 
-      <div id="form-company" class="form-field">
-        <label for="id_company_name">Organization</label>
-        {{ form.company_name }}
-      </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="id_contact_phone">Phone</label>
+            <div class="col-sm-10">
+                {% render_field form.contact_phone class="form-control" %}
+            </div>
+        </div>
 
-      <div id="form-phone" class="form-field">
-        <label for="id_contact_phone">Phone</label>
-        {{ form.contact_phone }}
-      </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="id_contact_address">Address</label>
+            <div class="col-sm-10">
+                {% render_field form.contact_address class="form-control" rows="4" %}
+            </div>
+        </div>
 
-      <div id="form-address" class="form-field">
-        <label for="id_contact_address">Address</label>
-        {{ form.contact_address }}
-      </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="id_comments">Comments</label>
+            <div class="col-sm-10">
+                {% render_field form.comments class="form-control" rows="5" %}
+            </div>
+        </div>
 
-      <div id="form-comments" class="form-field">
-        <label for="id_comments">Comments</label>
-        {{ form.comments }}
-      </div>
-
-      <input type="submit" value="Sign up!" />
+        <div class="row">
+            <div class="col-md-offset-10 col-md-2">
+                <input class="btn btn-primary pull-right" type="submit" value="Sign up!" />
+            </div>
+        </div>
 
     </form>
 </div>

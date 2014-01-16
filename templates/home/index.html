@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/landing.css">
+{% endblock extra_head %}
+
 {% block content %}
 <img id="landing_clouds" src="{{ STATIC_URL }}images/landing/clouds.png" />
 <div class="container">

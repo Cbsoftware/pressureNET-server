@@ -14,6 +14,13 @@ module.exports = function(grunt) {
             src: ['<%= static_dir %>less/pressurenet.less'],
             dest: '<%= static_dir %>css/style.css'
         },
+        landing: {
+            options: {
+                compress: true
+            },
+            src: ['<%= static_dir %>less/landing.less'],
+            dest: '<%= static_dir %>css/landing.css'
+        },
         map: {
             options: {
                 compress: true

@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'south',
     'urlobject',
+    'widget_tweaks',
 
     'customers',
     'home',
