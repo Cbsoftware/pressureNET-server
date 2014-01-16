@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% load url from future %}
+{% load customers_tags %}
+
+
+{% load widget_tweaks %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Developers and Researchers</h2>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'customers-register' %}">
+                <input id="register-btn" class="btn btn-primary pull-right" value="Register" />
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h3>SDK</h3>
+            <ul class="list-unstyled">
+                <li><a href="https://github.com/Cbsoftware/pressureNET-SDK/" target="_blank">pressureNET Android SDK on GitHub</a></li>
+                <li><a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md" target="_blank">SDK Documentation</a>
+            </ul>
+            <p>Our SDK enables developers to include pressureNET’s core functionality inside their apps to collect and distribute Android sensor data.</p>
+            
+            
+            <hr/>
+            <h3>API</h3>
+            <ul class="list-unstyled">
+                <li><a href="/static/docs/pressureNET_Live_API_2_1.pdf" target="_blank">pressureNET REST API Documentation (PDF)</a></li>
+            </ul>
+            <p>pressureNET provides a REST JSON API to gain access to the data. It allows access to our global dataset of atmospheric pressure with simple HTTPS requests. In order to use these services, please sign up for an API key.</p>
+
+           
+           
+            <hr/>
+            <h3>Source Code</h3>
+            <ul class="list-unstyled">
+                <li><a href="https://github.com/Cbsoftware/" target="_blank">Source Code on GitHub</a></li>
+            </ul>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vitae mi eu nisi pretium commodo quis eget tortor. Aliquam vitae lorem velit. Curabitur malesuada ultrices lacus, a feugiat dolor tristique a. Quisque posuere libero a nisi convallis, vitae imperdiet turpis euismod. Vestibulum eros neque, vestibulum quis convallis nec, adipiscing in libero.</p>
+            
+            
+            <hr/>
+            <h3>Public Data</h3>
+            <p>
+              Our entire record of public data will be available on Amazon S3 soon. 
+            </p>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="success_modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Registration Successful</h3>
+          </div>
+          <div class="modal-body">
+              <p>Thank you for registering.  You will receive your API Key in your email shortly.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+{% endblock content %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}lib/purl/purl.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var success = $().url().param('success');
+            if (success) {
+                $('#success_modal').modal();
+            }
+        });
+    </script>
+{% endblock %}

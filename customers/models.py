@@ -41,7 +41,9 @@ class Customer(models.Model):
     customer_plan = models.ForeignKey(CustomerPlan, blank=True, null=True)
     company_name = models.CharField(max_length=255, blank=True, null=True)
     contact_name = models.CharField(max_length=255)
-    contact_mail = models.EmailField(max_length=100, unique=True)
+    contact_mail = models.EmailField(max_length=100, unique=True, error_messages={
+        'unique': 'This email is already registered.',
+    })
     contact_phone = models.CharField(max_length=25, blank=True, null=True)
     contact_address = models.CharField(max_length=255, blank=True, null=True)
     api_key = models.CharField(max_length=255)
