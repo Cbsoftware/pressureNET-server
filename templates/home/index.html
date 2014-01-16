@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+<img id="landing_clouds" src="{{ STATIC_URL }}images/landing/clouds.png" />
 <div class="container">
+
 
     <div class="row hero">
         <div class="hero-image col-lg-4 col-md-4 col-sm-4">
@@ -9,14 +11,16 @@
         </div>
 
         <div id="landing_text" class="col-lg-8 col-md-8 col-sm-8">
-            <h2 class="hero-tagline">
-                We're building <span class="logotype">pressure<strong>NET</strong></span>
-            </h2>
+            <div id="landing_text_clouds">
+                <h2 class="hero-tagline">
+                    We're building <span class="logotype">pressure<strong>NET</strong></span>
+                </h2>
 
-            <p class="lead">
-                We want a true, accurate weather forecast. Big meteorology companies
-                are satisfied with 80% accuracy.
-            </p>
+                <p class="lead">
+                    We want a true, accurate weather forecast. Big meteorology companies
+                    are satisfied with 80% accuracy.
+                </p>
+            </div>
 
             <p>
                 If you have a barometer in your Android device, help science out and
@@ -26,7 +30,7 @@
 
             <p>
                 <a href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork">
-                  <img alt="Android app on Google Play" src="https://developer.android.com/images/brand/en_app_rgb_wo_45.png" />
+                  <img alt="Android app on Google Play" src="{{ STATIC_URL }}images/landing/googleplay.png" />
                 </a>
             </p>
         </div>

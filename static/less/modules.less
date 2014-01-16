@@ -1,4 +1,8 @@
 // Hero
+.header {
+    background-color: #fff;
+}
+
 .hero-image {
     text-align: center;
 
@@ -11,12 +15,18 @@
 }
 
 #landing_text {
+
+    #landing_text_clouds {
+        color: #fff;
+        text-shadow: 1px 1px #666; 
+    }
+
     .hero-tagline {
-        font-size: 40px;
+        font-size: 50px;
     }
 
     .lead {
-        font-size: 30px;
+        font-size: 35px;
     }
 
     p {
@@ -27,6 +37,11 @@
 }
 
 @media(max-width:767px) {
+    #landing_text_clouds {
+        color: #222;
+        text-shadow: none; 
+    }
+
     .header {
         h1 {
             text-align: center;

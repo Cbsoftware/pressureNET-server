@@ -17,6 +17,7 @@
   </head>
 
   <body>
+    {% block header %}
     <div class="header">
         <div class="container">
             <ul class="nav nav-pills pull-right">
@@ -33,6 +34,7 @@
             </h1>
         </div>
     </div>
+    {% endblock %} 
 
         {% block content %} {% endblock content %}
 
