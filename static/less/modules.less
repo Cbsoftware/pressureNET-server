@@ -1,4 +1,8 @@
 // Hero
+.header {
+    background-color: #fff;
+}
+
 .hero-image {
     text-align: center;
 
@@ -7,5 +11,48 @@
         max-width: 100%;
         height: auto;
         margin: auto;
+    }
+}
+
+#landing_text {
+
+    #landing_text_clouds {
+        color: #fff;
+        text-shadow: 1px 1px #666; 
+    }
+
+    .hero-tagline {
+        font-size: 50px;
+    }
+
+    .lead {
+        font-size: 35px;
+    }
+
+    p {
+        font-size: 20px;
+        padding-top: 10px;
+        padding-top: 10px;
+    }
+}
+
+@media(max-width:767px) {
+    #landing_text_clouds {
+        color: #222;
+        text-shadow: none; 
+    }
+
+    .header {
+        h1 {
+            text-align: center;
+        }
+
+        .logotype {
+            font-size: 30px;
+        }
+    }
+
+    .pull-right {
+        float: none !important;
     }
 }

@@ -18,11 +18,13 @@
 
   <body>
     <div class="main-container">
+        {% block header %}
         <div class="header">
             <div>
-                <ul class="nav nav-pills pull-right">
-                    <li><a href="{% url 'home-about' %}">About</a></li>
+                 <ul class="nav nav-pills pull-right">
+                    <li><a href="{% url 'home-map' %}">Map</a></li>
                     <li><a href="{% url 'customers-developers' %}">Developers</a></li>
+                    <li><a href="{% url 'home-about' %}">About</a></li>
                 </ul>
 
                 <h1>
@@ -33,46 +35,46 @@
                 </h1>
             </div>
         </div>
+        {% endblock %} 
 
-            {% block content %} {% endblock content %}
+        {% block content %} {% endblock content %}
+    </div>
+    <div class="footer">
+        <div>
+            {# TODO: social media icons #}
+            <div class="social-media pull-right">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+                <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
+            </div>
+
+            <p>Copyright &copy; 2013 Cumulonimbus Inc.</p>
+        </div>
     </div>
 
-        <div class="footer">
-            <div>
-                {# TODO: social media icons #}
-                <div class="social-media pull-right">
-                    <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
-                    <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
-                    <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
-                    <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
-                    <img class="social-media-icon" src="http://placehold.it/32/444" alt="TODO">
-                </div>
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-78967-8']);
+      _gaq.push(['_trackPageview']);
 
-                <p>Copyright &copy; 2013 Cumulonimbus Inc.</p>
-            </div>
-        </div>
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
 
-        <script type="text/javascript">
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-78967-8']);
-          _gaq.push(['_trackPageview']);
+    </script>
 
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="{{ STATIC_URL }}lib/bootstrap/js/bootstrap.min.js"></script>
 
-        </script>
+    {% block extra_js %} {% endblock extra_js %}
 
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-        <script src="{{ STATIC_URL }}lib/bootstrap/js/bootstrap.min.js"></script>
+    {% if debug %}
+        <script src="//{{ request.META.SERVER_NAME }}:35729/livereload.js"></script>
+    {% endif %}
 
-        {% block extra_js %} {% endblock extra_js %}
-
-        {% if debug %}
-            <script src="//{{ request.META.SERVER_NAME }}:35729/livereload.js"></script>
-        {% endif %}
-
-      </body>
-    </html>
+  </body>
+</html>

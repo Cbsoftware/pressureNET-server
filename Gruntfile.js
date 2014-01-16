@@ -13,6 +13,13 @@ module.exports = function(grunt) {
             },
             src: ['<%= static_dir %>less/pressurenet.less'],
             dest: '<%= static_dir %>css/style.css'
+        },
+        map: {
+            options: {
+                compress: true
+            },
+            src: ['<%= static_dir %>less/map.less'],
+            dest: '<%= static_dir %>css/map.css'
         }
     },
     // TODO: Javascript
