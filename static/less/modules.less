@@ -14,28 +14,30 @@
     }
 }
 
-#landing_text {
-
-    #landing_text_clouds {
-        color: #fff;
-        text-shadow: 1px 1px #666; 
-    }
-
-    .hero-tagline {
-        font-size: 50px;
-    }
-
-    .lead {
-        font-size: 45px;
-    }
-
-    p {
-        font-size: 20px;
-        padding-top: 14px;
-    }
-}
-
+// Mobile
 @media(max-width:767px) {
+    .nav {
+        margin-top: 10px;
+
+    }
+
+    .nav,
+    .nav > li {
+        float: none !important;
+        display:inline-block;
+        *display:inline; /* ie7 fix */
+        *zoom:1; /* hasLayout ie7 trigger */
+        vertical-align: top;
+    }
+
+    .nav-container {
+      text-align:center;
+    }
+    
+    #landing_clouds {
+        position: absolute;
+    }
+
     #landing_text_clouds {
         color: #222;
         text-shadow: none; 
@@ -51,21 +53,94 @@
         }
     }
 
-    .pull-right {
-        float: none !important;
+    #landing_text {
+        text-align: center;
+
+        .hero-tagline {
+            font-size: 45px;
+        }
+
+        .lead {
+            font-size: 38px;
+        }
+
+        p {
+            font-size: 20px;
+            padding-top: 25px;
+        }
+
+        .googleplay_img {
+        }
     }
 }
 
-.modal-body {
-    padding-top: 0px;
-    madding-bottom: 0px;
+// Tablet
+@media(min-width:768px){
+    .nav {
+        margin-top: 35px;
+
+    }
+    #landing_clouds {
+        position: absolute;
+        top: -18px;
+        z-index: -1;
+    }
+    
+    #landing_text {
+        #landing_text_clouds {
+            color: #fff;
+            text-shadow: 1px 1px #666; 
+        }
+
+        .hero-tagline {
+            font-size: 50px;
+        }
+
+        .lead {
+            font-size: 38px;
+        }
+
+        p {
+            font-size: 20px;
+            padding-top: 25px;
+        }
+
+        .googleplay_img {
+            height: 60px;
+        }
+    }
 }
 
-.modal-header {
-    border: none;
-}
+// Desktop
+@media(min-width:992px){
+    .nav {
+        margin-top: 35px;
 
-.modal-footer {
-    border: none;
-    padding-top: 0px;
+    }
+
+    #landing_clouds {
+        position: absolute;
+        top: -18px;
+        z-index: -1;
+    }
+    
+    #landing_text {
+        #landing_text_clouds {
+            color: #fff;
+            text-shadow: 1px 1px #666; 
+        }
+
+        .hero-tagline {
+            font-size: 50px;
+        }
+
+        .lead {
+            font-size: 45px;
+        }
+
+        p {
+            font-size: 20px;
+            padding-top: 16px;
+        }
+    }
 }
