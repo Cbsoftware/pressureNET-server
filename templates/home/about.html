@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+{% load home_tags %}
 {% load url from future %}
 
 {% block content %}
@@ -13,10 +14,10 @@
 		<div class="row">
         <div class="col-md-12">
             <h3>The App</h3>
-            <p>Our free app <a href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" target="_blank">pressureNET</a> allows users to track atmospheric pressure changes over time using the barometer in their Android device. Users can also submit current weather conditions in their precise location. This crowd-sourced data is collected and provided to meteorological researchers who are using the data to improve weather forecasting models.</p>
+            <p>Our free app <a href="{% get_playstore_url %}" target="_blank">pressureNET</a> allows users to track atmospheric pressure changes over time using the barometer in their Android device. Users can also submit current weather conditions in their precise location. This crowd-sourced data is collected and provided to meteorological researchers who are using the data to improve weather forecasting models.</p>
             <p>Our users’ privacy is of utmost importance to us. When the app is first installed and launched, the user is asked to set their information sharing settings. These can be changed at any later point in the Settings menu. The most popular choice set by our users is to share their data with academic researchers, professional forecasters and Cumulonimbus. An option to share with the public exists as well, and will provide an accessible open data set for public use.</p>
             <p>The project is open source and available on <a href="https://github.com/Cbsoftware/pressureNET" target="_blank">GitHub</a>.</p>
-            <p>If you have an Android device, please consider downloading <a href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" target="_blank">pressureNET from Google Play</a> to contribute to science experiments and research of Earth’s atmosphere.</p>
+            <p>If you have an Android device, please consider downloading <a href="{% get_playstore_url %}" target="_blank">pressureNET from Google Play</a> to contribute to science experiments and research of Earth’s atmosphere.</p>
 
             <hr/>
             <h3>The Live Stream</h3>

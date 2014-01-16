@@ -193,6 +193,9 @@ REST_FRAMEWORK = {
 
 MAX_CALL_LENGTH = 10000
 
+# Google Play
+PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork'
+
 
 # Sentry Logging
 RAVEN_CONFIG = {

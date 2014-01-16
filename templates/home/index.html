@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load home_tags %}
+
 {% block extra_head %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/landing.css">
 {% endblock extra_head %}
@@ -11,7 +13,9 @@
 
     <div class="row hero">
         <div class="hero-image col-lg-4 col-md-4 col-sm-4">
-            <img src="{{ STATIC_URL }}images/landing/phone.png" alt="">
+            <a href="{% get_playstore_url %}" target="_blank">
+                <img src="{{ STATIC_URL }}images/landing/phone.png" alt="">
+            </a>
         </div>
 
         <div id="landing_text" class="col-lg-8 col-md-8 col-sm-8">
@@ -21,19 +25,16 @@
                 </h2>
 
                 <p class="lead">
-                    We want a true, accurate weather forecast. Big meteorology companies
-                    are satisfied with 80% accuracy.
+                    We want a more accurate, real-time weather forecast
                 </p>
             </div>
 
             <p>
-                If you have a barometer in your Android device, help science out and
-                <a href="#TODO">get the app!</a> If you're a developer or researcher,
-                <a href="#TODO">check out the tools we have for you here</a>.
+                pressureNET gathers crowdsourced atmospheric sensor data from Android devices and provides it to scientific researchers.  <a href="{% get_playstore_url %}" target="_blank">Download pressureNET</a> now to help us improve weather forecasts for everybody.
             </p>
 
             <p>
-                <a href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork">
+                <a href="{% get_playstore_url %}" target="_blank">
                   <img alt="Android app on Google Play" src="{{ STATIC_URL }}images/landing/googleplay.png" />
                 </a>
             </p>
