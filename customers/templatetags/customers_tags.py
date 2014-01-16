@@ -1,14 +1,14 @@
 from django import template
 
 from customers import choices as customers_choices
-from customers.models import CustomerPlan
+from customers.models import CustomerType, CustomerPlan
 
 register = template.Library()
 
 
 @register.assignment_tag
 def get_customer_types():
-    return customers_choices.CUSTOMER_FORM_TYPES
+    return CustomerType.objects.all()
 
 
 @register.assignment_tag

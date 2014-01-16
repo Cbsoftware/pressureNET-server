@@ -20,10 +20,24 @@ class CustomerPlan(models.Model):
         return self.name
 
 
+class CustomerType(models.Model):
+    """Customer Type"""
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+
+    class Meta:
+        verbose_name = 'Customer Type'
+        verbose_name_plural = 'Customer Types'
+
+    def __unicode__(self):
+        return self.name
+
+
 class Customer(models.Model):
     """Customer data"""
     creation_date = models.DateTimeField(auto_now_add=True, null=True, blank=True)
-    customer_type = models.CharField(max_length=20, choices=customer_choices.CUSTOMER_TYPES)
+    #customer_type = models.CharField(max_length=20, choices=customer_choices.CUSTOMER_TYPES)
+    customer_type = models.ForeignKey(CustomerType, blank=True, null=True) 
     customer_plan = models.ForeignKey(CustomerPlan, blank=True, null=True)
     company_name = models.CharField(max_length=255, blank=True, null=True)
     contact_name = models.CharField(max_length=255)

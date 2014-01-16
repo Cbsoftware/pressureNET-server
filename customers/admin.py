@@ -2,13 +2,19 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
-from customers.models import CustomerPlan, Customer, CustomerCallLog
+from customers.models import CustomerPlan, CustomerType, Customer, CustomerCallLog
 
 
 class CustomerPlanAdmin(admin.ModelAdmin):
     list_display = ('name', 'global_calls', 'region_calls', 'regions', 'price')
 
 admin.site.register(CustomerPlan, CustomerPlanAdmin)
+
+
+class CustomerTypeAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(CustomerType, CustomerTypeAdmin)
 
 
 class CustomerAdmin(admin.ModelAdmin):
