@@ -16,7 +16,7 @@ MANAGERS = ADMINS
 ALLOWED_HOSTS = (
     # Staging
     'staging.pressurenet.io',
-    'pressurenet-staging.elasticbeanstalk.com'
+    'pressurenet-staging.elasticbeanstalk.com',
 
     # Live
     'pressurenet.io',
