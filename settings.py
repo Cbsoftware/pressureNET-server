@@ -14,9 +14,14 @@ PROJECT_PATH = os.path.realpath(os.path.dirname(__file__))
 MANAGERS = ADMINS
 
 ALLOWED_HOSTS = (
-    'pressurenet.io',
-    'pressurenet.cumulonimbus.ca',
+    # Staging
+    'staging.pressurenet.io',
     'pressurenet-staging.elasticbeanstalk.com'
+
+    # Live
+    'pressurenet.io',
+    'www.pressurenet.io',
+    'pressurenet.cumulonimbus.ca',
 )
 
 DEFAULT_FROM_EMAIL = 'pressureNET API <livestream@cumulonimbus.ca>'
