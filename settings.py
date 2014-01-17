@@ -84,7 +84,7 @@ STATIC_ROOT = os.path.join(PROJECT_PATH, 'served/static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = '/static/'
+STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 
 STATICFILES_DIRS = (
     os.path.join(PROJECT_PATH, 'static/'),
