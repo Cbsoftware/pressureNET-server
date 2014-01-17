@@ -3,35 +3,40 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
-<body style="font: 14px/1.2 Roboto, 'Helvetica Neue', Arial, sans-serif; color: #000; width: 100%; background-color: #ddd; margin: 0 auto;">
-	<div id="masthead" style="height: 68px; background-color: #333; padding: 10px 0;">
-		<h1 id="site-title"><a href="http://pressurenet.cumulonimbus.ca/livestream/" style="display: block; font-size: 36px; font-weight: 300; max-width: 584px; height: 36px; background-image: url( 'http://pressurenet.cumulonimbus.ca/static/images/logo-pn-email.png' ); background-position: 10px top; background-repeat: no-repeat; padding: 0 0 10px 56px; margin: 0 auto; color: #33b5e5; text-decoration: none;">pressure<span style="font-weight: 900;">NET</span> Live API</a></h1>
+<body style="font: 14px/1.2 'Open Sans', sans-serif; color: #000; width: 100%; margin: 0 auto;">
+	<div id="masthead" style="height: 68px; padding: 10px 0;">
+		<h1 id="site-title"><a href="http://pressurenet.io/developers/" style="display: block; font-size: 36px; font-weight: 300; max-width: 584px; height: 36px; background-image: url( 'http://pressurenet.io/static/images/logo-pn-email.png' ); background-position: 10px top; background-repeat: no-repeat; padding: 0 0 10px 56px; margin: 0 auto; color: #33b5e5; text-decoration: none;">pressure<span style="font-weight: 900;">NET</span> Data API</a></h1>
 	</div>
 
 	<div id="main" style="max-width: 640px; background-color: #fff; padding: 10px; margin: 0 auto 20px;">
 
     <p>Hello {{ customer.contact_name }},</p>
 
-    <p>Thank you for signing up for the pressureNET Live API.</p> 
+    <p>Thank you for signing up for the pressureNET Data API.</p> 
 
     <p>
       Your API key is:<br/> 
       <strong>{{ customer.api_key}}</strong>
     </p> 
 
-    <p>We plan to continually improve our service and add features to our Live API. If you have comments, questions, feature requests, bug reports, etc, please email us. You can always find our Live API documentation on our website, http://pressurenet.cumulonimbus.ca.</p> 
-
-    <p>You can test with the link below. We’re excited to see how you use our data at {{ customer.company_name}}!</p>
+    <p>We plan to continually improve our service and add features to our Data API. If you have comments, questions, feature requests, bug reports, etc, please email us. You can always find our Data API documentation on our website, http://pressurenet.io.</p> 
 
     <p>
-      API Demo Link:<br/> 
-      https://pressurenet.cumulonimbus.ca/live/?min_lat=29&amp;max_lat=31&amp;min_lon=-82&amp;max_lon=-79&amp;start_time=1370390400000&amp;end_time=1370397600000&amp;api_key={{ customer.api_key }}&amp;format=json
+        You can test with the link below.
+        {% if customer.company_name %}
+            We’re excited to see how you use our data at {{ customer.company_name}}!
+        {% endif %}
+    </p>
+
+    <p>
+      API Demo Link:<br/>
+      https://pressurenet.cumulonimbus.ca/live/?min_lat=40&amp;max_lat=45&amp;min_lon=-80&amp;max_lon=-75&amp;start_time=1389913201000&amp;end_time=1389916801000&amp;api_key={{ customer.api_key }}&amp;format=json
     </p>
 
     <p>
       Thanks,<br/>
-      The Cumulonimbus Team<br/>
-      http://www.cumulonimbus.ca/<br/>
+      The pressureNET Team<br/>
+      http://pressurenet.io/<br/>
     </p>
 
 	</div>
