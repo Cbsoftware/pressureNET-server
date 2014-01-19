@@ -2,96 +2,114 @@
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>pressureNET</title>
+        <title>pressureNET</title>
 
-    <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
+        <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{{ STATIC_URL }}lib/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{{ STATIC_URL }}lib/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
 
-    {% block extra_head %} {% endblock extra_head  %}
+        {% block extra_head %} {% endblock extra_head  %}
 
-  </head>
+    </head>
 
-  <body>
-    {% block header %}
-    <div class="header">
-        <div class="container nav-container">
-            <div class="row">
-                <div class="col-sm-6">
-                    <h1>
-                        <a href="{% url 'home-index' %}">
-                            <img class="pressurenet_header_logo" src="{{ STATIC_URL }}images/logo-pn.png" alt="pressurenet logo">
-                            <span class="logotype">pressure<strong>NET</strong></span>
-                        </a>
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <ul class="nav nav-pills pull-right">
-                        <li><a href="{% url 'customers-landing' %}">Developers</a></li>
-                        <li><a href="{% url 'home-about' %}">About</a></li>
-                    </ul>
+    <body>
+        {% block header %}
+        <div class="header">
+            <div class="container nav-container">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h1>
+                            <a href="{% url 'home-index' %}">
+                                <img class="pressurenet_header_logo" src="{{ STATIC_URL }}images/logo-pn.png" alt="pressurenet logo">
+                                <span class="logotype">pressure<strong>NET</strong></span>
+                            </a>
+                        </h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="nav nav-pills pull-right">
+                            <li><a href="{% url 'customers-landing' %}">Developers</a></li>
+                            <li><a href="{% url 'home-about' %}">About</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% endblock %} 
+        {% endblock %} 
 
-        {% block content %} {% endblock content %}
+            {% block content %} {% endblock content %}
 
-    <div class="footer">
-        <div class="container">
-            <div id="social-media" class="pull-right">
-                <ul id="social">
-                    <li>
-                        <a id="social-play" href="{% get_playstore_url %}" target="_blank">
-                        </a>
-                    </li>
-                    <li>
-                        <a id="social-facebook" href="https://www.facebook.com/Cumulonimbus.ca" target="_blank">
-                        </a>
-                    </li>
-                    <li >
-                        <a id="social-twitter" href="https://twitter.com/Cumulonimbus_ca" target="_blank">
-                        </a>
-                    </li>
-                    <li>
-                        <a id="social-github" href="https://github.com/cbsoftware" target="_blank">
-                        </a>
-                    </li>
-                    <li>
-                        <a id="social-gplus" href="https://plus.google.com/communities/109657802451413701146" target="_blank">
-                        </a>
-                    </li>
-                <ul>
+        <div class="footer">
+            <div class="container">
+                <div id="social-media" class="pull-right">
+                    <ul id="social">
+                        <li>
+                            <a id="social-play" href="{% get_playstore_url %}" target="_blank">
+                            </a>
+                        </li>
+                        <li>
+                            <a id="social-facebook" href="https://www.facebook.com/Cumulonimbus.ca" target="_blank">
+                            </a>
+                        </li>
+                        <li >
+                            <a id="social-twitter" href="https://twitter.com/Cumulonimbus_ca" target="_blank">
+                            </a>
+                        </li>
+                        <li>
+                            <a id="social-github" href="https://github.com/cbsoftware" target="_blank">
+                            </a>
+                        </li>
+                        <li>
+                            <a id="social-gplus" href="https://plus.google.com/communities/109657802451413701146" target="_blank">
+                            </a>
+                        </li>
+                    <ul>
+                </div>
+
+                <p id="copyright">Copyright &copy; 2014 Cumulonimbus Inc.</p>
             </div>
-
-            <p id="copyright">Copyright &copy; 2014 Cumulonimbus Inc.</p>
         </div>
-    </div>
 
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-78967-8']);
-        _gaq.push(['_trackPageview']);
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-78967-8']);
+            _gaq.push(['_trackPageview']);
 
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
+            (function() {
+              var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
 
-    </script>
+        </script>
 
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="{{ STATIC_URL }}lib/bootstrap/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script src="{{ STATIC_URL }}lib/bootstrap/js/bootstrap.min.js"></script>
 
-    {% block extra_js %} {% endblock extra_js %}
+        {% block extra_js %} {% endblock extra_js %}
 
-  </body>
+        <script type="text/javascript">
+          var _sf_async_config = { uid: 53793, domain: 'pressurenet.io', useCanonical: true };
+          (function() {
+            function loadChartbeat() {
+              window._sf_endpt = (new Date()).getTime();
+              var e = document.createElement('script');
+              e.setAttribute('language', 'javascript');
+              e.setAttribute('type', 'text/javascript');
+              e.setAttribute('src','//static.chartbeat.com/js/chartbeat.js');
+              document.body.appendChild(e);
+            };
+            var oldonload = window.onload;
+            window.onload = (typeof window.onload != 'function') ?
+              loadChartbeat : function() { oldonload(); loadChartbeat(); };
+          })();
+        </script>
+
+    </body>
 </html>
