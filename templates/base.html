@@ -5,7 +5,7 @@
     <head>
         <script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
 
         <title>pressureNET</title>
 
@@ -34,6 +34,7 @@
                     </div>
                     <div class="col-sm-6">
                         <ul class="nav nav-pills pull-right">
+                            <li><a href="{% url 'home-map' %}">Map</a></li>
                             <li><a href="{% url 'customers-landing' %}">Developers</a></li>
                             <li><a href="{% url 'home-about' %}">About</a></li>
                         </ul>
@@ -50,11 +51,11 @@
                 <div id="social-media" class="pull-right">
                     <ul id="social">
                         <li>
-                            <a id="social-play" href="{% get_playstore_url %}" target="_blank">
+                            <a id="social-email" href="mailto:software@cumulonimbus.ca" target="_blank">
                             </a>
                         </li>
                         <li>
-                            <a id="social-facebook" href="https://www.facebook.com/Cumulonimbus.ca" target="_blank">
+                            <a id="social-play" href="{% get_playstore_url %}" target="_blank">
                             </a>
                         </li>
                         <li >
@@ -67,6 +68,10 @@
                         </li>
                         <li>
                             <a id="social-gplus" href="https://plus.google.com/communities/109657802451413701146" target="_blank">
+                            </a>
+                        </li>
+                        <li>
+                            <a id="social-facebook" href="https://www.facebook.com/Cumulonimbus.ca" target="_blank">
                             </a>
                         </li>
                     <ul>

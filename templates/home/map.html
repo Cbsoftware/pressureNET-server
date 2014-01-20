@@ -1,82 +1,55 @@
 {% extends "base.html" %}
     
 {% block extra_head %}
-    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false"></script>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script> 
-    <script type="text/javascript" src="{{ STATIC_URL }}js/pressurenet.analysis.js"></script> 
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/map.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}lib/datepicker/css/datepicker.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div id="date-range" class="full">
-      <div class="half">
-        <label for="start_date">From</label>
-        <input readonly="true" type="text" name="start_date" id="start_date" class="dateselector" placeholder="Start Date">
-      </div>
-      <div class="half">
-        <label for="end_date">To</label>
-        <input readonly="true" type="text" id="end_date" name="end_date" class="dateselector" placeholder="End Date">
-      </div>
-      <div class="half">
-        <label for="log_duration">By</label>
-        <select class="duration_select" name="log_duration" id="log_duration">
-            <option value="10minute">10 Minutes</option>
-            <option value="hourly">1 Hour</option>
-            <option value="daily">1 Day</option>
-        </select>
-      </div>
-      <input type="button" id="load" value="Load" onClick="PressureNET.loadAndUpdate();">
+    <div id="map_container">
+        <input id="pac-input" class="controls form-control" type="text" placeholder="Search Location">
+        <div id="map_canvas">
+        </div>
+
+        <div id="map_panel_container" class="container">
+            <div class="row">
+                <div id="map_panel" class="col-md-8 col-md-offset-2">
+                    <span>Pressure in Millibars</span>
+                    <div id="map_graph">
+                    </div>
+                    <form class="form-inline">
+                        <div id="map_graph_controls" class="form-group">
+                            <div id="date-range" class="input-daterange">
+                                <input id="start_date" class="form-control" name="start_date" type="text" placeholder="Start Date" />
+                                <label>to</label>
+                                <input id="end_date" class="form-control" name="end_date" type="text" placeholder="End Date" />
+                            </div>
+
+                            <label for="date_length">by</label>
+                            <select id="date_length" class="form-control" name="date_length" type="select">
+                                <option value="10minute">10 minutes</option>
+                                <option value="hourly" selected>1 hour</option>
+                                <option value="daily">1 day</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div id="query_results" class="full"></div>
-    <div id="share_spot" class="full">
-      <input type="text" id="share_input">
-    </div>
-
-    <div id="map_canvas" class="full"></div>  
-
-    <div id="current_position" class="full"></div>
-
-    <div id="placeholder" class="full"></div>
-
-    <div id="graph_info" class="full">
-      <p>This graph is a plot of our raw atmospheric pressure data in millibars over time (some outliers have been discarded). Below is a table of information about the graph.</p>
-
-      <table class="graph_info_table">
-        <tr>
-          <th>Sensors</th>
-          <td id="resultsCount_cell" colspan="3"></td>
-        </tr>
-        <tr>
-          <th>Latitude</th>
-          <td id="min_latitude_cell"></td>
-          <td class="center">to</td>
-          <td id="max_latitude_cell"></td>
-        </tr>
-        <tr>
-          <th>Longitude</th>
-          <td id="min_longitude_cell"></td>
-          <td class="center">to</td>
-          <td id="max_longitude_cell"></td>
-        </tr>
-        <tr>
-          <th>Time</th>
-          <td id="start_time_cell"></td>
-          <td class="center">to</td>
-          <td id="end_time_cell"></td>
-        </tr>
-      </table>
-    </div>
-
-</div>
 {% endblock %}
 
 {% block extra_js %}
+    <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBi5dXNdOowRIkC0DwsgR_mWLbKoQKHvk0&sensor=false&libraries=places"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.flot.js"></script> 
+    <script type="text/javascript" src="{{ STATIC_URL }}lib/datepicker/js/bootstrap-datepicker.js"></script> 
+    <script type="text/javascript" src="{{ STATIC_URL }}js/map.js"></script> 
     <script type="text/javascript">
-      PressureNET.initialize({
-        statisticsUrl: '{% url 'readings-stats' %}'
-      });
-
+        $(function () {
+            PressureNET.initialize({
+              data_url: '{% url 'readings-stats' %}'
+            });
+        });
     </script>
 {% endblock %}
