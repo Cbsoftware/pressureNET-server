@@ -13,9 +13,34 @@
         PressureNET.map = new google.maps.Map(
             document.getElementById('map_canvas'),
             {
+                center: new google.maps.LatLng(42, -73), // start near nyc
+                zoom: 4,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             }
         );
+        
+        // Create the search box and link it to the UI element.
+        var search_input = document.getElementById('pac-input');
+        PressureNET.map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
+
+        var searchBox = new google.maps.places.SearchBox((search_input));
+
+        google.maps.event.addListenerOnce(PressureNET.map, 'idle', function() {
+            $('.controls').fadeIn();
+            $('#map_panel').fadeIn();
+            
+        });
+
+        google.maps.event.addListener(searchBox, 'places_changed', function() {
+            var places = searchBox.getPlaces();
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0, place; place = places[i]; i++) {
+                bounds.extend(place.geometry.location);
+            }
+            PressureNET.map.fitBounds(bounds);
+            PressureNET.map.setZoom(12);
+        });
 
         google.maps.event.addListener(PressureNET.map, 'bounds_changed', function() {
             PressureNET.update_graph();
@@ -30,22 +55,6 @@
                 PressureNET.map.setZoom(12);
             });
         }
-        // Create the search box and link it to the UI element.
-        var search_input = document.getElementById('pac-input');
-        PressureNET.map.controls[google.maps.ControlPosition.TOP_LEFT].push(search_input);
-
-        var searchBox = new google.maps.places.SearchBox((search_input));
-
-        google.maps.event.addListener(searchBox, 'places_changed', function() {
-            var places = searchBox.getPlaces();
-
-            var bounds = new google.maps.LatLngBounds();
-            for (var i = 0, place; place = places[i]; i++) {
-                bounds.extend(place.geometry.location);
-            }
-            PressureNET.map.fitBounds(bounds);
-            PressureNET.map.setZoom(12);
-        });
     }
 
     PressureNET.initialize_controls = function () {
