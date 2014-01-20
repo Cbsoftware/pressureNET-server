@@ -104,11 +104,23 @@
                     plot_data.push([data_point.timestamp, data_point.median]);
                 }
 
-                $.plot($('#map_graph'), [plot_data],{
-                    lines:{show:false},
-                    points:{show:true},
-                    xaxis:{mode:'time'},
-                });
+                $.plot(
+                    $('#map_graph'), 
+                    [{
+                        data: plot_data,
+                        color: '#428bca',
+                        lines: {
+                            show: true
+                        },
+                        points: {
+                            show: true
+                        },
+                    }], {
+                        xaxis: {
+                            mode:'time'
+                        }
+                    }
+                );
             }
         });
     }
