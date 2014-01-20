@@ -11,7 +11,7 @@
 
         <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{{ STATIC_URL }}lib/bootstrap/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
 
@@ -83,13 +83,13 @@
 
             (function() {
               var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : '//www') + '.google-analytics.com/ga.js';
               var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
             })();
 
         </script>
 
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js"></script>
         <script src="{{ STATIC_URL }}lib/bootstrap/js/bootstrap.min.js"></script>
 
         {% block extra_js %} {% endblock extra_js %}
