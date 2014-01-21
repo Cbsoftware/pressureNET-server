@@ -1,20 +1,17 @@
+@social_size: 24px;
+@social_cb_size: @social_size * 1.5;
+
 .footer {
     background: #FFF;
-    min-height: 60px;
     margin-top: 100px;
-    padding-top: 14px;
-    line-height: 32px;
-
-    .social_media_icon {
-        width: 32px;
-        height: 32px;
-        margin-left: 15px;
-    }
+    padding-top: 10px;
+    line-height: @social_size;
 }
 
 #social {
+    
     display: block;
-    height: 32px;
+    height: @social_size; 
     float: right;
     list-style: none;
     padding: 0;
@@ -27,36 +24,37 @@
         margin-right: 15px;
     }
 
+
     a {
         display: block;
-        width: 32px;
-        height: 32px;
+        width: @social_size;
+        height: @social_size;
         background-image: url("../images/ic-social.png");
-        background-size: 304px 64px;
+        background-size: (@social_cb_size + (@social_size * 8)) (@social_size * 2);
     }
 
     #social-cb {
-        width: 48px;
+        width: @social_cb_size;
     }
 
-    #social-cb {background-position: 0 0;}
-    #social-rss {background-position: -48px 0;}
-    #social-email {background-position: -80px 0;}
-    #social-github {background-position: -112px 0;}
-    #social-twitter {background-position: -144px 0;}
-    #social-gplus {background-position: -176px 0;}
-    #social-facebook {background-position: -208px 0;}
-    #social-linkedin {background-position: -240px 0;}
-    #social-play {background-position: -272px 0;}
-    #social-cb:hover {background-position: 0 -32px;}
-    #social-rss:hover {background-position: -48px -32px;}
-    #social-email:hover {background-position: -80px -32px;}
-    #social-github:hover {background-position: -112px -32px;}
-    #social-twitter:hover {background-position: -144px -32px;}
-    #social-gplus:hover {background-position: -176px -32px;}
-    #social-facebook:hover {background-position: -208px -32px;}
-    #social-linkedin:hover {background-position: -240px -32px;}
-    #social-play:hover {background-position: -272px -32px;}
+    #social-cb {              background-position: (0 - ((@social_size * 0))) 0;}//0 0;}
+    #social-rss {             background-position: (0 - (@social_cb_size + (@social_size * 0))) 0;}//-48px 0;}
+    #social-email {           background-position: (0 - (@social_cb_size + (@social_size * 1))) 0;}//-80px 0;}
+    #social-github {          background-position: (0 - (@social_cb_size + (@social_size * 2))) 0;}//-112px 0;}
+    #social-twitter {         background-position: (0 - (@social_cb_size + (@social_size * 3))) 0;}//-144px 0;}
+    #social-gplus {           background-position: (0 - (@social_cb_size + (@social_size * 4))) 0;}//-176px 0;}
+    #social-facebook {        background-position: (0 - (@social_cb_size + (@social_size * 5))) 0;}//-208px 0;}
+    #social-linkedin {        background-position: (0 - (@social_cb_size + (@social_size * 6))) 0;}//-240px 0;}
+    #social-play {            background-position: (0 - (@social_cb_size + (@social_size * 7))) 0;}//-272px 0;}
+    #social-cb:hover {        background-position: (0 - ((@social_size * 0))) -@social_size;}//0 -24px;}
+    #social-rss:hover {       background-position: (0 - (@social_cb_size + (@social_size * 0))) -@social_size;}//-48px -24px;}
+    #social-email:hover {     background-position: (0 - (@social_cb_size + (@social_size * 1))) -@social_size;}//-80px -24px;}
+    #social-github:hover {    background-position: (0 - (@social_cb_size + (@social_size * 2))) -@social_size;}//-112px -24px;}
+    #social-twitter:hover {   background-position: (0 - (@social_cb_size + (@social_size * 3))) -@social_size;}//-144px -24px;}
+    #social-gplus:hover {     background-position: (0 - (@social_cb_size + (@social_size * 4))) -@social_size;}//-176px -24px;}
+    #social-facebook:hover {  background-position: (0 - (@social_cb_size + (@social_size * 5))) -@social_size;}//-208px -24px;}
+    #social-linkedin:hover {  background-position: (0 - (@social_cb_size + (@social_size * 6))) -@social_size;}//-240px -24px;}
+    #social-play:hover {      background-position: (0 - (@social_cb_size + (@social_size * 7))) -@social_size;}//-272px -24px;}
 }
 
 @media(max-width:767px) {
