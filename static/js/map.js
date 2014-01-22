@@ -60,8 +60,6 @@
     PressureNET.initialize_controls = function () {
         $('.input-daterange').datepicker({
             endDate: new Date(),
-            todayBtn: true,
-            todayHighlight: true,
             autoclose: true
         });
 
@@ -122,11 +120,16 @@
                             show: true
                         },
                         points: {
-                            show: true
+                            show: false
                         },
                     }], {
                         xaxis: {
-                            mode:'time'
+                            mode: 'time',
+                        },
+                        yaxis: {
+                        },
+                        grid: {
+                            color: '#ffffff'
                         }
                     }
                 );
