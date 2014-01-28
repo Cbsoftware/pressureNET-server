@@ -15,6 +15,7 @@
             {
                 center: new google.maps.LatLng(42, -73), // start near nyc
                 zoom: 4,
+                disableDefaultUI: true,
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             }
         );

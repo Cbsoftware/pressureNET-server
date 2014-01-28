@@ -29,6 +29,7 @@ html, body {
     font-size: 15px;
     font-weight: 300;
     text-overflow: ellipsis;
+    left: 30px !important;
 }
 
 #pac-input:focus {
@@ -81,5 +82,48 @@ html, body {
                 width: auto;
             }
         }
+    }
+}
+
+
+@media(max-width:767px) {
+    .footer, .nav {
+        display: none;
+    }
+
+    #map_container {
+        bottom: 0px !important;
+
+        #pac-input {
+            margin: 0px !important;
+            left: 0px !important;
+            border-radius: 0px;
+            width: 100%;
+        }
+
+        #map_panel {
+            position: absolute;
+            bottom: 0px;
+            border-radius: 0px;
+
+            #map_graph {
+                height: 100px;
+            }
+
+            .form-control {
+                display: inline-block;
+                width: 25% !important;
+            }
+
+            #map_graph_controls {
+                margin-bottom: 0px;
+            }
+        }
+    }
+}
+
+@media(max-height:320px) {
+    #map_panel_container {
+        display: none;
     }
 }
