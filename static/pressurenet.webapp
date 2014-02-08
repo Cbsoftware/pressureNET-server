@@ -1,0 +1,15 @@
+{
+  "name": "pressureNET",
+  "description": "Crowd Sourced Weather",
+  "launch_path": "/map/",
+  "icons": {
+    "60": "/static/images/60x60pn.png",
+    "90": "/static/images/90x90pn.png",
+    "128": "/static/images/128x128pn.png"
+  },
+  "developer": {
+    "name": "Cumulonimbus",
+    "url": "http://pressurenet.io"
+  },
+  "default_locale": "en"
+}
