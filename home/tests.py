@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -19,3 +20,11 @@ class IndexTests(TemplateTestMixin, TestCase):
 class AboutTests(TemplateTestMixin, TestCase):
     url_name = 'home-about'
     template_name = 'home/about.html'
+
+
+class CardTests(TestCase):
+
+    def test_card_page_redirects_to_play_store(self):
+        response = self.client.get(reverse('home-card'), follow=False)
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['location'], settings.PLAY_STORE_URL)
