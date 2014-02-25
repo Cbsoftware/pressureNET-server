@@ -63,6 +63,14 @@ class PressureNETIndexDashboard(Dashboard):
             models=('customers.*',),
         ))
 
+        # append an app list module for "Applications"
+        self.children.append(modules.ModelList(
+            _('Blog Posts'),
+            collapsible=True,
+            column=1,
+            models=('blog.*',),
+        ))
+
         # Cache module
         self.children.append(CacheModule(
             _('Cache Status'),

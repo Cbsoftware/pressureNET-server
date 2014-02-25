@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="blog_post col-md-offset-1 col-md-10">
+                <h1>{{ blog_post.title }}</h1>
+                <em>{{ blog_post.creation_date.date }}</em>
+                <p class="lead">{{ blog_post.author }}</p>
+                <div class="blog_content">
+                    {{ blog_post.content|safe }}
+                </div>
+                <hr/>
+            </div>
+        </div>
+    </div>
+{% endblock %}

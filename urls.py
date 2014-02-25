@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^developers/', include('customers.urls')),
+    url(r'^blog/', include('blog.urls')),
     url(r'^', include('readings.urls')),
     url(r'^', include('home.urls')),
 )

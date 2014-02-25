@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+        {% for blog_post in blog_posts %}
+            <div class="blog_post col-md-offset-1 col-md-10">
+                <h1>
+                    <a href="{% url "blog-detail" slug=blog_post.slug %}">
+                        {{ blog_post.title }}
+                    </a>
+                </h1>
+                <em>{{ blog_post.creation_date.date }}</em>
+                <p class="lead">{{ blog_post.author }}</p>
+                <div class="blog_content">
+                    {{ blog_post.teaser|safe }}
+                </div>
+                <hr/>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

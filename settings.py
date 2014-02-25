@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'urlobject',
     'widget_tweaks',
 
+    'blog',
     'customers',
     'home',
     'readings',
