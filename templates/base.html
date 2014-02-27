@@ -7,7 +7,11 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
 
-        <title>pressureNET</title>
+        <title>
+            {% block page_title %}
+                pressureNET
+            {% endblock %}
+        </title>
 
         <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
 
@@ -43,7 +47,7 @@
                 </div>
             </div>
         </div>
-        {% endblock %} 
+        {% endblock %}
 
             {% block content %} {% endblock content %}
 
