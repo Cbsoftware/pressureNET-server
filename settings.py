@@ -194,7 +194,12 @@ GRAPPELLI_INDEX_DASHBOARD = 'dashboard.PressureNETIndexDashboard'
 
 # Django Rest Framework
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_THROTTLE_CLASSES': (
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'readings_live': '5/hour',
+    }
 }
 
 MAX_CALL_LENGTH = 10000

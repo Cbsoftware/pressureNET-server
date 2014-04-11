@@ -10,6 +10,7 @@ from django.views.generic.edit import CreateView
 from django.utils import simplejson as json
 
 from rest_framework.generics import ListAPIView
+from rest_framework.throttling import UserRateThrottle, ScopedRateThrottle
 
 from customers import choices as customer_choices
 from customers.models import Customer, CustomerCallLog
@@ -249,11 +250,16 @@ class LoggedLocationListView(FilteredListAPIView):
         return queryset[:parameters['results_limit']]
 
 
+class ReadingLiveThrottle(ScopedRateThrottle):
+    scope = 'readings_live'
+
+
 class ReadingLiveView(APIKeyViewMixin, LoggedLocationListView):
     """Handle requests for livestreaming"""
     call_type = customer_choices.CALL_READINGS
     model = Reading
     serializer_class = ReadingLiveSerializer
+    throttle_classes = (ReadingLiveThrottle,)
 
 reading_live = ReadingLiveView.as_view()
 
