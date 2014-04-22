@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
 from customers.models import CustomerPlan, CustomerType, Customer, CustomerCallLog
+from utils.admin import CSVAdminMixin
 
 
 class CustomerPlanAdmin(admin.ModelAdmin):
@@ -57,7 +58,7 @@ class CustomerAdmin(admin.ModelAdmin):
 admin.site.register(Customer, CustomerAdmin)
 
 
-class CustomerCallLogAdmin(admin.ModelAdmin):
+class CustomerCallLogAdmin(CSVAdminMixin, admin.ModelAdmin):
     list_display = ('customer', 'results_returned', 'processing_time', 'timestamp', 'ip_address', 'call_type')
     list_filter = ('customer', 'call_type',)
 
