@@ -1,0 +1,12 @@
+<h1>
+    <a href="{% url "blog-detail" slug=blog_post.slug %}">
+        {{ blog_post.title }}
+    </a>
+</h1>
+<em>
+    {{ blog_post.creation_date.date }}
+    |
+    <a href="{% url "blog-detail" slug=blog_post.slug %}#disqus_thread">
+        0 Comments
+    </a>
+</em>

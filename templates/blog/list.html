@@ -5,18 +5,7 @@
         <div class="row">
         {% for blog_post in blog_posts %}
             <div class="blog_post col-md-offset-1 col-md-10">
-                <h1>
-                    <a href="{% url "blog-detail" slug=blog_post.slug %}">
-                        {{ blog_post.title }}
-                    </a>
-                </h1>
-                <em>
-                    {{ blog_post.creation_date.date }}
-                    |
-                    <a href="{% url "blog-detail" slug=blog_post.slug %}#disqus_thread">
-                        0 Comments
-                    </a>
-                </em>
+                {% include "blog/includes/blog_header.html" %}
                 <p class="lead">{{ blog_post.author.first_name }} {{ blog_post.author.last_name }}</p>
                 <div class="blog_content">
                     {{ blog_post.teaser|safe }}
