@@ -10,7 +10,13 @@
                         {{ blog_post.title }}
                     </a>
                 </h1>
-                <em>{{ blog_post.creation_date.date }}</em>
+                <em>
+                    {{ blog_post.creation_date.date }}
+                    |
+                    <a href="{% url "blog-detail" slug=blog_post.slug %}#disqus_thread">
+                        0 Comments
+                    </a>
+                </em>
                 <p class="lead">{{ blog_post.author.first_name }} {{ blog_post.author.last_name }}</p>
                 <div class="blog_content">
                     {{ blog_post.teaser|safe }}
@@ -21,4 +27,19 @@
         {% endfor %}
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'pressurenet'; // required: replace pressurenet with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
 {% endblock %}
