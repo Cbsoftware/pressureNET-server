@@ -116,7 +116,7 @@
                     $('#map_graph'), 
                     [{
                         data: plot_data,
-                        color: '#428bca',
+                        color: '#0099cc',
                         lines: {
                             show: true
                         },

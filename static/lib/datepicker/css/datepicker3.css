@@ -470,7 +470,7 @@ fieldset[disabled] .datepicker table tr td.selected.disabled:hover.active {
 .datepicker table tr td.active.disabled,
 .datepicker table tr td.active.disabled:hover {
   color: #ffffff;
-  background-color: #428bca;
+  background-color: #0099cc;
   border-color: #357ebd;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
@@ -572,7 +572,7 @@ fieldset[disabled] .datepicker table tr td.active.active,
 fieldset[disabled] .datepicker table tr td.active:hover.active,
 fieldset[disabled] .datepicker table tr td.active.disabled.active,
 fieldset[disabled] .datepicker table tr td.active.disabled:hover.active {
-  background-color: #428bca;
+  background-color: #0099cc;
   border-color: #357ebd;
 }
 .datepicker table tr td span {
@@ -599,7 +599,7 @@ fieldset[disabled] .datepicker table tr td.active.disabled:hover.active {
 .datepicker table tr td span.active.disabled,
 .datepicker table tr td span.active.disabled:hover {
   color: #ffffff;
-  background-color: #428bca;
+  background-color: #0099cc;
   border-color: #357ebd;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
@@ -701,7 +701,7 @@ fieldset[disabled] .datepicker table tr td span.active.active,
 fieldset[disabled] .datepicker table tr td span.active:hover.active,
 fieldset[disabled] .datepicker table tr td span.active.disabled.active,
 fieldset[disabled] .datepicker table tr td span.active.disabled:hover.active {
-  background-color: #428bca;
+  background-color: #0099cc;
   border-color: #357ebd;
 }
 .datepicker table tr td span.old,
