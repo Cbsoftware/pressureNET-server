@@ -198,7 +198,7 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': (
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'user': '5/hour',
+        'user': '4/min',
     }
 }
 
