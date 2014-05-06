@@ -14,6 +14,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
             'daterecorded',
             'latitude',
             'longitude',
+            'altitude',
         )
 
 
