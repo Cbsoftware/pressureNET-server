@@ -9,6 +9,7 @@ from django.test.utils import override_settings
 from django.utils import simplejson as json
 
 import factory
+import mock
 
 from readings import choices as readings_choices
 from readings.models import Reading, Condition
@@ -305,27 +306,9 @@ class ReadingLiveTests(TestCase):
 
 class CreateReadingTests(TestCase):
 
-    def __init__(self, *args, **kwargs):
-        self.queue = get_queue(settings.SQS_QUEUE)
-        return super(CreateReadingTests, self).__init__(*args, **kwargs)
-
-    def clear_queue(self):
-        if 'live' in settings.SQS_QUEUE:
-            raise Exception('Attempting to test against live queue')
-
-        self.queue.clear()
-
-    def setUp(self):
-        self.clear_queue()
-
-    def tearDown(self):
-        self.clear_queue()
-
-    def get_post_data(self):
-        return ReadingFactory.attributes()
-
-    def test_create_reading_inserts_into_db(self):
-        post_data = self.get_post_data()
+    @mock.patch('readings.forms.add_to_queue')
+    def test_create_reading_inserts_into_db(self, mock_queue):
+        post_data = ReadingFactory.attributes()
         response = self.client.post(reverse('readings-create-reading'), post_data)
 
         response_json = json.loads(response.content)
@@ -333,17 +316,11 @@ class CreateReadingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Reading.objects.count(), 1)
 
-        queued_messages = self.queue.get_messages(num_messages=10)
-        self.assertEqual(len(queued_messages), 1)
-
 
 class CreateConditionTests(TestCase):
 
-    def get_post_data(self):
-        return ConditionFactory.attributes()
-
     def test_create_reading_inserts_into_db(self):
-        post_data = self.get_post_data()
+        post_data = ConditionFactory.attributes()
         response = self.client.post(reverse('readings-create-condition'), post_data)
 
         self.assertEqual(response.status_code, 200)

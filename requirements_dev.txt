@@ -18,6 +18,7 @@ docutils==0.11
 factory-boy==2.3.1
 ipython==0.13.1
 jmespath==0.2.1
+mock==1.0.1
 ordereddict==1.1
 pep8==1.4.5
 pip2pi==0.2.1
