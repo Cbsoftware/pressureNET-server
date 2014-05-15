@@ -1,35 +1,152 @@
 {% extends "base.html" %}
 
-{% load home_tags %}
-{% load url from future %}
+{% block body_class %}about{% endblock %}
+
+{% block header_class %}short{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-offset-1 col-md-10">
-            <h2>About pressureNET</h2>
-            <p>
-                pressureNET is a global network of crowdsourced atmospheric sensors that collect weather data. Our app automatically collects atmospheric pressure measurements using barometers in Android devices. We're sharing this data with scientists and researchers to improve weather forecasting. Our goal is to create an extremely high-resolution and high-accuracy weather forecast model using this new source of real-time and hyperlocal data about the Earth's atmosphere.
-            </p>
+    <div id="about-pn" class="jumbotron section tall-box">
+        <div class="container">
+            <h1 class="full-pad">About PressureNet</h1>
 
-            <hr/>
-            <h3>Android App</h3>
-            <p>
-                Our app is available for free on <a href="{% get_playstore_url %}" target="_blank"> Google Play</a>. We are continuously taking feedback to make it better, so check it out and let us know what you think.
-            </p>
-
-            <hr/>
-            <h3>SDK and Live Data</h3>
-            <p>
-                We have built an open source SDK to let Android developers build on top of our platform. We also provide an API for researchers to access our data. Read more on our <a href="{% url 'customers-landing' %}">Developers page</a>.
-            </p>
-
-            <hr/>
-            <h3>Our Team</h3>
-            <p>
-                pressureNET is built by <a href="http://jacobsheehy.com/" target="_blank">Jacob Sheehy</a>, <a href="http://philippejones.com/" target="_blank">Phil Jones</a> and <a href="http://jaredkerim.com/" target="_blank">Jared Kerim</a>. We are based in Toronto, Canada.
-            </p>
+            <p class="about-pitch pull-left col-sm-6">We’re an atmosphere data and software intelligence company. Our mission is to dramatically improve weather and climate forecasting. We’re using new software tools and taking advantage of the ubiquity of connected atmosphere sensors to build the highest-resolution data collection system for the Earth.</p>
+            <p class="about-pitch pull-left col-sm-6">We’ve built an open source platform that collects data from Android smartphones called the PressureNet SDK, and we provide a feed of this data for atmosphere researchers through the PressureNet API.</p>
         </div>
     </div>
-</div>
+
+    <div id="about-sdk-api" class="jumbotron section tall-box">
+        <div class="container">
+            <div class="border-right col-sm-6">
+                <h2>The SDK</h2>
+                <p>We’ve made it easy for Android developers to become a part of the PressureNet data collection network. The pressureNET SDK is an Android library project that enables simple atmosphere sensor data collection and transmission to researchers. Integrating the SDK into your app provides you with simple access to our data and weather APIs while automatically contributing additional atmosphere data to our network.</p>
+            </div>
+            <div class="col-sm-6">
+                <h2>The API</h2>
+                <p>Our data archive contains hundreds of millions of atmospheric pressure measurements and we’re growing our live data intake quickly. In order to enable collaboration and science research, this data is available through our PressureNet API.</p>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <a class="btn btn-primary btn-lg" href="api.html" role="button">More details</a>
+        </div>
+    </div>
+
+    <div id="about-apps" class="container section">
+        <h2>Apps</h2>
+
+        <p class="col-sm-6 col-sm-offset-3">We’re building innovative apps on top of the PressureNet SDK - and you can too! Here are some of the apps in development by us and other developers:</p>
+
+        <div class="col-sm-4">
+            <h3>PressureNet</h3>
+            <p class="app-description">Our initial dedicated app to collect sensor data.</p>
+            <img class="app-screen img-responsive" src="{{ STATIC_URL }}images/screen-pressurenet.png" alt="PressureNet Screenshot">
+        </div>
+
+        <div class="col-sm-4">
+            <h3>Patient Zero</h3>
+            <p class="app-description">The next version of the fun pandemic simulator Patient Zero will incorporate PressureNet.</p>
+            <img class="app-screen img-responsive" src="{{ STATIC_URL }}images/screen-patient-zero.png" alt="Patient Zero Screenshot">
+        </div>
+
+        <div class="col-sm-4">
+            <h3>DoodleCam Beta</h3>
+            <p class="app-description">Scary monsters in the sky will be weather aware!</p>
+            <img class="app-screen img-responsive" src="{{ STATIC_URL }}images/screen-doodlecam.png" alt="Doodlecam Screenshot">
+        </div>
+    </div>
+
+    <div id="about-team" class="container section">
+        <h2>The Team</h2>
+
+        <div class="col-sm-3">
+            <img class="img-corners img-responsive" src="{{ STATIC_URL }}images/photo-jacob.jpg" alt="Photo of Jacob">
+            <hgroup>
+                <h3>Jacob Sheehy</h3>
+                <h4>CEO, Co-Founder</h4>
+                <p>Something about Jacob. Bacon.</p>
+            </hgroup>
+        </div>
+        <div class="col-sm-3">
+            <img class="img-corners img-responsive" src="{{ STATIC_URL }}images/photo-phil.jpg" alt="Photo of Phil">
+            <hgroup>
+                <h3>Phil Jones</h3>
+                <h4>Chief Creative,<br> Co-Founder</h4>
+                <p>Something about Phil. Ham.</p>
+            </hgroup>
+        </div>
+        <div class="col-sm-3">
+            <img class="img-corners img-responsive" src="{{ STATIC_URL }}images/photo-jared.png" alt="Photo of Jacob">
+            <hgroup>
+                <h3>Jared Kerim</h3>
+                <h4>CTO</h4>
+                <p>Something about Jared. Pork Chop.</p>
+            </hgroup>
+        </div>
+        <div class="col-sm-3">
+            <img class="img-corners img-responsive" src="{{ STATIC_URL }}images/photo-laura.jpg" alt="Photo of Jacob">
+            <hgroup>
+                <h3>Laura D'Alessandro</h3>
+                <h4>Community Coordinator</h4>
+                <p>Something about Laura. Prosciutto.</p>
+            </hgroup>
+        </div>
+    </div>
+
+    <div id="about-jobs" class="container section">
+        <h2>Jobs</h2>
+        
+        <div class="border-right col-sm-6">
+            <p>Can you spot the holes in our team? We're currently looking for the following positions to fill:</p>
+
+            <ul id="jobs-list">
+                <li>
+                    <h4><a data-toggle="collapse" data-parent="#jobs-list" href="#job-one">WRF Modeller</a></h4>
+                    <div id="job-one" class="job-listing collapse">
+                        <p>We’re looking for the best atmosphere modellers in the world. You’ll be in charge of our WRF data assimilation system and managing our WRF model runs and experiments. We’re collecting hundreds of millions of measurements of the atmosphere; help us examine this data and test our new weather forecasts!</p>
+                        <p><a href="">More Details</a></p>
+                    </div>
+                </li>
+                <li>
+                    <h4><a data-toggle="collapse" data-parent="#jobs-list" href="#job-two">iOS Developer</a></h4>
+                    <div id="job-two" class="job-listing collapse">
+                        <p>We’re about to build the best and most innovative iOS weather app: we’ve built the PressureNet platform on Android and are integrating new weather models to create vastly higher-resolution weather forecasts, custom-tailored for our users. You’ll be in charge of creating our open source iOS PressureNet SDK which you’ll use to develop our weather apps for iPhones and iPads. You’ll write code to collect sensor data, visualize weather patterns, and innovate on how weather forecasts are delivered.</p>
+                        <p><a href="">More Details</a></p>
+                    </div>
+                </li>
+                <li>
+                    <h4><a data-toggle="collapse" data-parent="#jobs-list" href="#job-three">Android Developer</a></h4>
+                    <div id="job-three" class="job-listing collapse">
+                        <p>Our PressureNet app has 15,000 users. Our SDK has a quickly growing developer community. You’ll be in charge of developing both our Android SDK and our Android apps. We’re using the PressureNet platform for sensor data collection combined with new weather models to create vastly higher-resolution, custom-tailored for our users. You’ll write code to collect sensor data, visualize weather patterns, and innovate on how weather forecasts are delivered.</p>
+                        <p><a href="">More Details</a></p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-sm-6">
+            <p class="text-center">Please attach a cover letter and resumé.</p>
+            <a class="btn btn-primary btn-lg" href="mailto:jobs@cumulonimbus.ca?subject=Jobs" role="button">Apply</a>
+        </div>
+    </div>
+
+    <div id="about-contact" class="container section">
+        <h2>Contact Us</h2>
+
+        <div class="border-right col-sm-4">
+            <h4>General Inquiries</h4>
+            <a class="btn btn-grey" href="mailto:contact@cumulonimbus.ca" role="button">Get in Touch!</a>
+        </div>
+        <div class="border-right col-sm-4">
+            <h4>Media Inquiries</h4>
+            <a class="btn btn-grey" href="mailto:contact@cumulonimbus.ca" role="button">Press</a>
+        </div>
+        <div class="col-sm-4">
+            <h4>Mailing Address</h4>
+            <address>
+                230-101 College St<br>
+                Toronto, ON, Canada<br>
+                M5G 1L7<br>
+            </address>
+        </div>
+    </div>
 {% endblock %}

@@ -1,19 +1,60 @@
 {% extends "base.html" %}
 
+{% block body_class %}blog{% endblock %}
+
+{% block header_class %}short{% endblock %}
+
 {% block content %}
-    <div class="container">
-        <div class="row">
-        {% for blog_post in blog_posts %}
-            <div class="blog_post col-md-offset-1 col-md-10">
-                {% include "blog/includes/blog_header.html" %}
-                <p class="lead">{{ blog_post.author.first_name }} {{ blog_post.author.last_name }}</p>
-                <div class="blog_content">
-                    {{ blog_post.teaser|safe }}
-                </div>
-                <a href="{% url "blog-detail" slug=blog_post.slug %}">Continue reading...</a>
-                <hr/>
+    <div id="content">
+        <div class="container">
+            <div class="post-archive col-sm-8 col-md-9 col-lg-10 col-sm-push-4 col-md-push-3 col-lg-push-2">
+
+                {% for blog_post in blog_posts %}
+                    <div class="post clearfix">
+                        <div class="col-sm-4">
+                            <a href=""><img class="post-archive-image" src="{{ blog_post.image.url }}" alt=""></a>
+                        </div>
+                        <div class="col-sm-8">
+                            <h3 class="post-archive-title"><a href="post.html">{{ blog_post.title }}</a></h3>
+                            <ul class="meta-list">
+                                <li><a href="">{{ blog_post.author.first_name }} {{ blog_post.author.last_name }}</a></li>
+                                <li>{{ blog_post.creation_date.date }}</li>
+                                <li><a href="">#TrendingScience</a></li>
+                                <li><a href="{% url "blog-detail" slug=blog_post.slug %}#disqus_thread">Comments</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <ul class="pagination clearfix">
+                    <li class="disabled"><a href="#">&laquo;</a></li>
+                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">&raquo;</a></li>
+                </ul>
             </div>
-        {% endfor %}
+
+            <div class="archive-nav col-sm-4 col-md-3 col-lg-2 col-sm-pull-8 col-md-pull-9 col-lg-pull-10">
+                <div id="authors" class="col-xs-6 col-sm-12">
+                    <h4>Authors</h4>
+                    <ul class="archive-nav-list">
+                        <li><a href="">Jacob Sheehy</a></li>
+                        <li><a href="">Laura D'Alessandro</a></li>
+                        <li><a href="">Phil Jones</a></li>
+                    </ul>
+                </div>
+                <div id="categories" class="col-xs-6 col-sm-12">
+                    <h4>Categories</h4>
+                    <ul class="archive-nav-list collapse">
+                        <li><a href="">#TrendingScience</a></li>
+                        <li><a href="">A Category</a></li>
+                        <li><a href="">The Real Deal</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1,43 +1,93 @@
 {% extends "base.html" %}
 
-{% load home_tags %}
+{% block body_class %}home{% endblock %}
 
-{% block extra_head %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/landing.css">
-{% endblock extra_head %}
+{% block header_class %}tall{% endblock %}
 
 {% block content %}
-<div id="hero-container" class="container">
-    <div class="row hero">
-        <div class="hero-image col-lg-4 col-md-4 col-sm-4">
-            <a href="{% get_playstore_url %}" target="_blank">
-                <img src="{{ STATIC_URL }}images/landing/phone.png" alt="">
-            </a>
+    <div id="home-headline" class="jumbotron section">
+        <div id="video-home" class="video-box">
+            <video class="hidden-xs hidden-sm" loop muted autoplay>
+                <source src="{{ STATIC_URL }}images/header02.mp4" type="video/mp4" />
+                <source src="{{ STATIC_URL }}images/header02.webm" type="video/webm" />
+            </video>
+            <div class="semi-black-screen"></div>
         </div>
+        <div class="container">
+            <hgroup class="col-xs-12">
+                <h1>
+                    <img id="wordmark" src="{{ STATIC_URL }}images/logo-wordmark.svg" alt="PressureNet"><br>
+                    The Weather's Future
+                </h1>
+                <h2>We’re connecting smartphone sensors to build the highest-resolution weather data platform available.</h2>
+            </hgroup>
 
-        <div id="landing_text" class="col-lg-8 col-md-8 col-sm-8">
-            <div id="landing_text_clouds">
-                <h2 class="hero-tagline">
-                    We're building <span class="logotype">pressure<strong>NET</strong></span>
-                </h2>
-
-                <p class="lead">
-                    We want a more accurate, real-time weather forecast
-                </p>
+            <div class="row">
+                <div class="border-right col-sm-4">
+                    <h3 class="text-center">PressureNet is<br class="hidden-xs hidden-sm"> a live atmosphere data feed</h3>
+                    <a class="btn btn-lg" href="api.html" role="button">Sign Up</a>
+                </div>
+                <div class="border-right col-sm-4">
+                    <h3 class="text-center">PressureNet is<br class="hidden-xs hidden-sm"> an open source platform</h3>
+                    <a class="btn btn-lg" href="api.html#apps" role="button">Contribute</a>
+                </div>
+                <div class="col-sm-4">
+                    <h3 class="text-center">PressureNet is<br class="hidden-xs hidden-sm"> a citizen science weather app</h3>
+                    <a class="btn btn-play btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>
+                </div>
             </div>
 
-            <p>
-                We're gathering crowdsourced weather data from Android phones and tablets and providing it to scientific researchers.  <a href="{% get_playstore_url %}" target="_blank">Download pressureNET</a> now to help us improve weather forecasts for everybody.
-            </p>
-
-            <p>
-                <a href="{% get_playstore_url %}" target="_blank">
-                  <img class="googleplay_img" alt="Android app on Google Play" src="{{ STATIC_URL }}images/landing/googleplay.png" />
-                </a>
-            </p>
+            <cite class="credit hidden-xs hidden-sm">Background CC <a href="http://www.openfootage.net/?p=47" target="_blank">OpenFootage.net</a></cite>
         </div>
-
     </div>
 
-</div>
-{% endblock content %}
+    <div id="problem" class="jumbotron section tall-box">
+        <div class="container">
+            <hgroup class="col-xs-8 col-xs-offset-3">
+                <h2 class="text-dark text-left">Current weather infrastructure is too expensive to scale and produces inaccurate results.</h2>
+                <h3 class="text-dark text-left">Low-resolution surface observations seed models with incomplete data.</h3>
+                <h3 class="text-dark text-left">Forecast errors cascade through models as forecast lengths increase.</h3>
+            </hgroup>
+
+            <cite class="credit">Background CC <a href="http://en.wikipedia.org/wiki/File:Radar_m%C3%A9t%C3%A9orologique_de_Villeroy_EC.JPG" target="_blank">Pierre cb, M0tty</a></cite>
+        </div>
+    </div>
+
+    <div id="solution" class="jumbotron section tall-box">
+        <div class="container">
+            <h2 class="col-xs-12">More data creates better forecasts. Let’s solve this problem together and build the biggest live atmosphere observation network ever.</h2>    
+            <div class="row">
+                <div class="border-right col-sm-6">
+                    <h3 class="text-center">Forecasts will improve as we grow.<br class="hidden-xs"> Add our SDK to your app!</h3>
+                    <a class="btn btn-lg" href="api.html" role="button">SDK</a>
+                </div>
+                <div class="col-sm-6">
+                    <h3 class="text-center">What’s it like outside?<br class="hidden-xs"> Download PressureNet for Android!</h3>
+                    <a class="btn btn-play btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>
+                </div>
+            </div>
+
+            <cite class="credit">Background CC <a href="https://www.flickr.com/photos/cityoftoronto/4626861500/sizes/o/" target="_blank">The City of Toronto</a></cite>
+        </div>
+    </div>
+
+    <div id="traction" class="section">
+        <div class="container">
+            <div id="media" class="border-right col-sm-6">
+                <h4 class="text-center">Media</h4>
+                <a href="" title="Scientific American" target="_blank"><img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-sa.png" alt="Scientific American"></a>
+                <a href="" title="BBC World Service" target="_blank"><img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-bbc.png" alt="BBC World Service"></a>
+                <a href="" title="MIT Technology Review" target="_blank"><img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-mittr.png" alt="MIT Technology Review"></a>
+                <a href="" title="Wired" target="_blank"><img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-wired.png" alt="Wired"></a>
+            </div>
+            <div id="universities" class="col-sm-6">
+                <h4 class="text-center">Researchers</h4>
+                <img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-ut.png" title="Univeristy of Toronto" alt="Univeristy of Toronto">
+                <img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-uw.png" title="University of Washington" alt="University of Washington">
+                <img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-mit.png" title="MIT" alt="MIT">
+                <img class="col-xs-6 col-md-3" src="{{ STATIC_URL }}images/logo-uwat.png" title="University of Waterloo" alt="University of Waterloo">
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
