@@ -1,125 +1,73 @@
-{% load home_tags %}
-
 <!DOCTYPE html>
-<html>
-    <head>
-        <script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>
-            {% block page_title %}
-                pressureNET
-            {% endblock %}
-        </title>
+    <title>PressureNet.io</title>
 
-        <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/altgoth.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/altgoth_unhinted.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/styles.css">
 
-        <link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="{{ STATIC_URL }}lib/bootstrap/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+    <!-- Unicode CSS Loader: place this in the head of your page -->
+    <script>
+        /* grunticon Stylesheet Loader | https://github.com/filamentgroup/grunticon | (c) 2012 Scott Jehl, Filament Group, Inc. | MIT license. */
+        window.grunticon=function(e){if(e&&3===e.length){var t=window,n=!!t.document.createElementNS&&!!t.document.createElementNS("http://www.w3.org/2000/svg","svg").createSVGRect&&!!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#Image","1.1"),A=function(A){var o=t.document.createElement("link"),r=t.document.getElementsByTagName("script")[0];o.rel="stylesheet",o.href=e[A&&n?0:A?1:2],r.parentNode.insertBefore(o,r)},o=new t.Image;o.onerror=function(){A(!1)},o.onload=function(){A(1===o.width&&1===o.height)},o.src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="}};
+        grunticon( [ "{{ STATIC_URL }}css/icons.data.svg.css", "{{ STATIC_URL }}css/icons.data.png.css", "{{ STATIC_URL }}css/icons.fallback.css" ] );</script>
+    <noscript><link href="{{ STATIC_URL }}css/icons.fallback.css" rel="stylesheet"></noscript>
 
-        {% block extra_head %} {% endblock extra_head  %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
 
-    </head>
+    <header id="header" class="{% block header_class %}{% endblock %}">
+        <div class="navbar container" role="navigation">
+            <div class="navbar-header">
+                <button class="navbar-toggle" data-target="#nav-top" data-toggle="collapse" type="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <i class="fa fa-bars fa-lg"></i>
+                </button>
+                <div id="branding" class="col-sm-4 col-md-5 col-lg-6"><a href="{% url 'home-index' %}"><img src="{{ STATIC_URL }}images/logo-pn-blue.png" width="160" height="auto" alt="PressureNet" /></a></div>
+            </div>
+            <nav id="nav-top" class="collapse col-sm-8 col-md-7 col-lg-6">
+                <ul class="nav nav-pills nav-justified">
+                    <li class="menu-item"><a href="{% url 'home-index' %}">Home</a></li>
+                    <li class="menu-item"><a href="{% url 'home-about' %}">About</a></li>
+                    <li class="menu-item"><a href="{% url 'home-api' %}">API</a></li>
+                    <li class="menu-item"><a href="{% url 'home-map' %}">Map</a></li>
+                    <li class="menu-item"><a href="{% url 'blog-list' %}">Blog</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
-    <body>
-        {% block header %}
-        <div class="header">
-            <div class="container nav-container">
-                <div class="row">
-                    <div class="col-sm-6">
-                        <h1>
-                            <a href="{% url 'home-index' %}">
-                                <img class="pressurenet_header_logo" src="{{ STATIC_URL }}images/logo-pn.png" alt="pressurenet logo">
-                                <span class="logotype">pressure<strong>NET</strong></span>
-                            </a>
-                        </h1>
-                    </div>
-                    <div class="col-sm-6">
-                        <ul class="nav nav-pills pull-right">
-                            <li><a href="{% url 'home-map' %}">Map</a></li>
-                            <li><a href="{% url 'customers-landing' %}">Developers</a></li>
-                            <li><a href="{% url 'blog-list' %}">Blog</a></li>
-                            <li><a href="{% url 'home-about' %}">About</a></li>
-                        </ul>
-                    </div>
-                </div>
+    {% block content %}
+    {% endblock %}
+
+    <footer id="footer">
+        <div  class="container">
+            <nav id="nav-bottom" role="navigation">
+                <a id="social-email" href="mailto:contact@cumulonimbus.ca"><i class="fa fa-envelope fa-lg"></i></a>
+                <a id="social-play" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork"><i class="fa fa-android fa-lg"></i></a>
+                <a id="social-github" href="https://github.com/Cbsoftware/"><i class="fa fa-github fa-lg"></i></a>
+                <a id="social-twitter" href="https://twitter.com/Cumulonimbus_ca"><i class="fa fa-twitter fa-lg"></i></a>
+                <a id="social-instagram" href="http://instagram.com/pressurenet"><i class="fa fa-instagram fa-lg"></i></a>
+                <a id="social-youtube" href=""><i class="fa fa-youtube-play fa-lg"></i></a>
+                <a id="social-gplus" href="https://plus.google.com/u/0/communities/109657802451413701146"><i class="fa fa-google-plus-square fa-lg"></i></a>
+                <a id="social-facebook" href="https://www.facebook.com/Cumulonimbus.ca"><i class="fa fa-facebook-square fa-lg"></i></a>
+                <a id="social-linkedin" href="http://www.linkedin.com/company/3050978"><i class="fa fa-linkedin-square fa-lg"></i></a>
+            </nav>
+            <div id="credits">
+                Copyright &copy; 2014 <a id="cb-logo" href="http://cumulonimbus.ca" target="_blank"></a> Cumulonimbus Inc.
             </div>
         </div>
-        {% endblock %}
+    </footer>
 
-            {% block content %} {% endblock content %}
+    <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}js/defaults.js"></script>
+    {% block extra_js %}
+    {% endblock %}
 
-        <div class="footer">
-            <div class="container">
-                <div id="social-media" class="pull-right">
-                    <ul id="social">
-                        <li>
-                            <a id="social-email" href="mailto:software@cumulonimbus.ca" target="_blank">
-                            </a>
-                        </li>
-                        <li>
-                            <a id="social-play" href="{% get_playstore_url %}" target="_blank">
-                            </a>
-                        </li>
-                        <li >
-                            <a id="social-twitter" href="https://twitter.com/Cumulonimbus_ca" target="_blank">
-                            </a>
-                        </li>
-                        <li>
-                            <a id="social-github" href="https://github.com/cbsoftware" target="_blank">
-                            </a>
-                        </li>
-                        <li>
-                            <a id="social-gplus" href="https://plus.google.com/communities/109657802451413701146" target="_blank">
-                            </a>
-                        </li>
-                        <li>
-                            <a id="social-facebook" href="https://www.facebook.com/Cumulonimbus.ca" target="_blank">
-                            </a>
-                        </li>
-                    <ul>
-                </div>
-
-                <p id="copyright">Copyright &copy; 2014 Cumulonimbus Inc.</p>
-            </div>
-        </div>
-
-        <script type="text/javascript">
-            var _gaq = _gaq || [];
-            _gaq.push(['_setAccount', 'UA-78967-8']);
-            _gaq.push(['_trackPageview']);
-
-            (function() {
-              var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-              ga.src = ('https:' == document.location.protocol ? 'https://ssl' : '//www') + '.google-analytics.com/ga.js';
-              var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-            })();
-
-        </script>
-
-        <script type="text/javascript" src="//code.jquery.com/jquery-1.9.1.js"></script>
-        <script src="{{ STATIC_URL }}lib/bootstrap/js/bootstrap.min.js"></script>
-
-        {% block extra_js %} {% endblock extra_js %}
-
-        <script type="text/javascript">
-          var _sf_async_config = { uid: 53793, domain: 'pressurenet.io', useCanonical: true };
-          (function() {
-            function loadChartbeat() {
-              window._sf_endpt = (new Date()).getTime();
-              var e = document.createElement('script');
-              e.setAttribute('language', 'javascript');
-              e.setAttribute('type', 'text/javascript');
-              e.setAttribute('src','//static.chartbeat.com/js/chartbeat.js');
-              document.body.appendChild(e);
-            };
-            var oldonload = window.onload;
-            window.onload = (typeof window.onload != 'function') ?
-              loadChartbeat : function() { oldonload(); loadChartbeat(); };
-          })();
-        </script>
-
-    </body>
+</body>
 </html>

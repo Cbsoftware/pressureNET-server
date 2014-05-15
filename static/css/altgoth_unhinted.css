@@ -1,0 +1,28 @@
+/**
+ * @license
+ * MyFonts Webfont Build ID 2811918, 2014-05-14T14:44:38-0400
+ * 
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are 
+ * explicitly restricted from using the Licensed Webfonts(s).
+ * 
+ * You may obtain a valid license at the URLs below.
+ * 
+ * Webfont: Alternate Gothic No 2 D by URW++
+ * URL: http://www.myfonts.com/fonts/urw/alternate-gothic/no2-d/
+ * Copyright: Copyright 2010 URW++ Design &amp; Development Hamburg
+ * Licensed pageviews: 10,000
+ * 
+ * 
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=2811918
+ * 
+ * © 2014 MyFonts Inc
+*/
+
+
+/* @import must be at top of file, otherwise CSS will not work */
+@import url("//hello.myfonts.net/count/2ae80e");
+
+  
+@font-face {font-family: 'AlternateGotNo2D';src:url('../fonts/2AE8A2_0_unhinted_0.woff') format('woff'),url('../fonts/2AE8A2_0_unhinted_0.ttf') format('truetype');}
+ 

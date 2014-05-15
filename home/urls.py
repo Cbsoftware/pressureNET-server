@@ -4,6 +4,7 @@ from django.conf.urls import patterns, url
 urlpatterns = patterns('home.views',
     url('^$', 'index', name='home-index'),
     url('^about/$', 'about', name='home-about'),
+    url('^api/$', 'api', name='home-api'),
     url('^map/$', 'map_page', name='home-map'),
     url('^card/$', 'card_redirect', name='home-card'),
 )

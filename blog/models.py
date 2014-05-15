@@ -8,6 +8,7 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     teaser = models.TextField()
+    image = models.ImageField(max_length=255, upload_to='blog/images', blank=True, null=True)
     content = models.TextField()
     published = models.BooleanField()
 
