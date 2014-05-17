@@ -30,28 +30,27 @@
             <div class="jcarousel-tray">
                 <div class="jcarousel-slide">
                     <figure class="col-sm-4 col-md-5 col-lg-6">
-                        <img class="img-responsive" src="{{ STATIC_URL }}images/phone.png" alt="">
+                        <img class="img-responsive" src="{{ STATIC_URL }}images/screen-pressurenet.png" alt="">
                     </figure>
                     <figcaption class="col-sm-8 col-md-7 col-lg-6">
                         <h2>PressureNet</h2>
                         
                         <p>By downloading pressureNET you are a citizen scientist helping make weather forecasts more accurate! Submit weather reports, watch animations of crowdsourced conditions, and get alerts of nearby weather.</p>
 
-                        <a class="btn btn-play btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>
-<!--                        <a class="btn btn-app btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>-->
+                        <a class="btn btn-play btn-store btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>
                     </figcaption>
                 </div>
                 <div class="jcarousel-slide">
                     <figure class="col-sm-4 col-md-5 col-lg-6">
-                        <img class="img-responsive" src="{{ STATIC_URL }}images/phone.png" alt="">
+                        <img class="img-responsive" src="{{ STATIC_URL }}images/screen-weather-alarm.png" alt="">
                     </figure>
                     <figcaption class="col-sm-8 col-md-7 col-lg-6">
-                        <h2>Weather Alarm 1</h2>
+                        <h2>Weather Alarm</h2>
 
                         <p>Everyone wants to know the weather when they wake up. Why isn’t it a part of the alarm clock app on your phone?</p>
 
-                        <a class="btn btn-vote btn-lg" href="#" data-vote-type="want" data-vote="Weather Alarm" role="button">I Want This!</a>
-                        <a class="btn btn-vote btn-email btn-lg" href="mailto:partnerships@cumulonimbus.ca?subject=I%20Wanna%20Build%20Weather%20Alarm!" data-vote-type="build" data-vote="Weather Alarm" role="button">I Wanna <em>Build</em> It!</a>
+                        <a class="btn btn-vote btn-lg" href="#" onClick="_gaq.push(['_trackEvent', 'Buttons', 'Vote', 'Weather Alarm', 'Want']);" data-vote-type="want" data-vote="Weather Alarm" role="button">I Want This!</a>
+                        <a class="btn btn-vote btn-email btn-lg" href="mailto:partnerships@cumulonimbus.ca?subject=I%20Wanna%20Build%20Weather%20Alarm!" onClick="_gaq.push(['_trackEvent', 'Buttons', 'Vote', 'Weather Alarm', 'Build']);" data-vote-type="build" data-vote="Weather Alarm" target="_blank" role="button">I Wanna <em>Build</em> It!</a>
                     </figcaption>
                 </div>
             </div>
@@ -91,4 +90,8 @@
         <h2>Excited?</h2>
         <a class="btn btn-primary btn-lg" href="{% url "customers-register" %}" role="button">Sign Up!</a>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/jcarousel.min.js"></script>
 {% endblock %}
