@@ -7,3 +7,4 @@ node_modules/
 static/admin
 static/grappelli
 served/
+pnet_dev
