@@ -145,7 +145,7 @@ $( ".ph-bg" ).click(function() {
 
 $( "#share-twitter" ).click(function(e) {
     var $this = $( this ),
-        text = encodeURI( $this.data( "text" )),
+        text = encodeURIComponent( $this.data( "text" )),
         hashtags = $this.data( "hashtags" );
 
     e.preventDefault();
@@ -159,7 +159,6 @@ $( "#share-twitter" ).click(function(e) {
 
 $( "#share-facebook" ).click(function(e) {
     var $this = $( this ),
-        redir = encodeURI( $this.data( "redir" )),
         appID = "711837532201345";
 
     e.preventDefault();
@@ -183,23 +182,23 @@ $( "#share-googleplus" ).click(function(e) {
     );
 });
 
-$( "#share-tumblr" ).on( "click", function(e) {
+$( "#share-tumblr" ).click(function(e) {
     var $this = $( this ),
-        url = encodeURI( $this.data( "url" )),
-        name = encodeURI( $this.data( "name" )),
-        description = encodeURI( $this.data( "description" ));
+        url = encodeURIComponent( $this.data( "url" )),
+        name = encodeURIComponent( $this.data( "name" )),
+        description = encodeURIComponent( $this.data( "description" ));
 
     e.preventDefault();
 
     window.open(
         this.href + url + "&name=" + name + "&description=" + description,
         "tumblrDialog",
-        "height=400, width=400, toolbar=0, status=0"
+        "height=430, width=450, toolbar=0, status=0"
     );
 });
 
 
-$( "#share-reddit" ).on( "click", function(e) {
+$( "#share-reddit" ).click(function(e) {
     var $this = $( this );
 
     e.preventDefault();
@@ -212,7 +211,7 @@ $( "#share-reddit" ).on( "click", function(e) {
 });
 
 
-$( "#share-stumbleupon" ).on( "click", function(e) {
+$( "#share-stumbleupon" ).click(function(e) {
     var $this = $( this );
 
     e.preventDefault();
