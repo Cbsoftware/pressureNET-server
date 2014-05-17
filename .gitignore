@@ -6,3 +6,4 @@ settings_local*.py
 node_modules/
 static/admin
 static/grappelli
+served/
