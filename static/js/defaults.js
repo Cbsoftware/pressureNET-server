@@ -71,6 +71,7 @@ jumboVideo();
 
 // Make jCarousel slides the width of the container
 function slideSize() {
+    $( ".jcarousel" ).width( contWidth + 30 );
     $( ".jcarousel-slide" ).width( contWidth - 60 );
 }
 
@@ -83,7 +84,25 @@ $( window ).resize(function() {
     makeFull();
     jumboVideo();
     showMenu();
-    slideSize();
+    if ( $( ".jcarousel" ).length ) slideSize();
+});
+
+
+// Collapse panels
+$( ".collapse-group" ).on( "show.bs.collapse", function () {
+    $( this ).find( ".in" ).collapse( "hide" );
+});
+
+
+// Level-height leveling
+$( ".level-group" ).each(function() {
+    var maxHeight = 0;
+
+    $( ".level-item" ).each(function() {
+        maxHeight = maxHeight > $( this ).innerHeight() ? maxHeight : $( this ).innerHeight();
+    });
+
+    $( ".level-item" ).height( maxHeight );
 });
 
 
@@ -122,6 +141,95 @@ $( ".ph-bg" ).click(function() {
 });
 
 
+// Sharing buttons
+
+$( "#share-twitter" ).click(function(e) {
+    var $this = $( this ),
+        url = encodeURI( $this.data( "url" )),
+        text = encodeURI( $this.data( "text" )),
+        hashtags = $this.data( "hashtags" );
+
+    e.preventDefault();
+
+    window.open(
+        this.href + "?url=" + url + "&text=" + text + "&hashtags=" + hashtags,
+        "tweetDialog",
+        "height=260, width=550, toolbar=0, status=0"
+    );
+});
+
+$( "#share-facebook" ).click(function(e) {
+    var $this = $( this ),
+        href = encodeURI( $this.data( "href" )),
+        redir = encodeURI( $this.data( "redir" )),
+        appID = "711837532201345";
+
+    e.preventDefault();
+
+    window.open(
+        this.href + "&display=page&app_id=" + appID + "&redirect_uri=" + redir,
+        "facebookDialog",
+        "height=600, width=600, toolbar=0, status=0"
+    );
+});
+
+$( "#share-googleplus" ).on( "click", function(e) {
+    var $this = $( this ),
+        url = encodeURI( $this.data( "url" ));
+
+    e.preventDefault();
+
+    window.open(
+        this.href + "?url=" + url,
+        "gplusDialog",
+        "height=600, width=600, toolbar=0, status=0"
+    );
+});
+
+$( "#share-tumblr" ).on( "click", function(e) {
+    var $this = $( this ),
+        url = encodeURI( $this.data( "url" )),
+        name = encodeURI( $this.data( "name" )),
+        description = encodeURI( $this.data( "description" ));
+
+    e.preventDefault();
+
+    window.open(
+        this.href + "?url=" + url + "&name=" + name + "&description=" + description,
+        "tumblrDialog",
+        "height=500, width=800, toolbar=0, status=0"
+    );
+});
+
+
+$( "#share-reddit" ).on( "click", function(e) {
+    var $this = $( this ),
+        url = encodeURI( $this.data( "url" ));
+
+    e.preventDefault();
+
+    window.open(
+        this.href + "?url=" + url,
+        "redditDialog",
+        "height=750, width=850, toolbar=0, status=0"
+    );
+});
+
+
+$( "#share-stumbleupon" ).on( "click", function(e) {
+    var $this = $( this ),
+        url = encodeURI( $this.data( "url" ));
+
+    e.preventDefault();
+
+    window.open(
+        this.href + "?url=" + url,
+        "stumbleuponDialog",
+        "height=525, width=800, toolbar=0, status=0"
+    );
+});
+
+
 // Setup jCarousel
 if ( $( ".jcarousel" ).length ) {
     $(function() {
@@ -149,6 +257,7 @@ if ( $( ".jcarousel" ).length ) {
     });
 }
 
+
 // Vote button functionality
 $( ".btn-vote" ).click(function(e) {
     if ( !$( this ).hasClass( "voted" ) ) {
@@ -159,5 +268,3 @@ $( ".btn-vote" ).click(function(e) {
         console.log( "VOTED! " + vote + ": " + type );
     }
 });
-
-
