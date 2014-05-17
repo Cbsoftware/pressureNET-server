@@ -185,13 +185,14 @@ $( "#share-googleplus" ).click(function(e) {
 
 $( "#share-tumblr" ).on( "click", function(e) {
     var $this = $( this ),
+        url = encodeURI( $this.data( "url" )),
         name = encodeURI( $this.data( "name" )),
         description = encodeURI( $this.data( "description" ));
 
     e.preventDefault();
 
     window.open(
-        this.href + "&name=" + name + "&description=" + description,
+        this.href + url + "&name=" + name + "&description=" + description,
         "tumblrDialog",
         "height=400, width=400, toolbar=0, status=0"
     );
