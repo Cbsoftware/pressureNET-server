@@ -1,9 +1,12 @@
+import urlparse
+
 from django.conf import settings
 from django.utils import simplejson as json
 
 from boto.exception import BotoServerError
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
+from storages.backends.s3boto import S3BotoStorage
 
 from utils.compression import gzip_compress, gzip_decompress
 
@@ -56,3 +59,9 @@ def write_to_bucket(bucket, key, content, content_type='', content_encoding='', 
 
     except BotoServerError:
         return None
+
+
+class MediaS3Storage(S3BotoStorage):
+
+    def url(self, name):
+        return urlparse.urljoin(settings.MEDIA_URL, name)
