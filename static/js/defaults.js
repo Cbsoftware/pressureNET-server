@@ -167,7 +167,7 @@ $( "#share-facebook" ).click(function(e) {
     e.preventDefault();
 
     window.open(
-        this.href + "&display=page&app_id=" + appID + "&redirect_uri=" + redir,
+        this.href + "?u=" + href + "&app_id=" + appID,
         "facebookDialog",
         "height=600, width=600, toolbar=0, status=0"
     );
