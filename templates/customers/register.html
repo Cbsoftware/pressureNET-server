@@ -114,9 +114,14 @@
 
             <div class="form-group">
                 <div class="col-sm-6">
-                    <div class="checkbox">
+                    <div class="checkbox {% if form.conditions.errors %}has-error{% endif %}">
                         <label>
-                            <input type="checkbox"> I have read and agree with the <a data-toggle="collapse" href="#terms">terms and conditions</a>.
+                            <input name="conditions" type="checkbox"> I have read and agree with the <a data-toggle="collapse" href="#terms">terms and conditions</a>.
+                        </label>
+                        <label class="control-label" for="id_conditions">
+                            {% for error in form.conditions.errors %}
+                                {{ error }}
+                            {% endfor %}
                         </label>
                         <div id="terms" class="collapse">
                             <h4>Terms and Conditions for API Registration</h4>

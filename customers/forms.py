@@ -11,6 +11,7 @@ from customers.models import Customer
 class CustomerForm(forms.ModelForm):
     api_key = forms.CharField(required=False)
     contact_address = forms.CharField(required=False, widget=forms.Textarea)
+    conditions = forms.BooleanField(required=True)
 
     class Meta:
         model = Customer
