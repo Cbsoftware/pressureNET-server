@@ -254,11 +254,13 @@ if ( $( ".jcarousel" ).length ) {
 
 // Vote button functionality
 $( ".btn-vote" ).click(function(e) {
+    if ( !$( this ).hasClass( "btn-email" ) ) e.preventDefault();
+
     if ( !$( this ).hasClass( "voted" ) ) {
-        e.preventDefault();
+
         var vote = $( this ).data( "vote" ),
             type = $( this ).data( "vote-type" );
+
         $( this ).addClass( "voted" );
-        console.log( "VOTED! " + vote + ": " + type );
     }
 });
