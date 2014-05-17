@@ -11,6 +11,7 @@ class UserFactory(factory.Factory):
     FACTORY_FOR = User
 
     username = factory.Sequence(lambda n: 'person{0}@example.com'.format(n))
+    first_name = factory.Sequence(lambda n: 'person{0}'.format(n))
 
 
 class BlogPostFactory(factory.Factory):
@@ -22,6 +23,8 @@ class BlogPostFactory(factory.Factory):
     content = 'content'
     teaser = 'teaser'
     published = True
+    image = 'image.jpg'
+    image_blurred = 'image_blurred.jpg'
 
 
 class BlogListTest(TestCase):
