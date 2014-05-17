@@ -17,6 +17,8 @@
         grunticon( [ "{{ STATIC_URL }}css/icons.data.svg.css", "{{ STATIC_URL }}css/icons.data.png.css", "{{ STATIC_URL }}css/icons.fallback.css" ] );</script>
     <noscript><link href="{{ STATIC_URL }}css/icons.fallback.css" rel="stylesheet"></noscript>
 
+    {% block extra_head %}{% endblock %}
+
 </head>
 <body class="{% block body_class %}{% endblock %}">
 

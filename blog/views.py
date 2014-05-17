@@ -17,6 +17,14 @@ class BlogListView(ListView):
 blog_list = cache_page(BlogListView.as_view(), settings.CACHE_TIMEOUT)
 
 
+class BlogListAuthorView(BlogListView):
+
+    def get_queryset(self):
+        return super(BlogListAuthorView, self).get_queryset().filter(author__first_name=self.kwargs['author'])
+
+blog_list_author = cache_page(BlogListAuthorView.as_view(), settings.CACHE_TIMEOUT)
+
+
 class BlogDetailView(DetailView):
     model = BlogPost
     template_name = 'blog/detail.html'

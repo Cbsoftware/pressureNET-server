@@ -1,36 +1,97 @@
 {% extends "base.html" %}
+{% load blog_tags %}
 
-{% block page_title %}
-    {{ blog_post.title }}
+{% block body_class %}post{% endblock %}
+
+{% block header_class %}short{% endblock %}
+
+{% block extra_head %}
+    <style>
+        .post-header .ph-bg.ph-blurred {
+            opacity: 0;
+            background-image: url("{{ blog_post.image_blurred.url }}") !important;
+        }
+
+        .post-header .ph-bg {
+            background-image: url("{{ blog_post.image.url }}") !important;
+        }
+    </style>
 {% endblock %}
 
+
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <div class="blog_post col-md-offset-1 col-md-10">
-                {% include "blog/includes/blog_header.html" %}
-                <p class="lead">{{ blog_post.author.first_name }} {{ blog_post.author.last_name }}</p>
-                <div class="blog_content">
+    <div id="content">
+        <div class="blog-post container section">
+            <div class="post-header full closed" data-width="1700" data-height="956"><!-- These data fields are seeded dynamically from the bg image size -->
+                <div class="ph-bg"></div>
+                <div class="ph-bg ph-blurred"></div>
+                <h1 class="post-title full-pad">{{ blog_post.title }}</h1>
+            </div>
+            <div class="post-main row clearfix">
+                <div class="post-meta col-sm-3 col-md-2">
+                    <ul class="meta-list clearfix">
+                        <li><a href="{% url "blog-list-author" author=blog_post.author.first_name %}">{{ blog_post.author.first_name }} {{ blog_post.author.last_name }}</a></li>
+                        <li>{{ blog_post.creation_date.date }}</li>
+                        <li><a href="#disqus_thread">Comments</a></li>
+                        <li class="post-share">
+                            Share:<br class="hidden-xs">
+                            <a id="share-twitter" href="" title="Share this post on Twitter"><i class="fa fa-twitter fa-2x"></i></a>
+                            <a id="share-facebook" href="" title="Share this post on Facebook"><i class="fa fa-facebook-square fa-2x"></i></a>
+                            <a id="share-gplus" href="" title="Share this post on Google Plus"><i class="fa fa-google-plus-square fa-2x"></i></a>
+                            <a id="share-tumblr" href="" title="Share this post on Tumblr"><i class="fa fa-tumblr-square fa-2x"></i></a>
+                            <a id="share-pinterest" href="" title="Share this post on Pinterest"><i class="fa fa-pinterest fa-2x"></i></a>
+                            <a id="share-reddit" href="" title="Share this post on Reddit"><i class="fa fa-reddit fa-2x"></i></a>
+                            <a id="share-stumbleupon" href="" title="Share this post on StumbleUpon"><i class="fa fa-stumbleupon-circle fa-2x"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="post-content col-sm-9 col-md-6">
                     {{ blog_post.content|safe }}
                 </div>
-                <hr/>
+                <div class="clearfix visible-sm"></div>
+                <div class="posts-author col-md-4">
+                    {% get_author_blog_posts blog_post.author blog_post as author_blog_posts %}
+                    {% if author_blog_posts %}
+                        <h3>Other Posts by {{ blog_post.author.first_name }}</h3>
+                        {% for author_blog_post in author_blog_posts %}
+                            <div class="post-recent col-xs-4 col-md-12">
+                                <a href="{% url "blog-detail" slug=author_blog_post.slug %}"><img class="post-recent-image" src="{{ author_blog_post.image.url }}" alt=""></a>
+                                <h4 class="post-recent-title"><a href="{% url "blog-detail" slug=author_blog_post.slug %}">{{ author_blog_post.title }}</a></h4>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="posts-recent col-xs-12">
+                    <h3>Recent Posts</h3>
+                    {% get_recent_blog_posts as recent_blog_posts %}
+                    {% for recent_blog_post in recent_blog_posts %}
+                        <div class="post-recent col-xs-4">
+                            <a href="{% url "blog-detail" slug=recent_blog_post.slug %}"><img class="post-recent-image" src="{{ recent_blog_post.image.url }}" alt=""></a>
+                            <h4 class="post-recent-title"><a href="{% url "blog-detail" slug=recent_blog_post.slug %}">{{ recent_blog_post.title }}</a></h4>
+                            <span class="post-recent-author"><a href="{% url "blog-list-author" author=recent_blog_post.author.first_name %}">{{ recent_blog_post.author.first_name }} {{ recent_blog_post.author.last_name }}</a></span>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        <div class="blog_comments row">
-            <div id="disqus_thread" class="col-xs-12 col-md-10 col-md-offset-1"></div>
-            <script type="text/javascript">
-                var disqus_shortname = 'pressurenet';
-                var disqus_identifier = '{{ blog_post.title|slugify}}';
-                var disqus_title = '{{ blog_post.title }}';
 
-                (function() {
-                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-                })();
-            </script>
-            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-            <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        <div class="container section">
+            <div class="comments row">
+                <div id="disqus_thread" class="col-xs-12 col-md-8 col-md-offset-2"></div>
+                <script type="text/javascript">
+                    var disqus_shortname = 'pressurenet';
+
+                    (function() {
+                        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+            </div>
         </div>
     </div>
 {% endblock %}
