@@ -25,11 +25,11 @@
             <div class="row">
                 <div class="border-right col-sm-4">
                     <h3 class="text-center">PressureNet is<br class="hidden-xs hidden-sm"> a live atmosphere data feed</h3>
-                    <a class="btn btn-lg" href="api.html" role="button">Sign Up</a>
+                    <a class="btn btn-lg" href="{% url "customers-register" %}" role="button">Sign Up</a>
                 </div>
                 <div class="border-right col-sm-4">
                     <h3 class="text-center">PressureNet is<br class="hidden-xs hidden-sm"> an open source platform</h3>
-                    <a class="btn btn-lg" href="api.html#apps" role="button">Contribute</a>
+                    <a class="btn btn-lg" href="{% url "customers-landing" %}#apps" role="button">Contribute</a>
                 </div>
                 <div class="col-sm-4">
                     <h3 class="text-center">PressureNet is<br class="hidden-xs hidden-sm"> a citizen science weather app</h3>
@@ -59,7 +59,7 @@
             <div class="row">
                 <div class="border-right col-sm-6">
                     <h3 class="text-center">Forecasts will improve as we grow.<br class="hidden-xs"> Add our SDK to your app!</h3>
-                    <a class="btn btn-lg" href="api.html" role="button">SDK</a>
+                    <a class="btn btn-lg" href="{% url "customers-landing" %}" role="button">SDK</a>
                 </div>
                 <div class="col-sm-6">
                     <h3 class="text-center">What’s it like outside?<br class="hidden-xs"> Download PressureNet for Android!</h3>

@@ -1,93 +1,94 @@
 {% extends "base.html" %}
 
-{% load url from future %}
-{% load customers_tags %}
+{% block body_class %}api{% endblock %}
 
-
-{% load widget_tweaks %}
-
+{% block header_class %}short{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-offset-1 col-md-6">
-            <h2>Developers and Researchers</h2>
+    <div id="api-headline" class="jumbotron section">
+        <div id="video-api" class="video-box">
+            <video class="hidden-xs hidden-sm" loop muted autoplay>
+                <source src="{{ STATIC_URL }}images/header02.mp4" type="video/mp4" />
+                <source src="{{ STATIC_URL }}images/header02.webm" type="video/webm" />
+            </video>
         </div>
-        <div class="col-md-4">
-            <a href="{% url 'customers-register' %}">
-                <input id="register-btn" class="btn btn-primary pull-right" value="Register" />
-            </a>
-        </div>
-    </div>
+        <div class="container">
+            <h1 class="col-xs-12">Get your hands on our data!</h1>
+            
+            <div class="clearfix"></div>
 
-    <div class="row">
-        <div class="col-md-offset-1 col-md-10">
-            <h3>Android SDK</h3>
-            <ul class="list-unstyled">
-                <li><a href="https://github.com/Cbsoftware/pressureNET-SDK/" target="_blank">SDK Source</a></li>
-                <li><a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md" target="_blank">SDK Documentation</a>
-            </ul>
-            <p>
-                pressureNET is an open source platform for scientific data collection. We have built an SDK for Android that handles all sensor data collection, location management, and data transmission to the scientific community. The pressureNET app itself uses the SDK, and you can too! This SDK enables Android developers to include pressureNET’s core functionality inside their apps to collect and distribute Android sensor data. Weather forecast accuracy will increase as more developers include the SDK in their applications. <a href="{% url 'customers-register' %}">Get an API key to get started</a>, and please <a href="mailto:software@cumulonimbus.ca">email us</a> with questions or comments.
-            </p>
-            
-            
-            <hr/>
-            <h3>Data API</h3>
-            <ul class="list-unstyled">
-                <li><a href="/static/docs/pressureNET_Live_API_2_1.pdf" target="_blank">pressureNET REST API Documentation (PDF)</a></li>
-            </ul>
-            <p>
-                pressureNET provides a REST JSON API to retrieve live and archive data. It enables access to our global dataset of atmospheric pressure with simple HTTPS requests. In order to use these services, <a href="{% url 'customers-register' %}">please sign up for an API key</a>.
-            </p>
+            <a class="btn btn-lg" href="{% url "customers-register" %}" role="button">Sign Up</a>
 
-           
-           
-            <hr/>
-            <h3>pressureNET Source Code</h3>
-            <ul class="list-unstyled">
-                <li><a href="https://github.com/Cbsoftware/" target="_blank">Source Code on GitHub</a></li>
-            </ul>
-            <p>
-                pressureNET is an open source project because we believe in sharing our work and enabling others to build on top of it. If you'd like to help us find and fix bugs, implement new features, or just play with it, check out the app code (and the SDK code) and let us know what you think.
-            </p>
-            
-            
-            <hr/>
-            <h3>Public Data</h3>
-            <p>
-              Our entire record of public data will be available on Amazon S3 soon. 
-            </p>
-
+            <cite class="credit hidden-xs hidden-sm">Background CC <a href="http://www.openfootage.net/?p=47" target="_blank">OpenFootage.net</a></cite>
         </div>
     </div>
 
-    <div class="modal fade" id="success_modal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3 class="modal-title">Registration Successful</h3>
-          </div>
-          <div class="modal-body">
-              <p>Thank you for registering.  You will receive your API Key in your email shortly.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">Okay</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    <div id="uses-cases" class="container section">
+        <h1 class="full-pad">PressureNet Use Cases</h1>
 
-{% endblock content %}
+        <div id="apps-carousel" class="jcarousel row">
+            <div class="jcarousel-tray">
+                <div class="jcarousel-slide">
+                    <figure class="col-sm-4 col-md-5 col-lg-6">
+                        <img class="img-responsive" src="{{ STATIC_URL }}images/phone.png" alt="">
+                    </figure>
+                    <figcaption class="col-sm-8 col-md-7 col-lg-6">
+                        <h2>PressureNet</h2>
+                        
+                        <p>By downloading pressureNET you are a citizen scientist helping make weather forecasts more accurate! Submit weather reports, watch animations of crowdsourced conditions, and get alerts of nearby weather.</p>
 
-{% block extra_js %}
-    <script type="text/javascript" src="{{ STATIC_URL }}lib/purl/purl.js"></script>
-    <script type="text/javascript">
-        $(function () {
-            var success = $().url().param('success');
-            if (success) {
-                $('#success_modal').modal();
-            }
-        });
-    </script>
+                        <a class="btn btn-play btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>
+<!--                        <a class="btn btn-app btn-lg" href="https://play.google.com/store/apps/details?id=ca.cumulonimbus.barometernetwork" role="button"></a>-->
+                    </figcaption>
+                </div>
+                <div class="jcarousel-slide">
+                    <figure class="col-sm-4 col-md-5 col-lg-6">
+                        <img class="img-responsive" src="{{ STATIC_URL }}images/phone.png" alt="">
+                    </figure>
+                    <figcaption class="col-sm-8 col-md-7 col-lg-6">
+                        <h2>Weather Alarm 1</h2>
+
+                        <p>Everyone wants to know the weather when they wake up. Why isn’t it a part of the alarm clock app on your phone?</p>
+
+                        <a class="btn btn-vote btn-lg" href="#" data-vote-type="want" data-vote="Weather Alarm" role="button">I Want This!</a>
+                        <a class="btn btn-vote btn-email btn-lg" href="mailto:partnerships@cumulonimbus.ca?subject=I%20Wanna%20Build%20Weather%20Alarm!" data-vote-type="build" data-vote="Weather Alarm" role="button">I Wanna <em>Build</em> It!</a>
+                    </figcaption>
+                </div>
+            </div>
+            <a class="jcarousel-prev" href="#"></a>
+            <a class="jcarousel-next" href="#"></a>
+        </div>
+    </div>
+    
+    <div id="features" class="container section">
+        <h2 class="full-pad">Features</h2>
+
+        <div class="border-right col-sm-6">
+            <h3>SDK</h3>
+            <ul class="feature-list">
+                <li>Simple Android library project</li>
+                <li>Handles all sensor data collection and transmission</li>
+                <li>Supports multiple use cases depending your needs</li>
+                <li>Flexible data schedule</li>
+                <li>Open Source (MIT license)</li>
+                <li>Read the <a href="">full documentation</a></li>
+            </ul>
+            <p><a class="btn btn-default" href="https://github.com/Cbsoftware/pressureNET/" role="button"><i class="fa fa-github fa-lg"></i> Git</a> the SDK or <a href="">download</a> the latest version directly.</p>
+        </div>
+        <div class="col-sm-6">
+            <h3>API</h3>
+            <ul class="feature-list">
+                <li>Live atmosphere data feed from our global smartphone network</li>
+                <li>800,000 measurements per day (May 2014)</li>
+                <li>Simple access through HTTPS</li>
+                <li>Data returned in JSON</li>
+                <li>Read the <a href="">full documentation</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container section">
+        <h2>Excited?</h2>
+        <a class="btn btn-primary btn-lg" href="{% url "customers-register" %}" role="button">Sign Up!</a>
+    </div>
 {% endblock %}

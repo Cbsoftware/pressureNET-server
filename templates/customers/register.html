@@ -1,109 +1,140 @@
 {% extends "base.html" %}
-
-{% load url from future %}
 {% load customers_tags %}
-
-
 {% load widget_tweaks %}
+
+{% block body_class %}api{% endblock %}
+
+{% block header_class %}short {% endblock %}
 
 
 {% block content %}
-<div class="container">
-    {% get_customer_types as customer_types %}
-    {% get_customer_plans as customer_plans %}
-
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Register</h2>
-            <hr/>
+    <div id="signup-title" class="jumbotron section tall-box">
+        <div class="container">
+            <h1 class="full-pad">Sign Up for an API Key</h1>
         </div>
     </div>
 
-    <form class="form-horizontal" role="form" method="POST" action="{% url 'customers-register' %}">
+    <div id="signup-form" class="container section">
 
-        {% csrf_token %}
+        <form class="form-horizontal" role="form" method="POST" action="{% url "customers-register" %}">
 
-        <div class="form-group col-md-12">
-            <label class="control-label col-sm-2">
-                Type
-            </label>
-            <div class="col-sm-10">
-                {% for customer_type in customer_types %}
-                    <label class="control-label">
-                        <input name="customer_type"
-                            {% if form.customer_type.value %}
-                                {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
-                            {% else %}
-                                {% ifequal forloop.counter0 0 %}checked="checked"{% endifequal %}
-                            {% endif %}
-                            type="radio" value="{{ customer_type.id }}"/>
-                        {{ customer_type.name }}
+            {% csrf_token %}
+
+
+            <div class="form-group">
+
+
+                <label for="id_contact_name" class="col-sm-2 control-label">Name</label>
+                <div class="col-sm-4 {% if form.contact_name.errors %}has-error{% endif %}">
+                    {% render_field form.contact_name class="form-control" %}
+                    <label class="control-label" for="id_contact_name">
+                        {% for error in form.contact_name.errors %}
+                            {{ error }}
+                        {% endfor %}
                     </label>
-                    <p>
-                        {{ customer_type.description }}
-                    </p>
+                </div>
+
+                <label for="id_contact_mail" class="col-sm-2 control-label">E-Mail</label>
+                <div class="col-sm-4 {% if form.contact_mail.errors %}has-error{% endif %}">
+                    {% render_field form.contact_mail class="form-control" %}
+                    <label class="control-label" for="id_contact_mail">
+                        {% for error in form.contact_mail.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </label>
+                </div>
+
+
+            </div>
+            <div class="form-group">
+
+                <label for="id_company_name" class="col-sm-2 control-label">Organization</label>
+                <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
+                    {% render_field form.company_name class="form-control" %}
+                    <label class="control-label" for="id_company_name">
+                        {% for error in form.company_name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </label>
+                </div>
+
+                <label for="id_contact_phone" class="col-sm-2 control-label">Phone</label>
+                <div class="col-sm-4 {% if form.contact_phone.errors %}has-error{% endif %}">
+                    {% render_field form.contact_phone class="form-control" %}
+                    <label class="control-label" for="id_contact_phone">
+                        {% for error in form.contact_phone.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </label>
+                </div>
+
+
+            </div>
+            <div class="form-group">
+
+
+                <label for="address" class="col-sm-2 control-label">Address</label>
+                <div class="col-sm-4">
+                    {% render_field form.contact_address class="form-control" rows="4" %}
+                </div>
+
+
+                <label for="comments" class="col-sm-2 control-label">Comments</label>
+                <div class="col-sm-4">
+                    {% render_field form.comments class="form-control" rows="4" %}
+                </div>
+
+
+            </div>
+
+
+            <div class="form-group">
+                <h3>Registration Type</h3>
+                {% get_customer_types as customer_types %}
+                {% for customer_type in customer_types %}
+                    <div class="col-sm-6">
+                        <div class="radio">
+                            <label class="control-label">
+                                <input id="type-public" type="radio" name="customer_type" 
+                                    {% if form.customer_type.value %}
+                                        {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
+                                    {% else %}
+                                        {% ifequal forloop.counter0 0 %}checked="checked"{% endifequal %}
+                                    {% endif %}
+                                    value="{{ customer_type.id }}"
+                                />
+                                <h4 class="text-left">{{ customer_type.name }}</h4>
+                                <p class="text-left">{{ customer_type.description }}</p>
+                            </label>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
-        </div>
 
-        <div class="form-group {% if form.contact_name.errors %}has-error{% endif %}">
-            <label class="control-label col-sm-2" for="id_contact_name">Name</label>
-            <div class="col-sm-10">
-                {% render_field form.contact_name class="form-control" %}
+
+            <div class="form-group">
+                <div class="col-sm-6">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox"> I have read and agree with the <a data-toggle="collapse" href="#terms">terms and conditions</a>.
+                        </label>
+                        <div id="terms" class="collapse">
+                            <h4>Terms and Conditions for API Registration</h4>
+                            <p>Cumulonimbus has been primarily motivated by and is committed foremost to improving the world and advancing scientific progress. We are therefore happy to supply our live stream free of charge for scientific and non-commercial use only.</p>
+                            <p>We are proud to have been providing a continuous live stream to researchers at the University of Washington. However, in a project like this, technical or human error can interrupt, distort, or otherwise interfere with our live stream, and Cumulonimbus makes no representations as to the quality, consistency, or continuity of our live stream, whether affected by negligence or otherwise. Cumulonimbus assumes no liability whatsoever in supplying our live stream free of charge to researchers.</p>
+                            <p>We reserve all rights to the data supplied in our live stream and may withdraw access to the live stream at any time and for any reason.</p>
+                            <p>Please let us know if you’d like to redistribute the data supplied in our live stream, and we’ll be happy to discuss!</p>
+                            <p>As the project grows, our operational needs may change, so we may charge a fee for our live stream in the future. We will of course always remain foremost committed to promoting scientific progress, so we will ever endeavour to help advance your research objectives.</p>
+                            <p>By accepting use of our live stream, you accept the terms above.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <button class="btn btn-lg btn-primary" type="submit">Sign up!</button>
+                </div>
             </div>
-            <label class="control-label col-sm-10 col-sm-offset-2" for="id_contact_name">
-                {% for error in form.contact_name.errors %}
-                    {{ error }}
-                {% endfor %}
-            </label>
-        </div>
+        </form>
 
-        <div class="form-group {% if form.contact_mail.errors %}has-error{% endif %}">
-            <label class="control-label col-sm-2" for="id_contact_mail">E-mail</label>
-            <div class="col-sm-10">
-                {% render_field form.contact_mail class="form-control" %}
-            </div>
-            <label class="control-label col-sm-10 col-sm-offset-2" for="id_contact_mail">
-                {% for error in form.contact_mail.errors %}
-                    {{ error }}
-                {% endfor %}
-            </label>
-        </div>
 
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="id_company_name">Organization</label>
-            <div class="col-sm-10">
-                {% render_field form.company_name class="form-control" %}
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="id_contact_phone">Phone</label>
-            <div class="col-sm-10">
-                {% render_field form.contact_phone class="form-control" %}
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="id_contact_address">Address</label>
-            <div class="col-sm-10">
-                {% render_field form.contact_address class="form-control" rows="4" %}
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="id_comments">Comments</label>
-            <div class="col-sm-10">
-                {% render_field form.comments class="form-control" rows="5" %}
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-offset-10 col-md-2">
-                <input class="btn btn-primary pull-right" type="submit" value="Sign up!" />
-            </div>
-        </div>
-
-    </form>
-</div>
+    </div>
 {% endblock %}
