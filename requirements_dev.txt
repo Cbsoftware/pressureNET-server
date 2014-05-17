@@ -26,6 +26,7 @@ jmespath==0.2.1
 mock==1.0.1
 ordereddict==1.1
 pep8==1.4.5
+pilkit==1.1.8
 pip2pi==0.2.1
 ply==3.4
 pyasn1==0.1.7
