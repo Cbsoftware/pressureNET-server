@@ -8,9 +8,11 @@ bcdoc==0.12.0
 boto==2.9.9
 botocore==0.29.0
 colorama==0.2.5
+django-appconf==0.6
 django-debug-toolbar==0.9.4
 django-filter==0.6
 django-grappelli==2.4.4
+django-imagekit==3.2.1
 django-ses==0.4.1
 django-storages==1.1.8
 django-widget-tweaks==1.3
