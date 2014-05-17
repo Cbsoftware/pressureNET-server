@@ -20,10 +20,7 @@
 
             {% csrf_token %}
 
-
             <div class="form-group">
-
-
                 <label for="id_contact_name" class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-4 {% if form.contact_name.errors %}has-error{% endif %}">
                     {% render_field form.contact_name class="form-control" %}
@@ -33,7 +30,6 @@
                         {% endfor %}
                     </label>
                 </div>
-
                 <label for="id_contact_mail" class="col-sm-2 control-label">E-Mail</label>
                 <div class="col-sm-4 {% if form.contact_mail.errors %}has-error{% endif %}">
                     {% render_field form.contact_mail class="form-control" %}
@@ -43,11 +39,9 @@
                         {% endfor %}
                     </label>
                 </div>
-
-
             </div>
-            <div class="form-group">
 
+            <div class="form-group">
                 <label for="id_company_name" class="col-sm-2 control-label">Organization</label>
                 <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
                     {% render_field form.company_name class="form-control" %}
@@ -57,7 +51,6 @@
                         {% endfor %}
                     </label>
                 </div>
-
                 <label for="id_contact_phone" class="col-sm-2 control-label">Phone</label>
                 <div class="col-sm-4 {% if form.contact_phone.errors %}has-error{% endif %}">
                     {% render_field form.contact_phone class="form-control" %}
@@ -67,26 +60,18 @@
                         {% endfor %}
                     </label>
                 </div>
-
-
             </div>
+
             <div class="form-group">
-
-
                 <label for="address" class="col-sm-2 control-label">Address</label>
                 <div class="col-sm-4">
                     {% render_field form.contact_address class="form-control" rows="4" %}
                 </div>
-
-
                 <label for="comments" class="col-sm-2 control-label">Comments</label>
                 <div class="col-sm-4">
                     {% render_field form.comments class="form-control" rows="4" %}
                 </div>
-
-
             </div>
-
 
             <div class="form-group">
                 <h3>Registration Type</h3>
@@ -110,7 +95,6 @@
                     </div>
                 {% endfor %}
             </div>
-
 
             <div class="form-group">
                 <div class="col-sm-6">
@@ -139,7 +123,6 @@
                 </div>
             </div>
         </form>
-
 
     </div>
 {% endblock %}
