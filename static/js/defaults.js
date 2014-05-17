@@ -145,14 +145,13 @@ $( ".ph-bg" ).click(function() {
 
 $( "#share-twitter" ).click(function(e) {
     var $this = $( this ),
-        url = encodeURI( $this.data( "url" )),
         text = encodeURI( $this.data( "text" )),
         hashtags = $this.data( "hashtags" );
 
     e.preventDefault();
 
     window.open(
-        this.href + "?url=" + url + "&text=" + text + "&hashtags=" + hashtags,
+        this.href + "&text=" + text + "&hashtags=" + hashtags,
         "tweetDialog",
         "height=260, width=550, toolbar=0, status=0"
     );
@@ -160,27 +159,25 @@ $( "#share-twitter" ).click(function(e) {
 
 $( "#share-facebook" ).click(function(e) {
     var $this = $( this ),
-        href = encodeURI( $this.data( "href" )),
         redir = encodeURI( $this.data( "redir" )),
         appID = "711837532201345";
 
     e.preventDefault();
 
     window.open(
-        this.href + "?u=" + href + "&app_id=" + appID,
+        this.href,
         "facebookDialog",
         "height=600, width=600, toolbar=0, status=0"
     );
 });
 
-$( "#share-googleplus" ).on( "click", function(e) {
-    var $this = $( this ),
-        url = encodeURI( $this.data( "url" ));
+$( "#share-googleplus" ).click(function(e) {
+    var $this = $( this );
 
     e.preventDefault();
 
     window.open(
-        this.href + "?url=" + url,
+        this.href,
         "gplusDialog",
         "height=600, width=600, toolbar=0, status=0"
     );
@@ -188,28 +185,26 @@ $( "#share-googleplus" ).on( "click", function(e) {
 
 $( "#share-tumblr" ).on( "click", function(e) {
     var $this = $( this ),
-        url = encodeURI( $this.data( "url" )),
         name = encodeURI( $this.data( "name" )),
         description = encodeURI( $this.data( "description" ));
 
     e.preventDefault();
 
     window.open(
-        this.href + "?url=" + url + "&name=" + name + "&description=" + description,
+        this.href + "&name=" + name + "&description=" + description,
         "tumblrDialog",
-        "height=500, width=800, toolbar=0, status=0"
+        "height=400, width=400, toolbar=0, status=0"
     );
 });
 
 
 $( "#share-reddit" ).on( "click", function(e) {
-    var $this = $( this ),
-        url = encodeURI( $this.data( "url" ));
+    var $this = $( this );
 
     e.preventDefault();
 
     window.open(
-        this.href + "?url=" + url,
+        this.href,
         "redditDialog",
         "height=750, width=850, toolbar=0, status=0"
     );
@@ -217,13 +212,12 @@ $( "#share-reddit" ).on( "click", function(e) {
 
 
 $( "#share-stumbleupon" ).on( "click", function(e) {
-    var $this = $( this ),
-        url = encodeURI( $this.data( "url" ));
+    var $this = $( this );
 
     e.preventDefault();
 
     window.open(
-        this.href + "?url=" + url,
+        this.href,
         "stumbleuponDialog",
         "height=525, width=800, toolbar=0, status=0"
     );
