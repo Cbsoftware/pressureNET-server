@@ -77,7 +77,7 @@ USE_TZ = True
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://example.com/media/", "http://media.example.com/"
-MEDIA_URL = '/media/'
+MEDIA_URL = os.environ.get('MEDIA_URL', '/media/')
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -153,6 +153,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'raven.contrib.django.raven_compat',
     'south',
+    'storages',
     'urlobject',
     'widget_tweaks',
 
@@ -185,6 +186,11 @@ LOG_DURATIONS = (
     ('hourly', (60 * 60 * 1000)),
     ('daily', (24 * 60 * 60 * 1000)),
 )
+
+# Storage Settings
+DEFAULT_FILE_STORAGE = 'utils.s3.MediaS3Storage'
+AWS_STORAGE_BUCKET_NAME = S3_PUBLIC_BUCKET
+
 
 # Grappelli Admin
 GRAPPELLI_ADMIN_TITLE = 'PressureNET Admin'
