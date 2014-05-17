@@ -15,6 +15,7 @@ SolutionStack=32bit Amazon Linux running Python
 master=PressureNET-Live
 beanstalk=PressureNET-Live
 develop=PressureNET-Staging
+web=PressureNET-Staging
 loggly=PressureNET-Staging
 
 [branch:beanstalk]
