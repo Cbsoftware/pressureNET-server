@@ -261,6 +261,8 @@ $( ".btn-vote" ).click(function(e) {
         var vote = $( this ).data( "vote" ),
             type = $( this ).data( "vote-type" );
 
-        $( this ).addClass( "voted" );
+        $( this ).addClass( "voted" ).append( ' <i class="fa fa-check"></i>' )
+        .before( '<div class="thanks">Thanks for voting!</div>' );
+        $( ".thanks" ).delay( 3000 ).fadeOut( 500 );
     }
 });
