@@ -6753,18 +6753,11 @@ figure {
   right: 0;
   width: 100%;
   height: 100%;
-  background-image: url("../images/blog-header-20140415.jpg");
   background-position: center;
   background-size: cover;
 }
 .post-header .ph-bg.ph-blurred {
   opacity: 0;
-  filter: blur(50px);
-  -webkit-filter: blur(50px);
-  -moz-filter: blur(50px);
-  -ms-filter: blur(50px);
-  -o-filter: blur(50px);
-  filter: url(blur.svg#blur);
 }
 .post-header .post-title {
   position: absolute;
