@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 from utils.image import GaussianBlurSpec
 
@@ -14,6 +15,7 @@ class BlogPost(models.Model):
     teaser = models.TextField()
     image = models.ImageField(max_length=255, upload_to='blog/images', blank=True, null=True)
     image_blurred = ImageSpecField(source='image', processors=[GaussianBlurSpec()], format='JPEG')
+    image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(480, 360)], format='JPEG')
     content = models.TextField()
     published = models.BooleanField()
 

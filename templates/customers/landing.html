@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block page_title %} | API{% endblock %}
+
 {% block body_class %}api{% endblock %}
 
 {% block header_class %}short{% endblock %}
@@ -14,7 +16,9 @@
         </div>
         <div class="container">
             <h1 class="col-xs-12">Get your hands on our data!</h1>
-            
+
+            <div id="api-thanks" class="thanks">Thanks for signing up! You'll receive an e-mail with further details shortly.</div>
+
             <div class="clearfix"></div>
 
             <a class="btn btn-lg" href="{% url "customers-register" %}" role="button">Sign Up</a>
@@ -24,7 +28,7 @@
     </div>
 
     <div id="uses-cases" class="container section">
-        <h1 class="full-pad">PressureNet Use Cases</h1>
+        <h1 class="full-pad">PressureNet Applications</h1>
 
         <div id="apps-carousel" class="jcarousel row">
             <div class="jcarousel-tray">
@@ -94,4 +98,12 @@
 
 {% block extra_js %}
     <script src="{{ STATIC_URL }}js/jcarousel.min.js"></script>
+    <script src="{{ STATIC_URL }}js/purl.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var success = $.url().param( "success" );
+            if ( success ) $( "#api-thanks" ).delay( 250 ).fadeIn( 250 ).delay( 5000 ).fadeOut( 500 );
+        });
+    </script>
 {% endblock %}
