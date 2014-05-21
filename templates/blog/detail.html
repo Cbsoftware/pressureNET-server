@@ -31,7 +31,7 @@
 {% block content %}
     <div id="content">
         <div class="blog-post container section">
-            <div class="post-header full closed" data-width="1700" data-height="956"><!-- These data fields are seeded dynamically from the bg image size -->
+            <div class="post-header full closed" data-width="{{ blog_post.image.width }}" data-height="{{ blog_post.image.height }}">
                 <div class="ph-bg"></div>
                 <div class="ph-bg ph-blurred"></div>
                 <h1 class="post-title full-pad">{{ blog_post.title }}</h1>
