@@ -27,16 +27,19 @@ class CustomerForm(forms.ModelForm):
         )
 
     def send_email(self):
-        sender = settings.DEFAULT_FROM_EMAIL
-        recipient = self.cleaned_data.get('contact_mail', '')
-        subject = 'pressureNET Data API'
-        content = render_to_string('customers/email/registration.html', {
-            'customer': self.instance,
-        })
+        try:
+            sender = settings.DEFAULT_FROM_EMAIL
+            recipient = self.cleaned_data.get('contact_mail', '')
+            subject = 'pressureNET Data API'
+            content = render_to_string('customers/email/registration.html', {
+                'customer': self.instance,
+            })
 
-        email = EmailMultiAlternatives(subject, '', sender, [recipient])
-        email.attach_alternative(content, 'text/html')
-        email.send()
+            email = EmailMultiAlternatives(subject, '', sender, [recipient])
+            email.attach_alternative(content, 'text/html')
+            email.send()
+        except Exception, e:
+            pass
 
     def clean(self):
         cleaned_data = super(CustomerForm, self).clean()
