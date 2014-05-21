@@ -63,7 +63,7 @@
                         <h3>Other Posts by {{ blog_post.author.first_name }}</h3>
                         {% for author_blog_post in author_blog_posts %}
                             <div class="post-recent col-xs-4 col-md-12">
-                                <a href="{% url "blog-detail" slug=author_blog_post.slug %}"><img class="post-recent-image" src="{{ author_blog_post.image.url }}" alt=""></a>
+                                <a href="{% url "blog-detail" slug=author_blog_post.slug %}"><img class="post-recent-image" src="{{ author_blog_post.image_thumbnail.url }}" alt=""></a>
                                 <h4 class="post-recent-title"><a href="{% url "blog-detail" slug=author_blog_post.slug %}">{{ author_blog_post.title }}</a></h4>
                             </div>
                         {% endfor %}
@@ -76,7 +76,7 @@
                     {% get_recent_blog_posts as recent_blog_posts %}
                     {% for recent_blog_post in recent_blog_posts %}
                         <div class="post-recent col-xs-4">
-                            <a href="{% url "blog-detail" slug=recent_blog_post.slug %}"><img class="post-recent-image" src="{{ recent_blog_post.image.url }}" alt=""></a>
+                            <a href="{% url "blog-detail" slug=recent_blog_post.slug %}"><img class="post-recent-image" src="{{ recent_blog_post.image_thumbnail.url }}" alt=""></a>
                             <h4 class="post-recent-title"><a href="{% url "blog-detail" slug=recent_blog_post.slug %}">{{ recent_blog_post.title }}</a></h4>
                             <span class="post-recent-author"><a href="{% url "blog-list-author" author=recent_blog_post.author.first_name %}">{{ recent_blog_post.author.first_name }} {{ recent_blog_post.author.last_name }}</a></span>
                         </div>
