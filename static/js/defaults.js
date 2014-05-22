@@ -60,7 +60,7 @@ makeFull();
 
 // Set video background in .jumbotron to full size
 function jumboVideo() {
-    var jumboHeight = $( ".jumbotron" ).height() + 180,
+    var jumboHeight = $( ".jumbotron" ).height() + 263,
         jumboWidth  = $( ".jumbotron" ).width() + 30;
 
     $( ".video-box" ).height( jumboHeight ).width( jumboWidth );
