@@ -108,12 +108,20 @@ $( ".level-group" ).each(function() {
 
 // Blog effects
 
-// Blur the image on scroll down, Medium style
+// Scroll-based effects
 $( window ).scroll(function() {
     var scroll     = $( window ).scrollTop(),
         opacityVal = ( scroll / ( phCurrentHeight / 2 ) );
 
+// Blur the image on scroll down, Medium style
     $( ".ph-blurred" ).css( "opacity", opacityVal );
+
+// #Header colourer
+    if ( scroll > 90 ) {
+        $( ".home #header" ).addClass( "scrolled" );
+    } else {
+        $( ".home #header" ).removeClass( "scrolled" );
+    }
 });
 
 // Expand the image on tap
