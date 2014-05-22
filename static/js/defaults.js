@@ -1,7 +1,7 @@
 // Populate the variables
 var fullWidth       = $( window ).width(),
     contWidth       = $( ".container" ).width(),
-    fullPad         = Math.floor( ( fullWidth - contWidth ) / 2 ),
+    fullPad         = Math.floor( ( fullWidth - ( contWidth + 30 ) ) / 2 ),
     headerHeight    = $( "#header" ).outerHeight(),
     titleHeight     = $( ".post-title" ).innerHeight(),
     fullHeight      = $( window ).height() - headerHeight,
@@ -14,7 +14,7 @@ var fullWidth       = $( window ).width(),
 function varRefresh() {
     fullWidth       = $( window ).width();
     contWidth       = $( ".container" ).width();
-    fullPad         = Math.floor( ( fullWidth - contWidth ) / 2 );
+    fullPad         = Math.floor( ( fullWidth - ( contWidth + 30 ) ) / 2 );
     headerHeight    = $( "#header" ).outerHeight();
     fullHeight      = $( window ).height() - headerHeight;
     titleHeight     = $( ".post-title" ).innerHeight();
