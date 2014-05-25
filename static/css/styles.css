@@ -6778,6 +6778,18 @@ figure {
   font-family: "Droid Serif", "Times New Roman", Times, serif;
   line-height: 1.5em;
 }
+.post-content figure {
+  margin: 30px 0;
+}
+.post-content figure img {
+  width: 100%;
+  height: auto;
+}
+.post-content figure figcaption {
+  font-size: 0.85em;
+  font-style: italic;
+  margin-top: 15px;
+}
 .post-share {
   width: 100% !important;
 }
