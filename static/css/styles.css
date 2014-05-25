@@ -6237,12 +6237,14 @@ address {
 }
 #header.tall {
   height: 83px;
-  background-color: #ffffff;
+  background-color: transparent;
   padding-top: 15px;
   padding-bottom: 15px;
+  transition: all 0.25s;
 }
-#header.tall #nav-top {
+#header.tall.scrolled {
   background-color: #ffffff;
+  box-shadow: 0 0 15px #111111;
 }
 @media (max-width: 767px) {
   #header.tall #nav-top {
@@ -6253,6 +6255,9 @@ address {
   padding-top: 5px;
 }
 @media (max-width: 767px) {
+  #header.tall .menu-item:nth-child(even) {
+    background-color: #ffffff;
+  }
   #header.tall .menu-item:nth-child(odd) {
     background-color: #dddddd;
   }
@@ -6332,6 +6337,9 @@ address {
 .jumbotron.tall-box {
   background-repeat: no-repeat;
   background-size: cover;
+}
+.jumbotron#home-headline {
+  padding-top: 173px;
 }
 .jumbotron#vision {
   background-image: url("../images/bg-vision.jpg");
@@ -6478,9 +6486,6 @@ body {
     font-size: 16px;
     margin-bottom: 80px;
   }
-}
-body.home {
-  padding-top: 83px;
 }
 body.blog {
   padding-top: 95px;

@@ -1,7 +1,7 @@
 // Populate the variables
 var fullWidth       = $( window ).width(),
     contWidth       = $( ".container" ).width(),
-    fullPad         = Math.floor( ( fullWidth - contWidth ) / 2 ),
+    fullPad         = Math.floor( ( fullWidth - ( contWidth + 30 ) ) / 2 ),
     headerHeight    = $( "#header" ).outerHeight(),
     titleHeight     = $( ".post-title" ).innerHeight(),
     fullHeight      = $( window ).height() - headerHeight,
@@ -14,7 +14,7 @@ var fullWidth       = $( window ).width(),
 function varRefresh() {
     fullWidth       = $( window ).width();
     contWidth       = $( ".container" ).width();
-    fullPad         = Math.floor( ( fullWidth - contWidth ) / 2 );
+    fullPad         = Math.floor( ( fullWidth - ( contWidth + 30 ) ) / 2 );
     headerHeight    = $( "#header" ).outerHeight();
     fullHeight      = $( window ).height() - headerHeight;
     titleHeight     = $( ".post-title" ).innerHeight();
@@ -60,7 +60,7 @@ makeFull();
 
 // Set video background in .jumbotron to full size
 function jumboVideo() {
-    var jumboHeight = $( ".jumbotron" ).height() + 180,
+    var jumboHeight = $( ".jumbotron" ).height() + 263,
         jumboWidth  = $( ".jumbotron" ).width() + 30;
 
     $( ".video-box" ).height( jumboHeight ).width( jumboWidth );
@@ -108,12 +108,20 @@ $( ".level-group" ).each(function() {
 
 // Blog effects
 
-// Blur the image on scroll down, Medium style
+// Scroll-based effects
 $( window ).scroll(function() {
     var scroll     = $( window ).scrollTop(),
         opacityVal = ( scroll / ( phCurrentHeight / 2 ) );
 
+// Blur the image on scroll down, Medium style
     $( ".ph-blurred" ).css( "opacity", opacityVal );
+
+// #Header colourer
+    if ( scroll > 90 ) {
+        $( ".home #header" ).addClass( "scrolled" );
+    } else {
+        $( ".home #header" ).removeClass( "scrolled" );
+    }
 });
 
 // Expand the image on tap
