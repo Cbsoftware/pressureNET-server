@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.cache import cache
 
 from rest_framework.throttling import BaseThrottle
@@ -17,7 +18,7 @@ class APIKeyLockThrottle(BaseThrottle):
             if lock_key in cache:
                 return False
             else:
-                cache.set(lock_key, True)
+                cache.set(lock_key, True, timeout=settings.CACHE_LOCK_TIMEOUT)
 
         return True
 
