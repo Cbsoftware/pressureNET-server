@@ -3,24 +3,23 @@ import time
 import urllib2
 
 from django.conf import settings
-from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseNotAllowed
-from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView
+from django.utils import simplejson as json
 
 from rest_framework.generics import ListAPIView
+from rest_framework.throttling import UserRateThrottle
 
 from customers import choices as customer_choices
 from customers.models import Customer, CustomerCallLog
 
 from readings import choices as readings_choices
-from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.forms import ReadingForm, ConditionForm
-from readings.models import Reading, ReadingSync, Condition
+from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
-from readings.throttles import get_lock_key, APIKeyLockThrottle
+from readings.models import Reading, ReadingSync, Condition
 
 from utils.time_utils import to_unix
 from utils.loggly import loggly, Logger
@@ -256,17 +255,7 @@ class ReadingLiveView(APIKeyViewMixin, LoggedLocationListView):
     call_type = customer_choices.CALL_READINGS
     model = Reading
     serializer_class = ReadingLiveSerializer
-    throttle_classes = (APIKeyLockThrottle,)
-
-    def dispatch(self, request, *args, **kwargs):
-        response = super(ReadingLiveView, self).dispatch(request, *args, **kwargs)
-
-        # Unlock the api_key
-        api_key = request.GET['api_key']
-        lock_key = get_lock_key(api_key)
-        cache.delete(lock_key)
-
-        return response
+    throttle_classes = (UserRateThrottle,)
 
 reading_live = ReadingLiveView.as_view()
 
