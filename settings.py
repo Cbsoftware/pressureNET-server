@@ -38,7 +38,6 @@ DATABASES = {
 }
 
 CACHE_TIMEOUT = 60 * 5
-CACHE_LOCK_TIMEOUT = 60 * 10
 
 CACHES = {
     'default': {
