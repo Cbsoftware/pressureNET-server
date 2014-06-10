@@ -344,7 +344,9 @@ class QueueAggregator(Logger):
     def should_handle_blocks(self):
         now = datetime.datetime.now()
         elapsed = (now - self.last_handled_date).seconds * 1000
-        return elapsed > self.persist_duration
+        exceeded_persist_time = elapsed > self.persist_duration
+        exceeded_active_messages = len(self.active_messages) > 100000
+        return exceeded_persist_time or exceeded_active_messages
 
     def run(self):
         while True:
