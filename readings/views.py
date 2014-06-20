@@ -19,7 +19,7 @@ from readings import choices as readings_choices
 from readings.forms import ReadingForm, ConditionForm
 from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
-from readings.models import Reading, ReadingSync, Condition
+from readings.models import Reading, ReadingSync, Condition, ConditionFilter
 
 from utils.time_utils import to_unix
 from utils.loggly import loggly, Logger
@@ -140,6 +140,12 @@ class ConditionListView(FilteredListAPIView):
     model = Condition
     serializer_class = ConditionListSerializer
     filter_class = ConditionListFilter
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(ConditionListView, self).get_queryset(*args, **kwargs)
+
+        filter_user_ids = ConditionFilter.objects.all().values_list('user_id', flat=True)
+        return queryset.exclude(user_id__in=filter_user_ids)
 
 condition_list = cache_page(ConditionListView.as_view(), settings.CACHE_TIMEOUT)
 

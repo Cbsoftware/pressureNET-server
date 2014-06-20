@@ -12,7 +12,7 @@ import factory
 import mock
 
 from readings import choices as readings_choices
-from readings.models import Reading, Condition
+from readings.models import Reading, Condition, ConditionFilter
 
 from utils.queue import get_queue
 from utils.time_utils import to_unix
@@ -70,6 +70,14 @@ class ConditionFactory(DateLocationMeasurementFactory):
     precipitation_unit = 'abc'
     thunderstorm_intensity = 'abc'
     user_comment = 'abc'
+
+
+class ConditionFilterFactory(factory.Factory):
+    FACTORY_FOR = ConditionFilter
+
+    user_id = factory.LazyAttribute(
+        lambda reading: uuid.uuid4().get_hex()
+    )
 
 
 class DateLocationFilteredListTests(object):
@@ -298,6 +306,26 @@ class ReadingsListTests(DateLocationFilteredListTests, TestCase):
 class ConditionsListTests(DateLocationFilteredListTests, TestCase):
     url_name = 'readings-conditions-list'
     factory = ConditionFactory
+
+    def test_filtered_conditions_dont_appear(self):
+        good_condition = ConditionFactory(general_condition='good')
+        good_condition.save()
+
+        bad_condition = ConditionFactory(general_condition='bad')
+        bad_condition.save()
+
+        bad_filter = ConditionFilterFactory(user_id=bad_condition.user_id)
+        bad_filter.save()
+
+        response = self.client.get(reverse(self.url_name))
+
+        data = json.loads(response.content)
+
+        conditions = [condition['general_condition'] for condition in data]
+
+        self.assertEqual(len(conditions), 1)
+        self.assertIn('good', conditions)
+        self.assertNotIn('bad', conditions)
 
 
 class ReadingLiveTests(TestCase):
