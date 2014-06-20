@@ -63,6 +63,20 @@ class Condition(DateLocationMeasurementModel):
         return '%s: %s' % (self.user_id, self.general_condition)
 
 
+class ConditionFilter(models.Model):
+    """
+    pressureNET user filter for conditions
+    """
+    user_id = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name = 'condition filter'
+        verbose_name_plural = 'condition filters'
+
+    def __unicode__(self):
+        return self.user_id
+
+
 class ReadingSync(models.Model):
     """
     Reading synchronization from Tomcat Server
