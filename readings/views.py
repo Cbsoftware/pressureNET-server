@@ -99,7 +99,7 @@ class FilteredListAPIView(ListAPIView):
 
     def get_queryset(self):
         serializer = self.get_serializer_class()
-        queryset = super(FilteredListAPIView, self).get_queryset()
+        queryset = super(FilteredListAPIView, self).get_queryset().using('replica')
 
         if hasattr(serializer.Meta, 'fields'):
             fields = serializer.Meta.fields
