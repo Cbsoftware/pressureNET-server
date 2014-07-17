@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from froala_editor.fields import FroalaField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -12,12 +13,12 @@ class BlogPost(models.Model):
     author = models.ForeignKey(User, related_name='blog_posts')
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
-    teaser = models.TextField()
+    published = models.BooleanField()
     image = models.ImageField(max_length=255, upload_to='blog/images', blank=True, null=True)
     image_blurred = ImageSpecField(source='image', processors=[GaussianBlurSpec()], format='JPEG')
     image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(480, 360)], format='JPEG')
-    content = models.TextField()
-    published = models.BooleanField()
+    teaser = FroalaField()
+    content = FroalaField()
 
     class Meta:
         verbose_name = 'Blog Post'
