@@ -11,6 +11,7 @@ colorama==0.2.5
 django-appconf==0.6
 django-debug-toolbar==0.9.4
 django-filter==0.6
+django-froala-editor==0.8.7
 django-grappelli==2.4.4
 django-imagekit==3.2.1
 django-ses==0.4.1
