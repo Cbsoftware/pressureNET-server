@@ -1,0 +1,16 @@
+form .fr-dropdown ul.fr-dropdown-menu {
+    margin-left: 0;
+}
+
+form .froala-element p {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.froala-box {
+    clear: both;
+}
+
+.form-row {
+    overflow: visible;
+}

@@ -274,6 +274,7 @@ class JSONCreateView(Logger, CreateView):
 
         response = {
             'success': True,
+            'client_key': form.cleaned_data.get('client_key', ''),
             'errors': '',
         }
 
@@ -287,6 +288,7 @@ class JSONCreateView(Logger, CreateView):
     def form_invalid(self, form):
         response = {
             'success': False,
+            'client_key': form.cleaned_data.get('client_key', ''),
             'errors': form._errors,
         }
 
