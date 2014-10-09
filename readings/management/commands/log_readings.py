@@ -3,6 +3,7 @@ import time
 from multiprocessing.dummy import Pool
 from collections import defaultdict
 
+from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils import simplejson as json
@@ -62,8 +63,38 @@ class DataHandler(Logger):
     def write_data(self, data):
         return 'no output'
 
+    def acquire_lock(self, key):
+        for attempt in range(10):
+            if key not in cache:
+                cache.set(key, 1, timeout=60*8)
+                self.log(
+                    lock='acquired',
+                    key=key,
+                )
+                return
+
+            self.log(
+                lock='waiting',
+                key=key,
+            )
+            time.sleep(60)
+
+        raise Exception('Unable to acquire lock: {key}'.format(key=key))
+
+    def release_lock(self, key):
+        cache.delete(key)
+
+        self.log(
+            lock='released',
+            key=key,
+        )
+
     def handle(self, duration_label, key, data):
         try:
+            lock_key = '{duration}{key}'.format(duration=duration_label, key=key)
+
+            self.acquire_lock(lock_key)
+
             start = time.time()
 
             existing_data = self.get_existing_data(duration_label, key)
@@ -75,6 +106,8 @@ class DataHandler(Logger):
             output = self.write_data(duration_label, key, processed_data)
 
             end = time.time()
+
+            self.release_lock(lock_key)
 
             self.log(
                 output=output,
@@ -345,7 +378,7 @@ class QueueAggregator(Logger):
         now = datetime.datetime.now()
         elapsed = (now - self.last_handled_date).seconds * 1000
         exceeded_persist_time = elapsed > self.persist_duration
-        exceeded_active_messages = len(self.active_messages) > 100000
+        exceeded_active_messages = len(self.active_messages) > 5000
         return exceeded_persist_time or exceeded_active_messages
 
     def run(self):
