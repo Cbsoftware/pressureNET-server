@@ -15,8 +15,6 @@ class BlogPost(models.Model):
     slug = models.SlugField(max_length=255, unique=True)
     published = models.BooleanField()
     image = models.ImageField(max_length=255, upload_to='blog/images', blank=True, null=True)
-    image_blurred = ImageSpecField(source='image', processors=[GaussianBlurSpec()], format='JPEG')
-    image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(480, 360)], format='JPEG')
     teaser = FroalaField()
     content = FroalaField()
 

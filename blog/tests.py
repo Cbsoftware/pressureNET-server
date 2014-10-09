@@ -24,7 +24,6 @@ class BlogPostFactory(factory.Factory):
     teaser = 'teaser'
     published = True
     image = 'image.jpg'
-    image_blurred = 'image_blurred.jpg'
 
 
 class BlogListTest(TestCase):
