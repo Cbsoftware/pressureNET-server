@@ -10,7 +10,7 @@
 
 
 {% block content %}
-    <div id="signup-api-title" class="jumbotron section tall-box">
+    <div id="signup-sdk-title" class="jumbotron section tall-box">
         <div class="container">
             <h1 class="full-pad">Sign Up for an API Key</h1>
         </div>
@@ -23,7 +23,16 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="id_contact_name" class="col-sm-2 control-label">Name</label>
+                <label for="id_company_name" class="col-sm-2 control-label">Company</label>
+                <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
+                    {% render_field form.company_name class="form-control" %}
+                    <label class="control-label" for="id_company_name">
+                        {% for error in form.company_name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </label>
+                </div>
+                <label for="id_contact_name" class="col-sm-2 control-label">Contact Name</label>
                 <div class="col-sm-4 {% if form.contact_name.errors %}has-error{% endif %}">
                     {% render_field form.contact_name class="form-control" %}
                     <label class="control-label" for="id_contact_name">
@@ -32,23 +41,14 @@
                         {% endfor %}
                     </label>
                 </div>
+            </div>
+
+            <div class="form-group">
                 <label for="id_contact_mail" class="col-sm-2 control-label">E-Mail</label>
                 <div class="col-sm-4 {% if form.contact_mail.errors %}has-error{% endif %}">
                     {% render_field form.contact_mail class="form-control" %}
                     <label class="control-label" for="id_contact_mail">
                         {% for error in form.contact_mail.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="id_company_name" class="col-sm-2 control-label">Organization</label>
-                <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
-                    {% render_field form.company_name class="form-control" %}
-                    <label class="control-label" for="id_company_name">
-                        {% for error in form.company_name.errors %}
                             {{ error }}
                         {% endfor %}
                     </label>
@@ -69,33 +69,26 @@
                 <div class="col-sm-4">
                     {% render_field form.contact_address class="form-control" rows="4" %}
                 </div>
-                <label for="comments" class="col-sm-2 control-label">Comments</label>
-                <div class="col-sm-4">
-                    {% render_field form.comments class="form-control" rows="4" %}
+                <label for="id_app_link" class="col-sm-2 control-label">Link to your app</label>
+                <div class="col-sm-4 {% if form.app_link.errors %}has-error{% endif %}">
+                    {% render_field form.app_link class="form-control" %}
+                    <label class="control-label" for="id_app_link">
+                        {% for error in form.app_link.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </label>
                 </div>
             </div>
 
             <div class="form-group">
-                <h3>Registration Type</h3>
-                {% get_customer_types as customer_types %}
-                {% for customer_type in customer_types %}
-                    <div class="col-sm-6">
-                        <div class="radio">
-                            <label class="control-label">
-                                <input id="type-public" type="radio" name="customer_type" 
-                                    {% if form.customer_type.value %}
-                                        {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
-                                    {% else %}
-                                        {% ifequal forloop.counter0 0 %}checked="checked"{% endifequal %}
-                                    {% endif %}
-                                    value="{{ customer_type.id }}"
-                                />
-                                <h4 class="text-left">{{ customer_type.name }}</h4>
-                                <p class="text-left">{{ customer_type.description }}</p>
-                            </label>
-                        </div>
-                    </div>
-                {% endfor %}
+                <label for="weather" class="col-sm-2 control-label">How does the weather affect your users?</label>
+                <div class="col-sm-4">
+                    {% render_field form.weather class="form-control" rows="4" %}
+                </div>
+                <label for="comments" class="col-sm-2 control-label">Comments</label>
+                <div class="col-sm-4">
+                    {% render_field form.comments class="form-control" rows="4" %}
+                </div>
             </div>
 
             <div class="form-group">
