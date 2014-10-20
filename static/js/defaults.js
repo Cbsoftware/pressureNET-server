@@ -288,3 +288,22 @@ $( ".btn-vote" ).click(function(e) {
         $( ".thanks" ).delay( 3000 ).fadeOut( 500 );
     }
 });
+
+// Tab-group
+$( ".tab-link" ).click(function(e) {
+    e.preventDefault();
+
+    var tab = $( this ).data( "tab" );
+
+    $( ".tab-link" ).removeClass( "active" );
+    $( this ).addClass( "active" );
+
+    if ( tab == "sdk" ) {        
+        $( "#signup-form").delay( 500 ).removeClass( "tab-api" ).addClass( "tab-sdk" );
+        $( "#type-developer" ).val( "developer" );
+        $( "#type-researcher, #type-public" ).prop( "checked", false );
+    } else {
+        $( "#signup-form").removeClass( "tab-sdk" ).addClass( "tab-api" );
+        $( "#type-developer" ).val( "" );
+    }
+});

@@ -6165,6 +6165,59 @@ address {
 .jumbotron .btn-store:hover {
   background-color: #0099cc;
 }
+.tab-group {
+  display: table;
+  table-layout: fixed;
+}
+.tab-group .tab-link {
+  display: table-cell;
+  font-size: 30px;
+  line-height: 60px;
+  font-weight: 200;
+  text-align: center;
+  width: auto;
+  background-color: #dddddd;
+}
+.tab-group .tab-link:first-child {
+  border-right: #aaaaaa solid 2px;
+}
+.tab-group .tab-link:hover {
+  background-color: #cceeff;
+}
+.tab-group .tab-link.active {
+  color: #666666;
+  background-color: #ffffff;
+}
+.tab-sdk #label-name::before {
+  content: "Contact Name";
+}
+.tab-sdk #label-company::before {
+  content: "Company";
+}
+.tab-sdk #label-phone::before {
+  content: "Link to your app";
+}
+.tab-sdk #label-address::before {
+  content: "How does the weather affect your users?";
+}
+.tab-sdk #registration-type {
+  display: none;
+}
+.tab-api #label-name::before {
+  content: "Name";
+}
+.tab-api #label-company::before {
+  content: "Organization";
+}
+.tab-api #label-phone::before {
+  content: "Phone";
+}
+.tab-api #label-address::before {
+  content: "Address";
+}
+.tab-api #registration-type {
+  display: block;
+}
 .jcarousel {
   position: relative;
   overflow: hidden;
