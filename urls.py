@@ -6,6 +6,7 @@ from django.conf.urls import patterns, include, url
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^froala_editor/', include('froala_editor.urls')),
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('customers.urls')),

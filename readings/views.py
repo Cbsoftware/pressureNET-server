@@ -19,7 +19,7 @@ from readings import choices as readings_choices
 from readings.forms import ReadingForm, ConditionForm
 from readings.filters import ReadingListFilter, ConditionListFilter
 from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
-from readings.models import Reading, ReadingSync, Condition
+from readings.models import Reading, ReadingSync, Condition, ConditionFilter
 
 from utils.time_utils import to_unix
 from utils.loggly import loggly, Logger
@@ -141,6 +141,12 @@ class ConditionListView(FilteredListAPIView):
     serializer_class = ConditionListSerializer
     filter_class = ConditionListFilter
 
+    def get_queryset(self, *args, **kwargs):
+        queryset = super(ConditionListView, self).get_queryset(*args, **kwargs)
+
+        filter_user_ids = ConditionFilter.objects.all().values_list('user_id', flat=True)
+        return queryset.exclude(user_id__in=filter_user_ids)
+
 condition_list = cache_page(ConditionListView.as_view(), settings.CACHE_TIMEOUT)
 
 
@@ -161,7 +167,7 @@ class LoggedLocationListView(FilteredListAPIView):
     def unpack_parameters(self):
         return {
             'global_data': self.request.GET.get('global', False) == 'true',
-            'since_last_call': self.request.GET.get('since_last_call', False) == 'true',
+            'since_last_call': 'since_last_call' in self.request.GET,
             'min_latitude': self.request.GET.get('min_lat', -180),
             'max_latitude': self.request.GET.get('max_lat', 180),
             'min_longitude': self.request.GET.get('min_lon', -180),
@@ -181,8 +187,8 @@ class LoggedLocationListView(FilteredListAPIView):
         parameters = self.unpack_parameters()
         call_log = CustomerCallLog(call_type=self.call_type)
         call_log.customer = Customer.objects.get(api_key=parameters['api_key'])  # TODO: Handle DoesNotExist case
-        call_log.results_returned = len(self.get_queryset())
-        call_log.query = self.get_queryset().query
+        call_log.results_returned = len(response.data)
+        call_log.query = ''
         call_log.path = '%s?%s' % (self.request.path, self.request.META['QUERY_STRING'])
         call_log.data_format = parameters['data_format']
         call_log.min_latitude = parameters['min_latitude']
@@ -215,15 +221,11 @@ class LoggedLocationListView(FilteredListAPIView):
                 longitude__lte=parameters['max_longitude'],
             )
 
-        if parameters['since_last_call']:
-            try:
-                call_log = CustomerCallLog.objects.filter(customer=customer).order_by('-timestamp')[:1].get()
-                last_customerapi_call_time = call_log.timestamp
-            except CustomerCallLog.DoesNotExist:
-                last_customerapi_call_time = to_unix(datetime.datetime.now() - datetime.timedelta(hours=1))
-
+        call_logs = CustomerCallLog.objects.filter(customer=customer)
+        if parameters['since_last_call'] and call_logs.exists():
+            call_log = call_logs.order_by('-timestamp')[:1].get()
             queryset = queryset.filter(
-                daterecorded__gte=last_customerapi_call_time
+                daterecorded__gte=to_unix(call_log.timestamp),
             )
         else:
             queryset = queryset.filter(
@@ -272,6 +274,7 @@ class JSONCreateView(Logger, CreateView):
 
         response = {
             'success': True,
+            'client_key': form.cleaned_data.get('client_key', ''),
             'errors': '',
         }
 
@@ -285,6 +288,7 @@ class JSONCreateView(Logger, CreateView):
     def form_invalid(self, form):
         response = {
             'success': False,
+            'client_key': form.cleaned_data.get('client_key', ''),
             'errors': form._errors,
         }
 

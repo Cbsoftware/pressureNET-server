@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from readings.models import Reading, ReadingSync, Condition
+from readings.models import Reading, ReadingSync, Condition, ConditionFilter
 
 
 class ReadingAdmin(admin.ModelAdmin):
@@ -23,3 +23,9 @@ class ConditionAdmin(admin.ModelAdmin):
     list_display = ('user_id', 'latitude', 'longitude', 'general_condition', 'date')
 
 admin.site.register(Condition, ConditionAdmin)
+
+
+class ConditionFilterAdmin(admin.ModelAdmin):
+    list_display = ('user_id',)
+
+admin.site.register(ConditionFilter, ConditionFilterAdmin)
