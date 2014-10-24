@@ -6188,6 +6188,9 @@ address {
   color: #666666;
   background-color: #ffffff;
 }
+#customer-type-3 {
+  display: none;
+}
 .tab-sdk #label-name::before {
   content: "Contact Name";
 }
@@ -6201,7 +6204,7 @@ address {
   content: "How does the weather affect your users?";
 }
 .tab-sdk #registration-type {
-  visibility: hidden;
+  display: none;
 }
 .tab-api #label-name::before {
   content: "Name";
@@ -6216,7 +6219,7 @@ address {
   content: "Address";
 }
 .tab-api #registration-type {
-  visibility: visible;
+  display: block;
 }
 .jcarousel {
   position: relative;
