@@ -6515,6 +6515,14 @@ address {
   font-weight: 300;
   margin: 0;
 }
+.jumbotron p.center {
+  text-align: center;
+}
+@media (min-width: 992px) {
+  .jumbotron p.center {
+    margin: 0 25%;
+  }
+}
 .jumbotron .credit {
   z-index: 15;
   position: absolute;
