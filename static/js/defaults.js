@@ -301,9 +301,10 @@ $( ".tab-link" ).click(function(e) {
     if ( tab == "sdk" ) {        
         $( "#signup-form").delay( 500 ).removeClass( "tab-api" ).addClass( "tab-sdk" );
         $( "#type-developer" ).val( "developer" );
-        $( "#type-researcher, #type-public" ).prop( "checked", false );
+        $( '#type-public[value="1"], #type-public[value="2"]' ).prop( "checked", false );
+        $( '#type-public[value="3"]' ).prop( "checked", true );
     } else {
         $( "#signup-form").removeClass( "tab-sdk" ).addClass( "tab-api" );
-        $( "#type-developer" ).val( "" );
+        $( '#type-public[value="3"]' ).prop( "checked", false );
     }
 });
