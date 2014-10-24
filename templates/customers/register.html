@@ -91,7 +91,7 @@
                                     {% if form.customer_type.value %}
                                         {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
                                     {% else %}
-                                        {% ifequal forloop.counter0 0 %}checked="checked"{% endifequal %}
+                                        {% ifequal customer_type.name "Developer" %}checked="checked"{% endifequal %}
                                     {% endif %}
                                     value="{{ customer_type.id }}"
                                 />
