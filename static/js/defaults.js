@@ -290,6 +290,14 @@ $( ".btn-vote" ).click(function(e) {
 });
 
 // Tab-group
+if ( $( '#type-public[value="1"]' ).prop( "checked" ) || $( '#type-public[value="2"]' ).prop( "checked" ) ) {
+    $( "#tab-link-sdk" ).removeClass( "active" );
+    $( "#tab-link-api" ).addClass( "active" );
+} else if ( $( '#type-public[value="3"]' ).prop( "checked" ) ) {
+    $( "#tab-link-api" ).removeClass( "active" );
+    $( "#tab-link-sdk" ).addClass( "active" );
+}
+
 $( ".tab-link" ).click(function(e) {
     e.preventDefault();
 
