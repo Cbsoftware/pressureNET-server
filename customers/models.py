@@ -59,6 +59,9 @@ class Customer(models.Model):
     def __unicode__(self):
         return self.contact_name
 
+    def is_developer(self):
+        return self.customer_type.name == 'Developer'
+
 
 class CustomerCallLog(models.Model):
     """Log data for each customer API call"""

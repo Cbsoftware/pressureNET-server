@@ -288,3 +288,31 @@ $( ".btn-vote" ).click(function(e) {
         $( ".thanks" ).delay( 3000 ).fadeOut( 500 );
     }
 });
+
+// Tab-group
+if ( $( '#type-public[value="1"]' ).prop( "checked" ) || $( '#type-public[value="2"]' ).prop( "checked" ) ) {
+    $( "#tab-link-sdk" ).removeClass( "active" );
+    $( "#tab-link-api" ).addClass( "active" );
+} else if ( $( '#type-public[value="3"]' ).prop( "checked" ) ) {
+    $( "#tab-link-api" ).removeClass( "active" );
+    $( "#tab-link-sdk" ).addClass( "active" );
+}
+
+$( ".tab-link" ).click(function(e) {
+    e.preventDefault();
+
+    var tab = $( this ).data( "tab" );
+
+    $( ".tab-link" ).removeClass( "active" );
+    $( this ).addClass( "active" );
+
+    if ( tab == "sdk" ) {        
+        $( "#signup-form").delay( 500 ).removeClass( "tab-api" ).addClass( "tab-sdk" );
+        $( "#type-developer" ).val( "developer" );
+        $( '#type-public[value="1"], #type-public[value="2"]' ).prop( "checked", false );
+        $( '#type-public[value="3"]' ).prop( "checked", true );
+    } else {
+        $( "#signup-form").removeClass( "tab-sdk" ).addClass( "tab-api" );
+        $( '#type-public[value="3"]' ).prop( "checked", false );
+    }
+});
