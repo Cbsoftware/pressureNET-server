@@ -8,15 +8,28 @@ from customers.forms import CustomerForm
 from customers.models import Customer
 
 
-landing = cache_page(TemplateView.as_view(template_name='customers/landing.html'), settings.CACHE_TIMEOUT)
+landing_api = cache_page(TemplateView.as_view(template_name='customers/landing_api.html'), settings.CACHE_TIMEOUT)
+landing_developer = cache_page(TemplateView.as_view(template_name='customers/landing_developer.html'), settings.CACHE_TIMEOUT)
 
 
 class CreateCustomerView(CreateView):
     model = Customer
     form_class = CustomerForm
-    template_name = 'customers/register.html'
+
+
+class CreateAPICustomerView(CreateCustomerView):
+    template_name = 'customers/register_api.html'
 
     def get_success_url(self):
-        return '%s?success=1' % (reverse('customers-landing'),)
+        return '{url}?success=1'.format(url=reverse('customers-landing-api'))
 
-create_customer_view = CreateCustomerView.as_view()
+create_api_customer_view = CreateAPICustomerView.as_view()
+
+
+class CreateDeveloperCustomerView(CreateCustomerView):
+    template_name = 'customers/register_developer.html'
+
+    def get_success_url(self):
+        return '{url}?success=1'.format(url=reverse('customers-landing-developer'))
+
+create_developer_customer_view = CreateDeveloperCustomerView.as_view()
