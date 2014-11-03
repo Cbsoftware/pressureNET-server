@@ -24,6 +24,8 @@
 
     <div id="signup-form" class="tab-sdk container section">
 
+        <p id="signup-description"></p>
+
         <form class="form-horizontal" role="form" method="POST" action="{% url "customers-register" %}">
 
             {% csrf_token %}
