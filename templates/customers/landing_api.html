@@ -8,12 +8,6 @@
 
 {% block content %}
     <div id="api-headline" class="jumbotron section">
-        <div id="video-api" class="video-box">
-            <video class="hidden-xs hidden-sm" loop muted autoplay>
-                <source src="{{ STATIC_URL }}images/header02.mp4" type="video/mp4" />
-                <source src="{{ STATIC_URL }}images/header02.webm" type="video/webm" />
-            </video>
-        </div>
         <div class="container">
             <h1 class="col-xs-12">Get your hands on our data!</h1>
 
@@ -43,7 +37,7 @@
         </div>
     </div>
 
-    <div class="jumbotron container section">
+    <div class="container section">
         <h2>Need that data?</h2>
         <a class="btn btn-primary btn-lg" href="{% url "customers-api-register" %}" role="button">Sign Up!</a>
     </div>
