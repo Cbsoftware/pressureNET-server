@@ -15,13 +15,13 @@
             </video>
         </div>
         <div class="container">
-            <h1 class="col-xs-12">Get your hands on our data!</h1>
+            <h1 class="col-xs-12">Join our Developer Program!</h1>
 
             <div id="api-thanks" class="thanks">Thanks for signing up! You'll receive an e-mail with further details shortly.</div>
 
             <div class="clearfix"></div>
 
-            <a class="btn btn-lg" href="{% url "customers-register" %}" role="button">Sign Up</a>
+            <a class="btn btn-lg" href="{% url "customers-developer-register" %}" role="button">Sign Up</a>
 
             <cite class="credit hidden-xs hidden-sm">Background CC <a href="//www.openfootage.net/?p=47" target="_blank">OpenFootage.net</a></cite>
         </div>
@@ -36,7 +36,7 @@
         
         <div class="row">
             <h2>How it Works</h2>
-            <p class="col-md-6 col-md-offset-3">Apply with <a href="{% url "customers-register" %}">this</a> form today! Tell us why you think you’d be a good fit - how does the best weather forecast help your users?</p>
+            <p class="col-md-6 col-md-offset-3">Apply with <a href="{% url "customers-developer-register" %}">this</a> form today! Tell us why you think you’d be a good fit - how does the best weather forecast help your users?</p>
             <p class="col-md-6 col-md-offset-3">Our Android SDK makes the process of collecting atmospheric pressure data very simple. We’ll help you along and listen to your feedback - let’s make the best weather forecast together!</p>
         </div>
 
@@ -48,7 +48,7 @@
         </div>
 
         <h2 class="drop">Ready to help change the world?</h2>
-        <a class="btn btn-primary btn-lg" href="{% url "customers-register" %}" role="button">Apply now!</a>
+        <a class="btn btn-primary btn-lg" href="{% url "customers-developer-register" %}" role="button">Apply now!</a>
 
     </div>
 
@@ -90,36 +90,27 @@
     </div>
 -->
     
-    <div id="features" class="container section">
-        <h2 class="full-pad">Features</h2>
+    <div id="sdk-features" class="features section">
+        <div class="container">
+            <h2 class="full-pad">Features</h2>
 
-        <div class="border-right col-sm-6">
-            <h3>SDK</h3>
-            <ul class="feature-list">
-                <li>Simple Android library project</li>
-                <li>Handles all sensor data collection and transmission</li>
-                <li>Supports multiple use cases depending your needs</li>
-                <li>Flexible data schedule</li>
-                <li>Open Source (MIT license)</li>
-                <li>Read the <a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md">full documentation</a></li>
-            </ul>
-            <p><a class="btn btn-default" href="https://github.com/Cbsoftware/pressureNET-SDK" role="button"><i class="fa fa-github fa-lg"></i> Git</a> the SDK or <a href="{{ STATIC_URL }}docs/PressureNet-SDK-1.2-master.zip">download</a> the latest stable release.</p>
-        </div>
-        <div class="col-sm-6">
-            <h3>API</h3>
-            <ul class="feature-list">
-                <li>Live atmosphere data feed from our global smartphone network</li>
-                <li>800,000 measurements per day (May 2014)</li>
-                <li>Simple access through HTTPS</li>
-                <li>Data returned in JSON</li>
-                <li>Read the <a href="{{ STATIC_URL }}docs/PressureNet-Data-API.pdf">full documentation</a></li>
-            </ul>
+            <div class="col-sm-6 col-sm-offset-3">
+                <ul class="feature-list">
+                    <li>Simple Android library project</li>
+                    <li>Handles all sensor data collection and transmission</li>
+                    <li>Supports multiple use cases depending your needs</li>
+                    <li>Flexible data schedule</li>
+                    <li>Open Source (MIT license)</li>
+                    <li>Read the <a href="https://github.com/Cbsoftware/pressureNET-SDK/blob/master/Documentation.md">full documentation</a></li>
+                </ul>
+                <p><a class="btn btn-default" href="https://github.com/Cbsoftware/pressureNET-SDK" role="button"><i class="fa fa-github fa-lg"></i> Git</a> the SDK or <a href="{{ STATIC_URL }}docs/PressureNet-SDK-1.2-master.zip">download</a> the latest stable release.</p>
+            </div>
         </div>
     </div>
 
     <div class="container section">
         <h2>Excited?</h2>
-        <a class="btn btn-primary btn-lg" href="{% url "customers-register" %}" role="button">Sign Up!</a>
+        <a class="btn btn-primary btn-lg" href="{% url "customers-developer-register" %}" role="button">Sign Up!</a>
     </div>
 {% endblock %}
 

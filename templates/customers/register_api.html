@@ -16,19 +16,14 @@
         </div>
     </div>
 
-    <div class="tab-group container">
-        <a id="tab-link-sdk" class="tab-link active" href="#" data-tab="sdk">Developer Program</a>
-        <a id="tab-link-api" class="tab-link" href="#" data-tab="api">API</a>
-    </div>
+    <div id="signup-form" class="container section">
 
-    <div id="signup-form" class="tab-sdk container section">
-
-        <form class="form-horizontal" role="form" method="POST" action="{% url "customers-register" %}">
+        <form class="form-horizontal" role="form" method="POST" action="{% url "customers-api-register" %}">
 
             {% csrf_token %}
 
             <div class="form-group">
-                <label id="label-name" for="id_contact_name" class="col-sm-2 control-label"></label>
+                <label id="label-name" for="id_contact_name" class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-4 {% if form.contact_name.errors %}has-error{% endif %}">
                     {% render_field form.contact_name class="form-control" %}
                     <label class="control-label" for="id_contact_name">
@@ -49,7 +44,7 @@
             </div>
 
             <div class="form-group">
-                <label id="label-company" for="id_company_name" class="col-sm-2 control-label"></label>
+                <label id="label-company" for="id_company_name" class="col-sm-2 control-label">Institution</label>
                 <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
                     {% render_field form.company_name class="form-control" %}
                     <label class="control-label" for="id_company_name">
@@ -58,7 +53,7 @@
                         {% endfor %}
                     </label>
                 </div>
-                <label id="label-phone" for="id_contact_phone" class="col-sm-2 control-label"></label>
+                <label id="label-phone" for="id_contact_phone" class="col-sm-2 control-label">Phone</label>
                 <div class="col-sm-4 {% if form.contact_phone.errors %}has-error{% endif %}">
                     {% render_field form.contact_phone class="form-control" %}
                     <label class="control-label" for="id_contact_phone">
@@ -70,7 +65,7 @@
             </div>
 
             <div class="form-group">
-                <label id="label-address" for="address" class="col-sm-2 control-label"></label>
+                <label id="label-address" for="address" class="col-sm-2 control-label">Address</label>
                 <div class="col-sm-4">
                     {% render_field form.contact_address class="form-control" rows="4" %}
                 </div>
@@ -84,22 +79,23 @@
                 <h3>Registration Type</h3>
                 {% get_customer_types as customer_types %}
                 {% for customer_type in customer_types %}
-                    <div id="customer-type-{{ customer_type.id }}" class="col-sm-6">
-                        <div class="radio">
-                            <label class="control-label">
-                                <input id="type-public" type="radio" name="customer_type" 
-                                    {% if form.customer_type.value %}
-                                        {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
-                                    {% else %}
-                                        {% ifequal customer_type.name "Developer" %}checked="checked"{% endifequal %}
-                                    {% endif %}
-                                    value="{{ customer_type.id }}"
-                                />
-                                <h4 class="text-left">{{ customer_type.name }}</h4>
-                                <p class="text-left">{{ customer_type.description }}</p>
-                            </label>
+                    {% ifequal customer_type.name "Developer" %}
+                    {% else %}
+                        <div id="customer-type-{{ customer_type.id }}" class="col-sm-6">
+                            <div class="radio">
+                                <label class="control-label">
+                                    <input id="type-public" type="radio" name="customer_type" 
+                                        {% if form.customer_type.value %}
+                                            {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
+                                        {% endif %}
+                                        value="{{ customer_type.id }}"
+                                    />
+                                    <h4 class="text-left">{{ customer_type.name }}</h4>
+                                    <p class="text-left">{{ customer_type.description }}</p>
+                                </label>
+                            </div>
                         </div>
-                    </div>
+                    {% endifequal %}
                 {% endfor %}
             </div>
 

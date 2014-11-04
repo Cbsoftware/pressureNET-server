@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block page_title %} | API{% endblock %}
+
+{% block body_class %}api{% endblock %}
+
+{% block header_class %}short{% endblock %}
+
+{% block content %}
+    <div id="api-headline" class="jumbotron section">
+        <div id="video-api" class="video-box">
+            <video class="hidden-xs hidden-sm" loop muted autoplay>
+                <source src="{{ STATIC_URL }}images/header02.mp4" type="video/mp4" />
+                <source src="{{ STATIC_URL }}images/header02.webm" type="video/webm" />
+            </video>
+        </div>
+        <div class="container">
+            <h1 class="col-xs-12">Get your hands on our data!</h1>
+
+            <div id="api-thanks" class="thanks">Thanks for signing up! You'll receive an e-mail with further details shortly.</div>
+
+            <div class="clearfix"></div>
+
+            <a class="btn btn-lg" href="{% url "customers-api-register" %}" role="button">Sign Up</a>
+
+            <cite class="credit hidden-xs hidden-sm">Background CC <a href="//www.openfootage.net/?p=47" target="_blank">OpenFootage.net</a></cite>
+        </div>
+    </div>
+
+    <div id="api-features" class="features section">
+        <div class="container">
+            <h2 class="full-pad">Features</h2>
+
+            <div class="col-sm-6 col-sm-offset-3">
+                <ul class="feature-list">
+                    <li>Live atmosphere data feed from our global smartphone network</li>
+                    <li>5M measurements per day (November 2014)</li>
+                    <li>Simple access through HTTPS</li>
+                    <li>Data returned in JSON</li>
+                    <li>Read the <a href="{{ STATIC_URL }}docs/PressureNet-Data-API.pdf">full documentation</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="jumbotron container section">
+        <h2>Need that data?</h2>
+        <a class="btn btn-primary btn-lg" href="{% url "customers-api-register" %}" role="button">Sign Up!</a>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ STATIC_URL }}js/jcarousel.min.js"></script>
+    <script src="{{ STATIC_URL }}js/purl.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var success = $.url().param( "success" );
+            if ( success ) $( "#api-thanks" ).delay( 250 ).fadeIn( 250 ).delay( 5000 ).fadeOut( 500 );
+        });
+    </script>
+{% endblock %}
