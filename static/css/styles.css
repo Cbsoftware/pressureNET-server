@@ -6117,7 +6117,7 @@ address {
   line-height: 20px;
   width: 175px;
   height: 60px;
-  background-color: rgba(0, 153, 204, 0.5);
+  background-color: rgba(0, 172, 237, 0.5);
   border: none;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -6160,7 +6160,7 @@ address {
   background-image: url("../images/store-play.png");
 }
 .jumbotron .btn-store {
-  background-color: rgba(0, 153, 204, 0.5);
+  background-color: rgba(0, 172, 237, 0.5);
 }
 .jumbotron .btn-store:hover {
   background-color: #00aced;
@@ -6420,6 +6420,10 @@ address {
   background-image: url("../images/bg-about-sdk-api.jpg");
   background-position: center center;
 }
+.jumbotron#sdk-headline {
+  background-image: url("../images/bg-api-landing.jpg");
+  background-position: left center;
+}
 .jumbotron#signup-api-title {
   background-image: url("../images/bg-signup.jpg");
   background-position: center center;
@@ -6458,10 +6462,10 @@ address {
 .jumbotron #video-home video {
   top: 0;
 }
-.jumbotron #video-api {
+.jumbotron #video-sdk {
   background-position: center bottom;
 }
-.jumbotron #video-api video {
+.jumbotron #video-sdk video {
   bottom: 0;
 }
 .jumbotron .semi-black-screen {
@@ -6678,6 +6682,9 @@ figure {
 }
 #api-thanks {
   display: none;
+}
+#developer-program {
+  background-color: #ffffff;
 }
 #wordmark {
   vertical-align: text-top;
