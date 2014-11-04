@@ -10,25 +10,29 @@
 
 
 {% block content %}
-    <div id="signup-api-title" class="jumbotron section tall-box">
+    <div id="signup-sdk-title" class="jumbotron section tall-box">
         <div class="container">
-            <h1 class="full-pad">Sign Up for an API Key</h1>
+            <h1 class="full-pad">Apply to the Developer Program</h1>
         </div>
     </div>
 
-    <div class="tab-group container">
-        <a id="tab-link-sdk" class="tab-link active" href="#" data-tab="sdk">Developer Program</a>
-        <a id="tab-link-api" class="tab-link" href="#" data-tab="api">API</a>
-    </div>
-
-    <div id="signup-form" class="tab-sdk container section">
+    <div id="signup-form" class="container section">
 
         <form class="form-horizontal" role="form" method="POST" action="{% url "customers-developer-register" %}">
 
             {% csrf_token %}
 
             <div class="form-group">
-                <label id="label-name" for="id_contact_name" class="col-sm-2 control-label"></label>
+                <label id="label-company" for="id_company_name" class="col-sm-2 control-label">Company</label>
+                <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
+                    {% render_field form.company_name class="form-control" %}
+                    <label class="control-label" for="id_company_name">
+                        {% for error in form.company_name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </label>
+                </div>
+                <label id="label-name" for="id_contact_name" class="col-sm-2 control-label">Contact Name</label>
                 <div class="col-sm-4 {% if form.contact_name.errors %}has-error{% endif %}">
                     {% render_field form.contact_name class="form-control" %}
                     <label class="control-label" for="id_contact_name">
@@ -37,6 +41,9 @@
                         {% endfor %}
                     </label>
                 </div>
+            </div>
+
+            <div class="form-group">
                 <label for="id_contact_mail" class="col-sm-2 control-label">E-Mail</label>
                 <div class="col-sm-4 {% if form.contact_mail.errors %}has-error{% endif %}">
                     {% render_field form.contact_mail class="form-control" %}
@@ -46,19 +53,7 @@
                         {% endfor %}
                     </label>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label id="label-company" for="id_company_name" class="col-sm-2 control-label"></label>
-                <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
-                    {% render_field form.company_name class="form-control" %}
-                    <label class="control-label" for="id_company_name">
-                        {% for error in form.company_name.errors %}
-                            {{ error }}
-                        {% endfor %}
-                    </label>
-                </div>
-                <label id="label-phone" for="id_contact_phone" class="col-sm-2 control-label"></label>
+                <label id="label-phone" for="id_contact_phone" class="col-sm-2 control-label">Phone</label>
                 <div class="col-sm-4 {% if form.contact_phone.errors %}has-error{% endif %}">
                     {% render_field form.contact_phone class="form-control" %}
                     <label class="control-label" for="id_contact_phone">
@@ -70,7 +65,7 @@
             </div>
 
             <div class="form-group">
-                <label id="label-address" for="address" class="col-sm-2 control-label"></label>
+                <label id="label-address" for="address" class="col-sm-2 control-label">Address</label>
                 <div class="col-sm-4">
                     {% render_field form.contact_address class="form-control" rows="4" %}
                 </div>
@@ -115,7 +110,7 @@
                             {% endfor %}
                         </label>
                         <div id="terms" class="collapse">
-                            <h4>Terms and Conditions for API Registration</h4>
+                            <h4>Terms and Conditions for SDK Registration</h4>
                             <p>Cumulonimbus has been primarily motivated by and is committed foremost to improving the world and advancing scientific progress. We are therefore happy to supply our live stream free of charge for scientific and non-commercial use only.</p>
                             <p>We are proud to have been providing a continuous live stream to researchers at the University of Washington. However, in a project like this, technical or human error can interrupt, distort, or otherwise interfere with our live stream, and Cumulonimbus makes no representations as to the quality, consistency, or continuity of our live stream, whether affected by negligence or otherwise. Cumulonimbus assumes no liability whatsoever in supplying our live stream free of charge to researchers.</p>
                             <p>We reserve all rights to the data supplied in our live stream and may withdraw access to the live stream at any time and for any reason.</p>
@@ -126,7 +121,7 @@
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <button class="btn btn-lg btn-primary" type="submit">Sign up!</button>
+                    <button class="btn btn-lg btn-primary" type="submit">Apply!</button>
                 </div>
             </div>
         </form>

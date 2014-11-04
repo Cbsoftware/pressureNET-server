@@ -13,25 +13,17 @@
     <div id="signup-api-title" class="jumbotron section tall-box">
         <div class="container">
             <h1 class="full-pad">Sign Up for an API Key</h1>
-            <p class="center">PressureNet API keys allow developers to incorporate our SDK into their apps, and allow researchers access to the live data.<br>Sign up today!</p>
         </div>
     </div>
 
-    <div class="tab-group container">
-        <a id="tab-link-sdk" class="tab-link active" href="#" data-tab="sdk">Developer Program</a>
-        <a id="tab-link-api" class="tab-link" href="#" data-tab="api">API</a>
-    </div>
-
-    <div id="signup-form" class="tab-sdk container section">
-
-        <p id="signup-description"></p>
+    <div id="signup-form" class="container section">
 
         <form class="form-horizontal" role="form" method="POST" action="{% url "customers-api-register" %}">
 
             {% csrf_token %}
 
             <div class="form-group">
-                <label id="label-name" for="id_contact_name" class="col-sm-2 control-label"></label>
+                <label id="label-name" for="id_contact_name" class="col-sm-2 control-label">Name</label>
                 <div class="col-sm-4 {% if form.contact_name.errors %}has-error{% endif %}">
                     {% render_field form.contact_name class="form-control" %}
                     <label class="control-label" for="id_contact_name">
@@ -52,7 +44,7 @@
             </div>
 
             <div class="form-group">
-                <label id="label-company" for="id_company_name" class="col-sm-2 control-label"></label>
+                <label id="label-company" for="id_company_name" class="col-sm-2 control-label">Institution</label>
                 <div class="col-sm-4 {% if form.company_name.errors %}has-error{% endif %}">
                     {% render_field form.company_name class="form-control" %}
                     <label class="control-label" for="id_company_name">
@@ -61,7 +53,7 @@
                         {% endfor %}
                     </label>
                 </div>
-                <label id="label-phone" for="id_contact_phone" class="col-sm-2 control-label"></label>
+                <label id="label-phone" for="id_contact_phone" class="col-sm-2 control-label">Phone</label>
                 <div class="col-sm-4 {% if form.contact_phone.errors %}has-error{% endif %}">
                     {% render_field form.contact_phone class="form-control" %}
                     <label class="control-label" for="id_contact_phone">
@@ -73,7 +65,7 @@
             </div>
 
             <div class="form-group">
-                <label id="label-address" for="address" class="col-sm-2 control-label"></label>
+                <label id="label-address" for="address" class="col-sm-2 control-label">Address</label>
                 <div class="col-sm-4">
                     {% render_field form.contact_address class="form-control" rows="4" %}
                 </div>

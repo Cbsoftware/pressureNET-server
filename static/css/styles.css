@@ -5811,7 +5811,7 @@ h6 {
   text-transform: uppercase;
 }
 h1 {
-  color: #004455;
+  color: #1154ba;
   font-size: 40px;
   padding-top: 30px;
   padding-bottom: 30px;
@@ -5889,14 +5889,14 @@ h5 {
   }
 }
 a {
-  color: #0099cc;
+  color: #00aced;
   text-decoration: none;
   -webkit-transition: all 0.5s ease;
   transition: all 0.5s ease;
 }
 a:hover,
 a:focus {
-  color: #004455;
+  color: #1154ba;
   text-decoration: none;
 }
 p {
@@ -6069,7 +6069,7 @@ address {
 }
 .btn-primary {
   color: #ffffff;
-  background-color: #0099cc;
+  background-color: #00aced;
   border: none;
   padding-top: 15px;
   padding-bottom: 15px;
@@ -6125,7 +6125,7 @@ address {
 }
 .jumbotron .btn:hover {
   color: #ffffff;
-  background-color: #0099cc;
+  background-color: #00aced;
 }
 .push-down {
   margin-top: 120px !important;
@@ -6146,7 +6146,7 @@ address {
 .btn-store {
   width: 175px;
   height: 60px;
-  background-color: #0099cc;
+  background-color: #00aced;
   background-size: cover;
   border: none;
 }
@@ -6163,7 +6163,7 @@ address {
   background-color: rgba(0, 153, 204, 0.5);
 }
 .jumbotron .btn-store:hover {
-  background-color: #0099cc;
+  background-color: #00aced;
 }
 .tab-group {
   display: table;
@@ -6283,6 +6283,9 @@ address {
   background-color: rgba(255, 255, 255, 0.5);
   background-image: url("../images/next-hover.svg");
 }
+#branding {
+  padding-top: 6px;
+}
 #header {
   z-index: 99;
   position: fixed;
@@ -6343,7 +6346,7 @@ address {
 }
 #header .navbar .navbar-toggle {
   z-index: 100;
-  color: #0099cc;
+  color: #00aced;
 }
 #header .navbar #nav-top {
   overflow: hidden;
@@ -6373,7 +6376,7 @@ address {
 #header .navbar #nav-top .nav > li > a:hover,
 #header .navbar #nav-top .nav > li > a:focus {
   color: #ffffff !important;
-  background-color: #0099cc !important;
+  background-color: #00aced !important;
 }
 #header .navbar #nav-top .nav > li.active > a:hover,
 #header .navbar #nav-top .nav > li.active > a:focus {
@@ -6506,7 +6509,7 @@ address {
   margin-bottom: 30px;
 }
 .jumbotron .text-dark {
-  color: #004455;
+  color: #1154ba;
 }
 .jumbotron p {
   color: #ffffff;
@@ -6623,6 +6626,9 @@ body.api {
 .section.dark h6 {
   color: #dddddd;
 }
+.section.features {
+  background-color: #dddddd;
+}
 figure {
   margin-bottom: 15px;
 }
@@ -6641,18 +6647,18 @@ figure {
   border-radius: 0 !important;
 }
 .pagination a {
-  color: #0099cc !important;
+  color: #00aced !important;
   background-color: transparent !important;
   border: none !important;
   border-radius: 50px !important;
 }
 .pagination a:hover {
   color: #ffffff !important;
-  background-color: #0099cc !important;
+  background-color: #00aced !important;
 }
 .pagination li.active a,
 .pagination li.active a:hover {
-  color: #004455 !important;
+  color: #1154ba !important;
   background-color: #dddddd !important;
 }
 .pagination li.disabled a,
@@ -6662,7 +6668,7 @@ figure {
 }
 .thanks {
   float: left;
-  color: #004455;
+  color: #1154ba;
   text-align: center;
   width: 100%;
   background-color: #cceeff;
@@ -6672,9 +6678,6 @@ figure {
 }
 #api-thanks {
   display: none;
-}
-#features {
-  background-color: #dddddd;
 }
 #wordmark {
   vertical-align: text-top;
@@ -6804,7 +6807,7 @@ figure {
 }
 #footer #nav-bottom a:hover,
 #footer #nav-bottom a .fa:hover {
-  color: #0099cc !important;
+  color: #00aced !important;
 }
 .blog h1,
 .blog h2,
@@ -6949,7 +6952,7 @@ figure {
   padding-top: 15px;
 }
 #about-pn .about-pitch {
-  color: #004455;
+  color: #1154ba;
   font-size: 20px;
   margin-bottom: 15px;
 }
