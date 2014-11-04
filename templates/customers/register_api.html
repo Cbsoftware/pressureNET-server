@@ -79,22 +79,23 @@
                 <h3>Registration Type</h3>
                 {% get_customer_types as customer_types %}
                 {% for customer_type in customer_types %}
-                    <div id="customer-type-{{ customer_type.id }}" class="col-sm-6">
-                        <div class="radio">
-                            <label class="control-label">
-                                <input id="type-public" type="radio" name="customer_type" 
-                                    {% if form.customer_type.value %}
-                                        {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
-                                    {% else %}
-                                        {% ifequal customer_type.name "Developer" %}checked="checked"{% endifequal %}
-                                    {% endif %}
-                                    value="{{ customer_type.id }}"
-                                />
-                                <h4 class="text-left">{{ customer_type.name }}</h4>
-                                <p class="text-left">{{ customer_type.description }}</p>
-                            </label>
+                    {% ifequal customer_type.name "Developer" %}
+                    {% else %}
+                        <div id="customer-type-{{ customer_type.id }}" class="col-sm-6">
+                            <div class="radio">
+                                <label class="control-label">
+                                    <input id="type-public" type="radio" name="customer_type" 
+                                        {% if form.customer_type.value %}
+                                            {% ifequal form.cleaned_data.customer_type.id customer_type.id %}checked="checked"{% endifequal %}
+                                        {% endif %}
+                                        value="{{ customer_type.id }}"
+                                    />
+                                    <h4 class="text-left">{{ customer_type.name }}</h4>
+                                    <p class="text-left">{{ customer_type.description }}</p>
+                                </label>
+                            </div>
                         </div>
-                    </div>
+                    {% endifequal %}
                 {% endfor %}
             </div>
 

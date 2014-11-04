@@ -21,7 +21,7 @@ class CreateAPICustomerView(CreateCustomerView):
     template_name = 'customers/register_api.html'
 
     def get_success_url(self):
-        return '{url}?success=1'.format(url=reverse('customers-landing-api'))
+        return '{url}?success=1'.format(url=reverse('customers-api-landing'))
 
 create_api_customer_view = CreateAPICustomerView.as_view()
 
@@ -30,6 +30,6 @@ class CreateDeveloperCustomerView(CreateCustomerView):
     template_name = 'customers/register_developer.html'
 
     def get_success_url(self):
-        return '{url}?success=1'.format(url=reverse('customers-landing-developer'))
+        return '{url}?success=1'.format(url=reverse('customers-developer-landing'))
 
 create_developer_customer_view = CreateDeveloperCustomerView.as_view()
