@@ -56,6 +56,7 @@ class ConditionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condition
         fields = (
+            'user_id',
             'latitude',
             'longitude',
             'altitude',
