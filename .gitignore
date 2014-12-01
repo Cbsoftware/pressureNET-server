@@ -2,7 +2,6 @@
 *.pyc
 settings_local*.py
 .DS_Store
-.elasticbeanstalk/
 node_modules/
 static/admin
 static/grappelli
