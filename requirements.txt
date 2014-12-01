@@ -22,6 +22,7 @@ docutils==0.11
 jmespath==0.2.1
 ordereddict==1.1
 ply==3.4
+psycopg2==2.5.4
 pyasn1==0.1.7
 python-dateutil==2.2
 python-memcached==1.51
