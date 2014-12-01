@@ -31,10 +31,6 @@ class Reading(DateLocationMeasurementModel):
     observation_type = models.CharField(max_length=255, default='')
     observation_unit = models.CharField(max_length=255, default='')
     location_accuracy = models.FloatField()
-    is_charging = models.CharField(max_length=255, default='') 
-    model_type  = models.CharField(max_length=255, default='')
-    version_number = models.CharField(max_length=255, default='')
-    package_name = models.CharField(max_length=255, default='')
 
     class Meta:
         verbose_name = 'reading'

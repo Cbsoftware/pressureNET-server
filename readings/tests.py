@@ -55,10 +55,6 @@ class ReadingFactory(DateLocationMeasurementFactory):
     observation_type = 'pressure'
     observation_unit = 'mbars'
     location_accuracy = 0.0
-    is_charging = 'Yes'
-    model_type = 'Nexus 5'
-    version_number = '1.0STABLE'
-    package_name = 'PRESSURENET'
 
 
 class ConditionFactory(DateLocationMeasurementFactory):

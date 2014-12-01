@@ -37,10 +37,6 @@ class ReadingLiveSerializer(serializers.ModelSerializer):
             'reading_accuracy',
             'observation_type',
             'observation_unit',
-            'is_charging', 
-            'model_type',
-            'version_number',
-            'package_name',
         )
 
     def get_fields(self):
