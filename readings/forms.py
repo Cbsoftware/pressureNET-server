@@ -27,12 +27,6 @@ class ReadingForm(forms.ModelForm):
             'client_key',
         )
 
-    def save(self, *args, **kwargs):
-        # Add data to SQS queue
-        queue = get_queue(settings.SQS_QUEUE)
-        add_to_queue(queue, self.cleaned_data)
-        return super(ReadingForm, self).save(*args, **kwargs)
-
 
 class ConditionForm(forms.ModelForm):
 
