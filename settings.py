@@ -32,11 +32,11 @@ DEFAULT_FROM_EMAIL = 'pressureNET API <livestream@cumulonimbus.ca>'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.environ.get('PSQL_DB_NAME'),
-        'USER': os.environ.get('PSQL_USERNAME'),
-        'PASSWORD': os.environ.get('PSQL_PASSWORD'),
-        'HOST': os.environ.get('PSQL_ENDPOINT'),
-        'PORT': os.environ.get('PSQL_PORT'),
+        'NAME': os.environ.get('RDS_DB_NAME', ''),
+        'USER': os.environ.get('RDS_USERNAME', ''),
+        'PASSWORD': os.environ.get('RDS_PASSWORD', ''),
+        'HOST': os.environ.get('RDS_ENDPOINT', ''),
+        'PORT': os.environ.get('RDS_PORT', ''),
     }
 }
 
@@ -45,7 +45,7 @@ CACHE_TIMEOUT = 60 * 5
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'aws-pn-cgekrg0dxurw.egumzu.cfg.use1.cache.amazonaws.com:11211',
+        'LOCATION': os.environ.get('CACHE_ENDPOINT', ''),
     }
 }
 
@@ -169,18 +169,18 @@ INSTALLED_APPS = (
 )
 
 # AWS Settings
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY', '')
 
 # SQS Queue
-SQS_QUEUE = os.environ.get('SQS_QUEUE')
+SQS_QUEUE = os.environ.get('SQS_QUEUE', '')
 
 # S3 Bucket
-S3_PUBLIC_BUCKET = os.environ.get('S3_PUBLIC_BUCKET')
-S3_PRIVATE_BUCKET = os.environ.get('S3_PRIVATE_BUCKET')
+S3_PUBLIC_BUCKET = os.environ.get('S3_PUBLIC_BUCKET', '')
+S3_PRIVATE_BUCKET = os.environ.get('S3_PRIVATE_BUCKET', '')
 
 # DynamoDB
-DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE')
+DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', '')
 
 # S3 Readings Log Duration in milliseconds
 THREADPOOL_SIZE = 10
@@ -220,7 +220,7 @@ PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=ca.cumulonimbus.
 
 # Sentry Logging
 RAVEN_CONFIG = {
-    'dsn': os.environ.get('SENTRY_ENDPOINT'),
+    'dsn': os.environ.get('SENTRY_ENDPOINT', ''),
 }
 
 # Loggly Logging
