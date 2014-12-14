@@ -25,6 +25,10 @@ class ReadingForm(forms.ModelForm):
             'tzoffset',
             'location_accuracy',
             'client_key',
+            'is_charging', 
+            'model_type',
+            'version_number',
+            'package_name',
         )
 
 
