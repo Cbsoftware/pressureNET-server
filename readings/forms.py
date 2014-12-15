@@ -7,6 +7,10 @@ from utils.queue import get_queue, add_to_queue
 
 
 class ReadingForm(forms.ModelForm):
+    is_charging = forms.CharField(required=False) 
+    model_type  = forms.CharField(required=False)
+    version_number = forms.CharField(required=False)
+    package_name = forms.CharField(required=False)
 
     class Meta:
         model = Reading
