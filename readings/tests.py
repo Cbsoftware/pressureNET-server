@@ -1,3 +1,4 @@
+import copy
 import datetime
 import random
 import uuid
@@ -347,6 +348,20 @@ class CreateReadingTests(TestCase):
         self.assertTrue(response_json['success'])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Reading.objects.count(), 1)
+
+    def test_optional_fields(self):
+        post_data_all = ReadingFactory.attributes()
+
+        for optional_field in ('is_charging', 'model_type', 'version_number', 'package_name'):
+            Reading.objects.all().delete()
+            post_data = copy.copy(post_data_all)
+            del post_data[optional_field]
+            response = self.client.post(reverse('readings-create-reading'), post_data)
+
+            response_json = json.loads(response.content)
+            self.assertTrue(response_json['success'])
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(Reading.objects.count(), 1)
 
 
 class CreateConditionTests(TestCase):
