@@ -6420,7 +6420,7 @@ address {
   background-image: url("../images/bg-about-sdk-api.jpg");
   background-position: center center;
 }
-.jumbotron#sdk-headline {
+.jumbotron#api-headline {
   background-image: url("../images/bg-api-landing.jpg");
   background-position: left center;
 }
