@@ -27,74 +27,6 @@ from utils.dynamodb import get_item
 from utils.geohash import bounding_box_hash
 
 
-def add_from_pressurenet(request):
-    """
-    Data is incoming from pressureNET.
-    Authenticate and add it to the database.
-    """
-    start = time.time()
-    # get <-> post with urlencode
-    result = urllib2.urlopen('http://ec2-174-129-98-143.compute-1.amazonaws.com:8080/BarometerNetworkServer-3.1/BarometerServlet?pndv=buffer')
-    content = result.read()
-    readings_list = content.split(';')
-    count = 0
-    for reading in readings_list:
-        raw_location_accuracy = 0
-        raw_reading_accuracy = 0
-        reading_data = reading.split('|')
-        if reading_data[0] == '':
-            continue
-        raw_latitude = float(reading_data[0])
-        raw_longitude = float(reading_data[1])
-        raw_reading = float(reading_data[2])
-        raw_daterecorded = int(float(reading_data[3]))
-        raw_tzoffset = int(float(reading_data[4]))
-        raw_user_id = reading_data[5]
-        raw_sharing = reading_data[6]
-        raw_client_key = reading_data[7]
-        try:
-            raw_location_accuracy = reading_data[8]
-            raw_reading_accuracy = reading_data[9]
-        except:
-            pass
-        reading_form = ReadingForm(dict(
-            latitude=raw_latitude,
-            longitude=raw_longitude,
-            reading=raw_reading,
-            daterecorded=raw_daterecorded,
-            tzoffset=raw_tzoffset,
-            user_id=raw_user_id,
-            sharing=raw_sharing,
-            client_key=raw_client_key,
-            location_accuracy=raw_location_accuracy,
-            reading_accuracy=raw_reading_accuracy,
-            altitude=0.0,
-            observation_unit='mbar',
-            observation_type='pressure',
-            provider='network',
-        ))
-
-        if reading_form.is_valid():
-            reading_form.save()
-        else:
-            loggly(
-                view='add_reading_from_pressurenet',
-                event='invalid form',
-                errors=reading_form._errors,
-            )
-
-        count += 1
-
-    processing_time = time.time() - start
-    ReadingSync.objects.create(readings=count, processing_time=processing_time)
-    loggly(
-        view='add_reading_from_pressurenet',
-        event='save',
-        count=count,
-    )
-    return HttpResponse('okay go, count ' + str(count))
-
-
 class FilteredListAPIView(ListAPIView):
 
     def get_queryset(self):
@@ -114,26 +46,6 @@ class ReadingListView(FilteredListAPIView):
     filter_class = ReadingListFilter
 
 reading_list = cache_page(ReadingListView.as_view(), settings.CACHE_TIMEOUT)
-
-def reading_stats(request):
-    try:
-        duration_label = request.GET['log_duration']
-        start_time = int(request.GET['start_time'])
-        end_time = int(request.GET['end_time'])
-        min_lat = float(request.GET['min_latitude'])
-        max_lat = float(request.GET['max_latitude'])
-        min_lon = float(request.GET['min_longitude'])
-        max_lon = float(request.GET['max_longitude'])
-
-        geohash = bounding_box_hash(min_lat, min_lon, max_lat, max_lon)
-
-        hash_key = '%s-%s' % (duration_label, geohash)
-
-        stats = get_item(hash_key, start_time, end_time)
-    except:
-        stats = []
-
-    return HttpResponse(json.dumps(stats), mimetype='application/json')
 
 
 class ConditionListView(FilteredListAPIView):
