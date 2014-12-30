@@ -23,7 +23,7 @@ class BlogPostFactory(factory.Factory):
     content = 'content'
     teaser = 'teaser'
     published = True
-    image = 'image.jpg'
+    image = factory.django.ImageField(color='blue')
 
 
 class BlogListTest(TestCase):
