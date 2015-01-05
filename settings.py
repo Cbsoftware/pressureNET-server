@@ -192,6 +192,20 @@ LOG_DURATIONS = (
 DEFAULT_FILE_STORAGE = 'utils.s3.MediaS3Storage'
 AWS_STORAGE_BUCKET_NAME = S3_PUBLIC_BUCKET
 
+# Redis Settings
+REDIS_URL = os.environ.get('REDIS_URL', '')
+
+# Celery Settings
+BROKER_URL = 'redis://{redis}:6379/0'.format(redis=REDIS_URL)
+
+CELERYBEAT_SCHEDULE = {
+    'block-handler': {
+        'task': 'tasks.aggregator.BlockHandler',
+        'schedule': datetime.timedelta(seconds=30),
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
 
 # Grappelli Admin
 GRAPPELLI_ADMIN_TITLE = 'PressureNET Admin'
