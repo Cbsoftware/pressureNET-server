@@ -19,36 +19,29 @@ from utils.queue import get_queue
 from utils.time_utils import to_unix
 
 
-class DateLocationMeasurementFactory(factory.Factory):
+class DateFactoryMixin(object):
     date = factory.LazyAttribute(
-        lambda reading: datetime.datetime.now()
-    )
+        lambda reading: datetime.datetime.now())
+
+class LocationMeasurementFactory(factory.Factory):
     user_id = factory.LazyAttribute(
-        lambda reading: uuid.uuid4().get_hex()
-    )
+        lambda reading: uuid.uuid4().get_hex())
     latitude = factory.LazyAttribute(
-        lambda reading: (random.random() * 180) - 90
-    )
+        lambda reading: (random.random() * 180) - 90)
     longitude = factory.LazyAttribute(
-        lambda reading: (random.random() * 360) - 180
-    )
+        lambda reading: (random.random() * 360) - 180)
     altitude = factory.LazyAttribute(
-        lambda reading: random.random() * 300
-    )
+        lambda reading: random.random() * 300)
     daterecorded = factory.LazyAttribute(
-        lambda reading: to_unix(datetime.datetime.now())
-    )
+        lambda reading: to_unix(datetime.datetime.now()))
     tzoffset = factory.LazyAttribute(
-        lambda reading: random.randint(0, 100) * 1000
-    )
+        lambda reading: random.randint(0, 100) * 1000)
     client_key = 'ca.cumulonimbus.barometernetwork'
-    sharing = readings_choices.SHARING_PUBLIC
+    sharing = factory.LazyAttribute(lambda reading: random.choice([choice[0] for choice in readings_choices.SHARING_CHOICES]))
     provider = 'gps'
 
 
-class ReadingFactory(DateLocationMeasurementFactory):
-    FACTORY_FOR = Reading
-
+class RawReadingFactory(LocationMeasurementFactory):
     reading = factory.LazyAttribute(
         lambda reading: (random.random() * 300) + 800
     )
@@ -62,7 +55,11 @@ class ReadingFactory(DateLocationMeasurementFactory):
     package_name = 'PRESSURENET'
 
 
-class ConditionFactory(DateLocationMeasurementFactory):
+class ReadingFactory(DateFactoryMixin, RawReadingFactory):
+    FACTORY_FOR = Reading
+
+
+class ConditionFactory(DateFactoryMixin, LocationMeasurementFactory):
     FACTORY_FOR = Condition
 
     accuracy = 1.0
