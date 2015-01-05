@@ -2,14 +2,14 @@
 ApplicationName=My First Elastic Beanstalk Application
 AwsCredentialFile=/home/ubuntu/.elasticbeanstalk/aws_credential_file
 DevToolsEndpoint=git.elasticbeanstalk.us-west-2.amazonaws.com
-EnvironmentName=PressureNET-Live-Ingest
+EnvironmentName=PressureNET-Live-Worker
 EnvironmentType=LoadBalanced
 InstanceProfileName=aws-elasticbeanstalk-ec2-role
-OptionSettingFile=/home/ubuntu/pressureNET-server/.elasticbeanstalk/optionsettings.PressureNET-Live-Ingest
+OptionSettingFile=/home/ubuntu/pressureNET-server/.elasticbeanstalk/optionsettings.PressureNET-Live-Worker
 RdsDeletionPolicy=Snapshot
 RdsEnabled=No
 RdsSourceSnapshotName=
 Region=us-west-2
 ServiceEndpoint=https://elasticbeanstalk.us-west-2.amazonaws.com
-SolutionStack=32bit Amazon Linux running Python
+SolutionStack=64bit Amazon Linux running Python
 
