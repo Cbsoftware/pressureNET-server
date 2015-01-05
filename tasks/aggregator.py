@@ -58,25 +58,8 @@ def get_block_key(duration, block):
     return 'block:%s:%s' % (duration, block)
 
 
-def get_block_handled_key(duration, block):
-    return 'block-handled:%s:%s' % (duration, block)
-
-
 def unpack_block_key(block_key):
     return block_key.split(':')[1:]
-
-
-def update_block_handled_date(block_key, force=False):
-    duration, block = unpack_block_key(block_key)
-    handled_key = get_block_handled_key(duration, block)
-    now = to_unix(datetime.datetime.now())
-
-    if force:
-        REDIS.set(handled_key, now)
-    else:
-        REDIS.setnx(handled_key, now)
-
-    REDIS.expire(handled_key, 24 * 60 * 60)
 
 
 def get_file_path(format, duration, block, path_prefix=''):
@@ -279,6 +262,7 @@ class S3FilteredHandler(S3SharingHandler):
 
 
 class S3UserHandler(S3Handler):
+    DURATIONS = ('daily',)
 
     def write_data(self, duration, block, data):
         user_ids = set([datum['user_id'] for datum in data])
@@ -390,8 +374,6 @@ class BlockSorter(app.Task, Logger):
         pickled_reading = pickle.dumps(reading)
         REDIS.lpush(block_key, pickled_reading)
 
-        update_block_handled_date(block_key)
-
     def run(self, reading):
         reading_date = reading['daterecorded']
 
@@ -411,31 +393,15 @@ class BlockHandler(app.Task, Logger):
         PublicS3Handler,
         DynamoDBHandler,
     )
-    BLOCK_HANDLE_TIMEOUT = 10 * 60
-    BLOCK_HANDLE_LENGTH = 10000
     BLOCK_EXPIRE = 10 * 60
 
     def run(self):
         for key in REDIS.keys():
-            if is_block_key(key) and self.should_handle_block(key):
+            if is_block_key(key):
                 self.handle_block(key)
                 self.log(key=key)
 
         self.log()
-
-    def should_handle_block(self, block_key):
-        duration, block = unpack_block_key(block_key)
-
-        last_handled_key = get_block_handled_key(duration, block)
-        last_handled_date = from_unix(int(REDIS.get(last_handled_key)))
-
-        now = datetime.datetime.now()
-        elapsed = (now - last_handled_date).seconds
-        exceeded_persist_time = elapsed > self.BLOCK_HANDLE_TIMEOUT
-
-        block_length = REDIS.llen(block_key)
-        exceeded_active_messages = block_length > self.BLOCK_HANDLE_LENGTH
-        return exceeded_persist_time or exceeded_active_messages
 
     def handle_block(self, block_key):
         duration, block = unpack_block_key(block_key)
@@ -447,5 +413,3 @@ class BlockHandler(app.Task, Logger):
         for handler in self.handlers:
             if duration in handler.DURATIONS:
                 handler().delay(new_block_key, duration, block)
-
-        update_block_handled_date(block_key, force=True)
