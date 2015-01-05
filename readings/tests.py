@@ -15,7 +15,6 @@ import mock
 from readings import choices as readings_choices
 from readings.models import Reading, Condition, ConditionFilter
 
-from utils.queue import get_queue
 from utils.time_utils import to_unix
 
 
@@ -336,17 +335,19 @@ class ReadingLiveTests(TestCase):
 
 class CreateReadingTests(TestCase):
 
-    @mock.patch('readings.forms.add_to_queue')
-    def test_create_reading_inserts_into_db(self, mock_queue):
-        post_data = ReadingFactory.attributes()
+    @mock.patch('readings.forms.BlockSorter')
+    def test_create_reading_inserts_into_db(self, mock_sorter):
+        post_data = RawReadingFactory.attributes()
         response = self.client.post(reverse('readings-create-reading'), post_data)
 
         response_json = json.loads(response.content)
         self.assertTrue(response_json['success'])
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Reading.objects.count(), 1)
+        self.assertTrue(mock_sorter().delay.called)
 
-    def test_optional_fields(self):
+    @mock.patch('tasks.aggregator.BlockSorter')
+    def test_optional_fields(self, mock_sorter):
         post_data_all = ReadingFactory.attributes()
 
         for optional_field in ('is_charging', 'model_type', 'version_number', 'package_name'):
