@@ -15,6 +15,7 @@ class ReadingListSerializer(serializers.ModelSerializer):
             'latitude',
             'longitude',
             'altitude',
+            'sharing',
         )
 
 
