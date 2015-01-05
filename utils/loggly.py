@@ -19,6 +19,6 @@ class Logger(object):
 
     def log(self, **kwargs):
         kwargs.update({
-            'view': type(self).__name__,
+            'class': type(self).__name__,
         })
         loggly(**kwargs)
