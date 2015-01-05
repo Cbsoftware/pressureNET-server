@@ -10,7 +10,7 @@ import redis as pyredis
 from celery import Celery
 from django.conf import settings
 from django.utils import simplejson as json
-
+from django.utils.functional import cached_property
 
 from readings import choices as readings_choices
 from readings.serializers import ReadingListSerializer
@@ -33,8 +33,6 @@ app.config_from_object('django.conf:settings')
 # GLobal constants
 REDIS = pyredis.StrictRedis(host=settings.REDIS_URL)
 ALL_SHARING_LABELS = [choice[0] for choice in readings_choices.SHARING_CHOICES]
-DYNAMODB_CONN = get_conn()
-DYNAMODB_TABLE = DYNAMODB_CONN.get_table(settings.DYNAMODB_TABLE)
 
 
 # Utility functions
@@ -326,8 +324,14 @@ class PublicS3Handler(S3FilteredHandler):
 class DynamoDBHandler(DataHandler):
     DURATIONS = settings.STATISTICS_DURATIONS
     bucket = settings.S3_PRIVATE_BUCKET
-    conn = DYNAMODB_CONN
-    table = DYNAMODB_TABLE
+
+    @cached_property
+    def conn(self):
+        return get_conn()
+
+    @cached_property
+    def table(self):
+        return self.conn.get_table(settings.DYNAMODB_TABLE)
 
     def process_data(self, data):
         geo_sorted = defaultdict(list)
@@ -407,7 +411,7 @@ class BlockHandler(app.Task, Logger):
         PublicS3Handler,
         DynamoDBHandler,
     )
-    BLOCK_HANDLE_TIMEOUT = 1 * 60
+    BLOCK_HANDLE_TIMEOUT = 10 * 60
     BLOCK_HANDLE_LENGTH = 10000
     BLOCK_EXPIRE = 10 * 60
 

@@ -2,7 +2,7 @@ from django import forms
 from django.conf import settings
 
 from readings.models import Reading, Condition
-
+from tasks.aggregator import BlockSorter
 from utils.queue import get_queue, add_to_queue
 
 
@@ -34,6 +34,10 @@ class ReadingForm(forms.ModelForm):
             'version_number',
             'package_name',
         )
+
+    def save(self, *args, **kwargs):
+        BlockSorter().delay(self.cleaned_data)
+        return super(ReadingForm, self).save(*args, **kwargs)
 
 
 class ConditionForm(forms.ModelForm):
