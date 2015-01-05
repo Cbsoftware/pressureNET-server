@@ -200,7 +200,7 @@ AWS_STORAGE_BUCKET_NAME = S3_PUBLIC_BUCKET
 REDIS_URL = os.environ.get('REDIS_URL', '')
 
 # Celery Settings
-BROKER_URL = REDIS_URL
+BROKER_URL = 'redis://{redis}:6379/0'.format(redis=REDIS_URL)
 
 CELERYBEAT_SCHEDULE = {
     'block-handler': {
