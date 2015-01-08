@@ -36,7 +36,10 @@ class ReadingForm(forms.ModelForm):
         )
 
     def save(self, *args, **kwargs):
-        BlockSorter().delay(self.cleaned_data)
+        try:
+            BlockSorter().delay(self.cleaned_data)
+        except:
+            pass
         return super(ReadingForm, self).save(*args, **kwargs)
 
 
