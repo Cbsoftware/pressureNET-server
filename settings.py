@@ -205,7 +205,7 @@ BROKER_URL = 'redis://{redis}:6379/0'.format(redis=REDIS_URL)
 CELERYBEAT_SCHEDULE = {
     'block-handler': {
         'task': 'tasks.aggregator.BlockHandler',
-        'schedule': datetime.timedelta(seconds=30),
+        'schedule': datetime.timedelta(minutes=10),
     },
 }
 
