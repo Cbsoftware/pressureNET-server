@@ -389,11 +389,10 @@ class BlockSorter(app.Task, Logger):
 class BlockHandler(app.Task, Logger):
     handlers = (
         PrivateS3Handler,
-        PrivateS3UserHandler,
         PublicS3Handler,
         DynamoDBHandler,
     )
-    BLOCK_EXPIRE = 10 * 60
+    BLOCK_EXPIRE = 24 * 60 * 60
 
     def run(self):
         for key in REDIS.keys():
