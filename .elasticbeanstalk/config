@@ -2,10 +2,10 @@
 ApplicationName=My First Elastic Beanstalk Application
 AwsCredentialFile=/home/ubuntu/.elasticbeanstalk/aws_credential_file
 DevToolsEndpoint=git.elasticbeanstalk.us-west-2.amazonaws.com
-EnvironmentName=PressureNET-Live-Worker
-EnvironmentType=LoadBalanced
+EnvironmentName=PressureNET-Live-Beat
+EnvironmentType=SingleInstance
 InstanceProfileName=aws-elasticbeanstalk-ec2-role
-OptionSettingFile=/home/ubuntu/pressureNET-server/.elasticbeanstalk/optionsettings.PressureNET-Live-Worker
+OptionSettingFile=/home/ubuntu/pressureNET-server/.elasticbeanstalk/optionsettings.PressureNET-Live-Beat
 RdsDeletionPolicy=Snapshot
 RdsEnabled=No
 RdsSourceSnapshotName=
