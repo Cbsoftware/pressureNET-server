@@ -392,7 +392,7 @@ class BlockHandler(app.Task, Logger):
         PublicS3Handler,
         DynamoDBHandler,
     )
-    BLOCK_EXPIRE = 24 * 60 * 60
+    BLOCK_EXPIRE = 60 * 60
 
     def run(self):
         for key in REDIS.keys():
