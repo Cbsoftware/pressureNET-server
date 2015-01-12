@@ -402,7 +402,7 @@ class BlockSorter(BaseTask):
 class BlockHandler(BaseTask):
     handlers = (
         PrivateS3Handler,
-        PublicS3Handler,
+        #PublicS3Handler,
         DynamoDBHandler,
     )
     block_expire = 60 * 60

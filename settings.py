@@ -187,8 +187,8 @@ ALL_DURATIONS = (
     ('daily', (24 * 60 * 60 * 1000)),
 )
 LOG_DURATIONS = {
-    'split': ('daily',),
-    'combined': ('10minute', 'hourly', 'daily'),
+    'split': [], #('daily',),
+    'combined': ('10minute', ),#'hourly', 'daily'),
 }
 STATISTICS_DURATIONS = ('10minute', 'hourly')
 
