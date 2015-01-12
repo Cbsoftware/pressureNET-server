@@ -22,7 +22,7 @@
     <meta property="fb:app_id" content="711837532201345" />
     <meta property="og:site_name" content="PressureNet.io" />
     <meta property="og:title" content="{{ blog_post.title }}" />
-    <meta property="og:url" content="http://pressurenet.io{% url "blog-detail" slug=blog_post.slug %}" />
+    <meta property="og:url" content="https://pressurenet.io{% url "blog-detail" slug=blog_post.slug %}" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="{{ blog_post.image.url }}" />
 {% endblock %}
@@ -44,12 +44,12 @@
                         <li><a href="#disqus_thread">Comments</a></li>
                         <li class="post-share">
                             Share:<br class="hidden-xs">
-                            <a id="share-twitter" class="share-link" href="http://twitter.com/intent/tweet?url=http://pressurenet.io{{ request.path }}" data-text="{{ blog_post.title }}" data-hashtags="PressureNet" title="Share this post on Twitter"><i class="fa fa-twitter fa-lg"></i></a>
-                            <a id="share-facebook" class="share-link" href="https://www.facebook.com/sharer/sharer.php?u=http://pressurenet.io{{ request.path }}" title="Share this post on Facebook"><i class="fa fa-facebook-square fa-lg"></i></a>
-                            <a id="share-gplus" class="share-link" href="https://plus.google.com/share?url=http://pressurenet.io{{ request.path }}" title="Share this post on Google Plus"><i class="fa fa-google-plus-square fa-lg"></i></a>
-                            <a id="share-tumblr" class="share-link" href="http://www.tumblr.com/share/link?url=" data-url="http://pressurenet.io{{ request.path }}" data-name="{{ blog_post.title }}" data-description="{{ blog_post.teaser }}" title="Share this post on Tumblr"><i class="fa fa-tumblr-square fa-lg"></i></a>
-                            <a id="share-reddit" class="share-link" href="http://www.reddit.com/submit?url=http://pressurenet.io{{ request.path }}" title="Share this post on Reddit"><i class="fa fa-reddit-square fa-lg"></i></a>
-                            <a id="share-stumbleupon" class="share-link" href="http://www.stumbleupon.com/badge/?url=http://pressurenet.io{{ request.path }}" title="Share this post on StumbleUpon"><i class="fa fa-stumbleupon-circle fa-lg"></i></a>
+                            <a id="share-twitter" class="share-link" href="http://twitter.com/intent/tweet?url=https://pressurenet.io{{ request.path }}" data-text="{{ blog_post.title }}" data-hashtags="PressureNet" title="Share this post on Twitter"><i class="fa fa-twitter fa-lg"></i></a>
+                            <a id="share-facebook" class="share-link" href="https://www.facebook.com/sharer/sharer.php?u=https://pressurenet.io{{ request.path }}" title="Share this post on Facebook"><i class="fa fa-facebook-square fa-lg"></i></a>
+                            <a id="share-gplus" class="share-link" href="https://plus.google.com/share?url=https://pressurenet.io{{ request.path }}" title="Share this post on Google Plus"><i class="fa fa-google-plus-square fa-lg"></i></a>
+                            <a id="share-tumblr" class="share-link" href="http://www.tumblr.com/share/link?url=" data-url="https://pressurenet.io{{ request.path }}" data-name="{{ blog_post.title }}" data-description="{{ blog_post.teaser }}" title="Share this post on Tumblr"><i class="fa fa-tumblr-square fa-lg"></i></a>
+                            <a id="share-reddit" class="share-link" href="http://www.reddit.com/submit?url=https://pressurenet.io{{ request.path }}" title="Share this post on Reddit"><i class="fa fa-reddit-square fa-lg"></i></a>
+                            <a id="share-stumbleupon" class="share-link" href="http://www.stumbleupon.com/badge/?url=https://pressurenet.io{{ request.path }}" title="Share this post on StumbleUpon"><i class="fa fa-stumbleupon-circle fa-lg"></i></a>
                         </li>
                     </ul>
                 </div>
@@ -97,8 +97,8 @@
                         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
                     })();
                 </script>
-                <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-                <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+                <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+                <a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
             </div>
         </div>
     </div>

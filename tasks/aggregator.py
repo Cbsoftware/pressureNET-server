@@ -1,9 +1,9 @@
+import StringIO
 import csv
-import datetime
 import pickle
 import time
+import traceback
 import uuid
-import StringIO
 from collections import defaultdict
 
 import redis as pyredis
@@ -19,7 +19,6 @@ from utils.dynamodb import get_conn, write_items
 from utils.loggly import Logger
 from utils.s3 import get_bucket, read_from_bucket, write_to_bucket
 from utils.statistics import mean, median, std_dev
-from utils.time_utils import to_unix, from_unix
 from utils import geohash
 
 
@@ -71,33 +70,73 @@ def get_file_path(format, duration, block, path_prefix=''):
     )
 
 
+# Base Task
+class BaseTask(app.Task, Logger):
+
+    def handle(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def run(self, *args, **kwargs):
+        start = time.time()
+        success = False
+
+        try:
+            log_info = self.handle(*args, **kwargs)
+            success = True
+        except Exception, e:
+            log_info = {
+                'error': str(e),
+                'traceback': str(traceback.format_exc()),
+            }
+
+        end = time.time()
+
+        self.log(
+            success=success,
+            time=(end - start),
+            redis_memory=REDIS.info()['used_memory_human'],
+            **(log_info or {})
+        )
+
+
 # Writers
-class JSONS3Writer(app.Task, Logger):
-    file_format = 'json'
+class BaseS3Writer(BaseTask):
 
-    def run(self, bucket_name, output_path, data):
-        output_content = json.dumps(data)
+    def prepare(self, data):
+        raise NotImplementedError
 
+    def write(self, bucket_name, output_path, output_content):
         write_to_bucket(
             get_bucket(bucket_name),
             output_path,
             output_content,
-            'application/json',
+            'application/{format}'.format(format=self.file_format),
             compress=True,
         )
 
-        self.log(
-            format=self.file_format,
-            count=len(data),
-            bucket=bucket_name,
-            output_path=output_path,
-        )
+    def handle(self, bucket_name, output_path, data):
+        output_content = self.prepare(data)
+        self.write(bucket_name, output_path, output_content)
+
+        return {
+            'format': self.file_format,
+            'count': len(data),
+            'bucket': bucket_name,
+            'output_path': output_path,
+        }
 
 
-class CSVS3Writer(app.Task, Logger):
+class JSONS3Writer(BaseS3Writer):
+    file_format = 'json'
+
+    def prepare(self, data):
+        return json.dumps(data)
+
+
+class CSVS3Writer(BaseS3Writer):
     file_format = 'csv'
 
-    def run(self, bucket_name, output_path, data):
+    def prepare(self, data):
         output = StringIO.StringIO()
         writer = csv.writer(output)
 
@@ -110,27 +149,14 @@ class CSVS3Writer(app.Task, Logger):
         output_content = output.getvalue()
         output.close()
 
-        write_to_bucket(
-            get_bucket(bucket_name),
-            output_path,
-            output_content,
-            'application/csv',
-            compress=True,
-        )
-
-        self.log(
-            format=self.file_format,
-            count=len(data),
-            bucket=bucket_name,
-            output_path=output_path,
-        )
+        return output_content
 
 
 # Handlers
-class DataHandler(app.Task, Logger):
+class DataHandler(BaseTask):
     bucket = None
-    all_sharing_type = 'combined'
-    all_sharing_label = readings_choices.SHARING_PRIVATE
+    read_sharing_type = 'combined'
+    read_sharing_label = readings_choices.SHARING_PRIVATE
 
     def load_block_data(self, block_key):
         block_data = REDIS.lrange(block_key, 0, -1)
@@ -143,19 +169,12 @@ class DataHandler(app.Task, Logger):
 
         existing_dict.update(new_dict)
 
-        self.log(
-            method='merge',
-            existing=len(existing_data),
-            new=len(new_data),
-            merged=len(existing_dict),
-        )
-
         return existing_dict.values()
 
-    def get_existing_data(self, duration, block):
+    def load_existing_data(self, duration, block):
         path_prefix = '{type}/{label}'.format(
-            type=self.all_sharing_type,
-            label=self.all_sharing_label
+            type=self.read_sharing_type,
+            label=self.read_sharing_label
         )
         input_file = get_file_path(
             'json',
@@ -175,12 +194,12 @@ class DataHandler(app.Task, Logger):
         return data
 
     def write_data(self, duration, block, data):
-        pass
+        raise NotImplementedError
 
-    def run(self, block_key, duration, block):
+    def handle(self, block_key, duration, block):
         new_data = self.load_block_data(block_key)
 
-        existing_data = self.get_existing_data(duration, block)
+        existing_data = self.load_existing_data(duration, block)
 
         if existing_data:
             all_data = self.merge_data(existing_data, new_data)
@@ -191,17 +210,20 @@ class DataHandler(app.Task, Logger):
 
         self.write_data(duration, block, processed_data)
 
-        self.log(
-            duration=duration,
-            block=block,
-            count=len(processed_data),
-            bucket=self.bucket,
-        )
+        return {
+            'duration': duration,
+            'block': block,
+            'new_data': len(new_data),
+            'existing_data': len(existing_data) if existing_data else 0,
+            'merged_data': len(all_data),
+            'processed_data': len(processed_data),
+            'bucket': self.bucket,
+        }
 
 
 class S3Handler(DataHandler):
-    DURATIONS = reduce(set.union, map(set, settings.LOG_DURATIONS.values()))
-    SHARING_DURATIONS = settings.LOG_DURATIONS
+    durations = reduce(set.union, map(set, settings.LOG_DURATIONS.values()))
+    sharing_durations = settings.LOG_DURATIONS
     writers = [
         JSONS3Writer,
         CSVS3Writer,
@@ -217,7 +239,7 @@ class S3SharingHandler(S3Handler):
 
     def write_data(self, duration, block, data):
         for sharing_type, sharing_label_groups in self.sharing_types.items():
-            if duration in self.SHARING_DURATIONS[sharing_type]:
+            if duration in self.sharing_durations[sharing_type]:
                 for sharing_labels in sharing_label_groups:
                     filtered_data = [
                         datum for datum in data
@@ -241,7 +263,7 @@ class S3SharingHandler(S3Handler):
                             writer().delay(self.bucket, output_path, filtered_data)
 
 
-class S3FilteredHandler(S3SharingHandler):
+class S3FieldFilteredHandler(S3SharingHandler):
 
     def process_data(self, data):
         if self.allowed_fields:
@@ -262,7 +284,7 @@ class S3FilteredHandler(S3SharingHandler):
 
 
 class S3UserHandler(S3Handler):
-    DURATIONS = ('daily',)
+    durations = ('daily',)
 
     def write_data(self, duration, block, data):
         user_ids = set([datum['user_id'] for datum in data])
@@ -297,7 +319,7 @@ class PrivateS3UserHandler(S3UserHandler):
     bucket = settings.S3_PRIVATE_BUCKET
 
 
-class PublicS3Handler(S3FilteredHandler):
+class PublicS3Handler(S3FieldFilteredHandler):
     bucket = settings.S3_PUBLIC_BUCKET
     allowed_fields = ReadingListSerializer.Meta.fields
     sharing_types = {
@@ -306,7 +328,7 @@ class PublicS3Handler(S3FilteredHandler):
 
 
 class DynamoDBHandler(DataHandler):
-    DURATIONS = settings.STATISTICS_DURATIONS
+    durations = settings.STATISTICS_DURATIONS
     bucket = settings.S3_PRIVATE_BUCKET
 
     @cached_property
@@ -359,22 +381,15 @@ class DynamoDBHandler(DataHandler):
         for batch_items in group_by(put_items, 25):
             write_items(self.conn, self.table, batch_items)
 
-    def log(self, **kwargs):
-        super(DynamoDBHandler, self).log(
-            event='write to dynamodb',
-            table=str(self.table),
-            **kwargs
-        )
 
-
-class BlockSorter(app.Task, Logger):
+class BlockSorter(BaseTask):
 
     def write_to_redis(self, duration, block, reading):
         block_key = get_block_key(duration, block)
         pickled_reading = pickle.dumps(reading)
         REDIS.lpush(block_key, pickled_reading)
 
-    def run(self, reading):
+    def handle(self, reading):
         reading_date = reading['daterecorded']
 
         for duration, duration_time in settings.ALL_DURATIONS:
@@ -383,32 +398,29 @@ class BlockSorter(app.Task, Logger):
 
             self.write_to_redis(duration, block, reading)
 
-        self.log()
 
-
-class BlockHandler(app.Task, Logger):
+class BlockHandler(BaseTask):
     handlers = (
         PrivateS3Handler,
-        PublicS3Handler,
+        #PublicS3Handler,
         DynamoDBHandler,
     )
-    BLOCK_EXPIRE = 24 * 60 * 60
+    block_expire = 60 * 60
 
-    def run(self):
+    def handle(self):
+        handled_keys = []
         for key in REDIS.keys():
             if is_block_key(key):
                 self.handle_block(key)
-                self.log(key=key)
-
-        self.log()
+                handled_keys.append(key)
 
     def handle_block(self, block_key):
         duration, block = unpack_block_key(block_key)
         new_block_key = str(uuid.uuid4())
 
         REDIS.rename(block_key, new_block_key)
-        REDIS.expire(new_block_key, self.BLOCK_EXPIRE)
+        REDIS.expire(new_block_key, self.block_expire)
 
         for handler in self.handlers:
-            if duration in handler.DURATIONS:
+            if duration in handler.durations:
                 handler().delay(new_block_key, duration, block)
