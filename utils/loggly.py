@@ -19,6 +19,7 @@ class Logger(object):
 
     def log(self, **kwargs):
         kwargs.update({
+            'module': type(self).__module__,
             'class': type(self).__name__,
         })
         loggly(**kwargs)
