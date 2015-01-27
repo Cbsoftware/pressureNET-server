@@ -345,6 +345,7 @@ class CreateReadingTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Reading.objects.count(), 1)
         self.assertTrue(mock_sorter().delay.called)
+        self.assertNotIn('client_key', mock_sorter().delay.call_args[0][0])
 
     @mock.patch('tasks.aggregator.BlockSorter')
     def test_optional_fields(self, mock_sorter):
