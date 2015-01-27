@@ -1,3 +1,5 @@
+import copy
+
 from django import forms
 from django.conf import settings
 
@@ -36,10 +38,9 @@ class ReadingForm(forms.ModelForm):
         )
 
     def save(self, *args, **kwargs):
-        try:
-            BlockSorter().delay(self.cleaned_data)
-        except:
-            pass
+        reading_data = copy.copy(self.cleaned_data)
+        del reading_data['client_key']
+        BlockSorter().delay(reading_data)
         return super(ReadingForm, self).save(*args, **kwargs)
 
 
