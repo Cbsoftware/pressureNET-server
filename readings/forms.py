@@ -6,9 +6,10 @@ from django.conf import settings
 from readings.models import Reading, Condition
 from tasks.aggregator import BlockSorter
 from utils.queue import get_queue, add_to_queue
+from utils.loggly import Logger
 
 
-class ReadingForm(forms.ModelForm):
+class ReadingForm(Logger, forms.ModelForm):
     is_charging = forms.CharField(required=False) 
     model_type  = forms.CharField(required=False)
     version_number = forms.CharField(required=False)
@@ -38,9 +39,12 @@ class ReadingForm(forms.ModelForm):
         )
 
     def save(self, *args, **kwargs):
-        reading_data = copy.copy(self.cleaned_data)
-        del reading_data['client_key']
-        BlockSorter().delay(reading_data)
+        try:
+            reading_data = copy.copy(self.cleaned_data)
+            del reading_data['client_key']
+            BlockSorter().delay(reading_data)
+        except Exception, e:
+            self.log(error=str(e))
         return super(ReadingForm, self).save(*args, **kwargs)
 
 
