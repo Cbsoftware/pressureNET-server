@@ -94,7 +94,7 @@ class BaseTask(app.Task, Logger):
         self.log(
             success=success,
             time=(end - start),
-            redis_memory=REDIS.info()['used_memory_human'],
+            redis_memory=REDIS.info()['used_memory'],
             **(log_info or {})
         )
 
