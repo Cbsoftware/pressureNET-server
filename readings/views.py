@@ -229,26 +229,52 @@ create_condition = csrf_exempt(CreateConditionView.as_view())
 
 
 def get_s3_file(request):
-    api_key = request.GET.get('api_key', None)
-    timestamp = request.GET.get('timestamp', None) or int(time.time() * 1000)
-    file_format = request.GET.get('format', 'json')
+    response = HttpResponse(status=400)
+    file_path = None
+    error = None
 
-    if not (api_key and Customer.objects.filter(api_key=api_key, api_key_enabled=True).exists()):
-        return HttpResponseNotAllowed('An active API Key is required')
+    start = time.time()
 
-    customer = Customer.objects.get(api_key=api_key)
+    try:
+        api_key = request.GET.get('api_key', None)
+        timestamp_block = None
 
-    duration_label, duration_time = settings.ALL_DURATIONS[0]
-    timestamp_offset = timestamp % duration_time
-    timestamp_block = timestamp - timestamp_offset
+        file_format = request.GET.get('format', 'json')
 
-    if not customer.customer_type:
-        return HttpResponseNotAllowed('You are not authorized to request this API.  Please contact support.')
+        timestamp = int(request.GET.get('timestamp', 0)) or int(time.time() * 1000)
+        
+        if not (api_key and Customer.objects.filter(api_key=api_key, api_key_enabled=True).exists()):
+            response = HttpResponseNotAllowed('An active API Key is required')
+        else:
+            customer = Customer.objects.get(api_key=api_key)
 
-    file_path = 'readings/pressure/combined/{sharing}/{format}/10minute/{timestamp}.{format}'.format(
-        sharing=customer.customer_type.sharing, format=file_format, timestamp=timestamp_block)
-    s3_file = get_file(file_path)
-    if s3_file:
-        return redirect(s3_file.generate_url(1000))
-    else:
-        raise Http404
+            duration_label, duration_time = settings.ALL_DURATIONS[0]
+            timestamp_offset = timestamp % duration_time
+            timestamp_block = timestamp - timestamp_offset
+
+            if not customer.customer_type:
+                response = HttpResponseNotAllowed('You are not authorized to request this API.  Please contact support.')
+            else:
+                file_path = 'readings/pressure/combined/{sharing}/{format}/10minute/{timestamp}.{format}'.format(
+                    sharing=customer.customer_type.sharing, format=file_format, timestamp=timestamp_block)
+                s3_file = get_file(file_path)
+                if s3_file:
+                    response = redirect(s3_file.generate_url(1000))
+                else:
+                    response = HttpResponse(status=404)
+    except Exception, e:
+        error = str(e)
+
+    end = time.time()
+    loggly(**{
+        'class': 'S3FileView',
+        'time': (end - start),
+        'api_key': api_key,
+        'timestamp': timestamp,
+        'timestamp_block': timestamp_block,
+        'status': response.status_code,
+        's3_file': file_path,
+        'error': error,
+    })
+
+    return response
