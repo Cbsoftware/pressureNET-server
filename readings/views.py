@@ -3,11 +3,12 @@ import time
 import urllib2
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseBadRequest, Http404, HttpResponseNotAllowed
+from django.shortcuts import redirect
+from django.utils import simplejson as json
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView
-from django.utils import simplejson as json
 
 from rest_framework.generics import ListAPIView
 from rest_framework.throttling import UserRateThrottle
@@ -16,15 +17,16 @@ from customers import choices as customer_choices
 from customers.models import Customer, CustomerCallLog
 
 from readings import choices as readings_choices
-from readings.forms import ReadingForm, ConditionForm
 from readings.filters import ReadingListFilter, ConditionListFilter
-from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
+from readings.forms import ReadingForm, ConditionForm
 from readings.models import Reading, ReadingSync, Condition, ConditionFilter
+from readings.serializers import ReadingListSerializer, ReadingLiveSerializer, ConditionListSerializer
 
-from utils.time_utils import to_unix
-from utils.loggly import loggly, Logger
 from utils.dynamodb import get_item
 from utils.geohash import bounding_box_hash
+from utils.loggly import loggly, Logger
+from utils.s3 import get_file
+from utils.time_utils import to_unix
 
 
 class FilteredListAPIView(ListAPIView):
@@ -224,3 +226,55 @@ class CreateConditionView(JSONCreateView):
     form_class = ConditionForm
 
 create_condition = csrf_exempt(CreateConditionView.as_view())
+
+
+def get_s3_file(request):
+    response = HttpResponse(status=400)
+    file_path = None
+    error = None
+
+    start = time.time()
+
+    try:
+        api_key = request.GET.get('api_key', None)
+        timestamp_block = None
+
+        file_format = request.GET.get('format', 'json')
+
+        timestamp = int(request.GET.get('timestamp', 0)) or int(time.time() * 1000)
+        
+        if not (api_key and Customer.objects.filter(api_key=api_key, api_key_enabled=True).exists()):
+            response = HttpResponseNotAllowed('An active API Key is required')
+        else:
+            customer = Customer.objects.get(api_key=api_key)
+
+            duration_label, duration_time = settings.ALL_DURATIONS[0]
+            timestamp_offset = timestamp % duration_time
+            timestamp_block = timestamp - timestamp_offset
+
+            if not customer.customer_type:
+                response = HttpResponseNotAllowed('You are not authorized to request this API.  Please contact support.')
+            else:
+                file_path = 'readings/pressure/combined/{sharing}/{format}/10minute/{timestamp}.{format}'.format(
+                    sharing=customer.customer_type.sharing, format=file_format, timestamp=timestamp_block)
+                s3_file = get_file(file_path)
+                if s3_file:
+                    response = redirect(s3_file.generate_url(1000))
+                else:
+                    response = HttpResponse(status=404)
+    except Exception, e:
+        error = str(e)
+
+    end = time.time()
+    loggly(**{
+        'class': 'S3FileView',
+        'time': (end - start),
+        'api_key': api_key,
+        'timestamp': timestamp,
+        'timestamp_block': timestamp_block,
+        'status': response.status_code,
+        's3_file': file_path,
+        'error': error,
+    })
+
+    return response
