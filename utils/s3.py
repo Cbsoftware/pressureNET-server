@@ -61,6 +61,11 @@ def write_to_bucket(bucket, key, content, content_type='', content_encoding='', 
         return None
 
 
+def get_file(file_path):
+    bucket = get_bucket(settings.S3_PRIVATE_BUCKET)
+    return bucket.get_key(file_path)
+
+
 class MediaS3Storage(S3BotoStorage):
 
     def url(self, name):
