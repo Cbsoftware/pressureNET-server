@@ -7,3 +7,4 @@ static/admin
 static/grappelli
 pnet_dev
 .elasticbeanstalk/
+celerybeat*

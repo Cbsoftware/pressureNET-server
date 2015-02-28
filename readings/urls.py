@@ -7,4 +7,6 @@ urlpatterns = patterns('readings.views',
     url('^live/$', 'reading_live', name='readings-live'),
     url('^add/$', 'create_reading', name='readings-create-reading'),
     url('^conditions/add/$', 'create_condition', name='readings-create-condition'),
+
+    url('^api/pressure/$', 'get_s3_file', name='readings-pressure-get'),
 )
