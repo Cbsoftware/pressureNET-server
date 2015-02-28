@@ -1,6 +1,7 @@
 from django.db import models
 
 from customers import choices as customer_choices
+from readings import choices as readings_choices
 
 
 class CustomerPlan(models.Model):
@@ -24,6 +25,7 @@ class CustomerType(models.Model):
     """Customer Type"""
     name = models.CharField(max_length=255)
     description = models.TextField()
+    sharing = models.CharField(max_length=255, blank=True, null=True, choices=readings_choices.SHARING_CHOICES)
 
     class Meta:
         verbose_name = 'Customer Type'
