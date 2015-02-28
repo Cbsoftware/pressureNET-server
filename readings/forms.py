@@ -10,7 +10,7 @@ from utils.loggly import Logger
 
 
 class ReadingForm(Logger, forms.ModelForm):
-    is_charging = forms.CharField(required=False) 
+    is_charging = forms.CharField(required=False)
     model_type  = forms.CharField(required=False)
     version_number = forms.CharField(required=False)
     package_name = forms.CharField(required=False)
@@ -32,7 +32,7 @@ class ReadingForm(Logger, forms.ModelForm):
             'tzoffset',
             'location_accuracy',
             'client_key',
-            'is_charging', 
+            'is_charging',
             'model_type',
             'version_number',
             'package_name',
@@ -42,7 +42,7 @@ class ReadingForm(Logger, forms.ModelForm):
         try:
             reading_data = copy.copy(self.cleaned_data)
             del reading_data['client_key']
-            BlockSorter().delay(reading_data)
+            BlockSorter().apply(args=[reading_data])
         except Exception, e:
             self.log(error=str(e))
         return super(ReadingForm, self).save(*args, **kwargs)
