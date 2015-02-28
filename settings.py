@@ -183,8 +183,8 @@ DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', '')
 # S3 Readings Log Duration in milliseconds
 ALL_DURATIONS = (
     ('10minute', (10 * 60 * 1000)),
-    ('hourly', (60 * 60 * 1000)),
-    ('daily', (24 * 60 * 60 * 1000)),
+    #('hourly', (60 * 60 * 1000)),
+    #('daily', (24 * 60 * 60 * 1000)),
 )
 LOG_DURATIONS = {
     'split': [], #('daily',),
