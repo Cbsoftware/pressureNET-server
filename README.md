@@ -15,7 +15,7 @@ Web-based data viewer for pressureNET
 
 1.  Install all the local packages using pip:
 
-        pip install -r requirements
+        pip install -r requirements.txt
 
 1.  Copy `settings_local.py.ex` to `settings_local.py` and fill in the database settings (database name, username, password).
 
